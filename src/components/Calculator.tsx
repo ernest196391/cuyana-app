@@ -30,9 +30,9 @@ export default function Calculator() {
   const cup = rate ? gyd * rate : 0;
 
   const waHref = useMemo(() => {
-    let msg = `Hola, quiero enviar ${formatNumber(gyd)} GYD y que mi familia reciba ${formatNumber(
-      cup
-    )} CUP.`;
+    let msg = `Hola Adonys, estoy interesado en mandar ${formatNumber(
+      gyd
+    )} GYD para que mi familia en Cuba reciba ${formatNumber(cup)} CUP.`;
     if (ref) msg += ` (Referido: ${ref})`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   }, [gyd, cup, ref]);
