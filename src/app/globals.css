@@ -1,0 +1,295 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --vino: #6e1423;
+  --vino-deep: #4a0e18;
+  --dorado: #c89b3c;
+  --dorado-soft: #e7d3a1;
+  --grafito: #1c1a1f;
+  --papel: #f6efe7;
+  --papel-card: #fffdfa;
+  --linea: rgba(28, 26, 31, 0.12);
+  --texto: #2a2326;
+  --texto-suave: #6b5f5a;
+}
+
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--texto);
+  font-family: var(--font-instrument-sans), sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- header ---------- */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 0 10px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand svg {
+  width: 26px;
+  height: 26px;
+}
+.brand span {
+  font-family: var(--font-instrument-serif), serif;
+  font-size: 22px;
+  letter-spacing: 0.3px;
+  color: var(--vino-deep);
+}
+.rate-pill {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  color: var(--texto-suave);
+  border: 1px solid var(--linea);
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: var(--papel-card);
+}
+.rate-pill b {
+  color: var(--vino);
+  font-weight: 600;
+}
+
+/* ---------- hero ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  padding: 36px 0 56px;
+}
+@media (max-width: 860px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 20px 0 40px;
+  }
+}
+
+.hero h1 {
+  font-family: var(--font-instrument-serif), serif;
+  font-weight: 400;
+  font-size: clamp(34px, 5.4vw, 54px);
+  line-height: 1.12;
+  letter-spacing: 0.2px;
+  margin: 0 0 18px;
+  color: var(--vino-deep);
+}
+.hero p.sub {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--texto-suave);
+  max-width: 46ch;
+  margin: 0;
+}
+
+/* ---------- calculator card ---------- */
+.calc {
+  background: var(--papel-card);
+  border: 1px solid var(--linea);
+  border-radius: 18px;
+  padding: 26px 24px 24px;
+  box-shadow: 0 18px 40px -24px rgba(74, 14, 24, 0.35);
+}
+.field {
+  margin-bottom: 18px;
+}
+.field label {
+  display: block;
+  font-size: 13px;
+  color: var(--texto-suave);
+  margin-bottom: 8px;
+}
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid var(--linea);
+  padding-bottom: 8px;
+  transition: border-color 0.15s ease;
+}
+.input-row:focus-within {
+  border-color: var(--vino);
+}
+.input-row .cur {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 15px;
+  color: var(--texto-suave);
+}
+.input-row input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 26px;
+  color: var(--texto);
+  min-width: 0;
+}
+
+.result {
+  background: var(--vino-deep);
+  border-radius: 14px;
+  padding: 20px 20px;
+  margin: 6px 0 20px;
+  color: #fff;
+}
+.result label {
+  display: block;
+  font-size: 12px;
+  color: var(--dorado-soft);
+  margin-bottom: 6px;
+}
+.result .amount {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.result .amount span {
+  font-size: 17px;
+  opacity: 0.8;
+  margin-left: 6px;
+}
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  background: var(--vino);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 15px 18px;
+  font-family: var(--font-instrument-sans), sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.cta:hover {
+  background: #5a0f1c;
+}
+.cta:active {
+  transform: scale(0.99);
+}
+.cta svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.calc-note {
+  font-size: 12px;
+  color: var(--texto-suave);
+  text-align: center;
+  margin-top: 12px;
+}
+
+/* ---------- trust strip ---------- */
+.trust {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--linea);
+  border-bottom: 1px solid var(--linea);
+  padding: 26px 0;
+  margin-bottom: 56px;
+}
+.trust .item {
+  flex: 1;
+  padding: 0 20px;
+  border-left: 1px solid var(--linea);
+}
+.trust .item:first-child {
+  border-left: none;
+  padding-left: 0;
+}
+.trust .item p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--texto);
+}
+@media (max-width: 720px) {
+  .trust {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .trust .item {
+    border-left: none;
+    padding: 0;
+  }
+}
+
+/* ---------- how it works ---------- */
+.how {
+  padding-bottom: 60px;
+}
+.how h2 {
+  font-family: var(--font-instrument-serif), serif;
+  font-weight: 400;
+  font-size: 26px;
+  color: var(--vino-deep);
+  margin: 0 0 26px;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+@media (max-width: 720px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+}
+.step .n {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  color: var(--dorado);
+  margin-bottom: 8px;
+}
+.step p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--texto-suave);
+}
+
+footer {
+  border-top: 1px solid var(--linea);
+  padding: 22px 0 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+footer p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
