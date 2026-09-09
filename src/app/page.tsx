@@ -1,19 +1,15 @@
 import RatePill from "@/components/RatePill";
 import Calculator from "@/components/Calculator";
+import UpdatedAtNote from "@/components/UpdatedAtNote";
 
 export default function Home() {
   return (
     <div className="wrap">
       <header>
         <div className="brand">
-          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M6 20C6 20 14 12 20 12C26 12 34 20 34 20C34 20 26 28 20 28C14 28 6 20 6 20Z"
-              stroke="#6E1423"
-              strokeWidth="2.4"
-              fill="none"
-            />
-            <path d="M20 12C20 12 24 20 20 28" stroke="#C89B3C" strokeWidth="2.4" />
+          <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="20" r="20" fill="#6E1423" />
+            <path d="M15 11 L28.5 20 L15 29 Z" fill="#C89B3C" />
           </svg>
           <span>Cuyana</span>
         </div>
@@ -38,12 +34,24 @@ export default function Home() {
 
       <section className="trust">
         <div className="item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3.5 2" />
+          </svg>
           <p>Minutos, no días</p>
         </div>
         <div className="item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" />
+            <path d="M9 12l2 2 4-4" />
+          </svg>
           <p>Tasa clara, sin sorpresas</p>
         </div>
         <div className="item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z" />
+            <circle cx="12" cy="9" r="2.3" />
+          </svg>
           <p>Entrega en toda Cuba</p>
         </div>
       </section>
@@ -67,7 +75,9 @@ export default function Home() {
       </section>
 
       <footer>
-        <p>Tasa actualizada hoy, 09:41.</p>
+        <p>
+          <UpdatedAtNote />
+        </p>
         <p>Cuyana © 2026 — Guyana ↔ Cuba</p>
       </footer>
     </div>

@@ -60,8 +60,9 @@ header {
 }
 .brand span {
   font-family: var(--font-instrument-serif), serif;
-  font-size: 22px;
-  letter-spacing: 0.3px;
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
   color: var(--vino-deep);
 }
 .rate-pill {
@@ -72,10 +73,54 @@ header {
   border-radius: 999px;
   padding: 6px 12px;
   background: var(--papel-card);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .rate-pill b {
   color: var(--vino);
   font-weight: 600;
+}
+@media (max-width: 400px) {
+  .rate-pill-prefix {
+    display: none;
+  }
+}
+
+/* ---------- skeleton ---------- */
+.skeleton {
+  display: inline-block;
+  height: 0.9em;
+  vertical-align: middle;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    rgba(28, 26, 31, 0.08) 25%,
+    rgba(28, 26, 31, 0.16) 37%,
+    rgba(28, 26, 31, 0.08) 63%
+  );
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+}
+.skeleton-dark {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.14) 25%,
+    rgba(255, 255, 255, 0.26) 37%,
+    rgba(255, 255, 255, 0.14) 63%
+  );
+}
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
 }
 
 /* ---------- hero ---------- */
@@ -239,28 +284,39 @@ header {
   gap: 0;
   border-top: 1px solid var(--linea);
   border-bottom: 1px solid var(--linea);
-  padding: 26px 0;
+  padding: 30px 0;
   margin-bottom: 56px;
 }
 .trust .item {
   flex: 1;
-  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 22px;
   border-left: 1px solid var(--linea);
 }
 .trust .item:first-child {
   border-left: none;
   padding-left: 0;
 }
+.trust .item svg {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: var(--vino);
+}
 .trust .item p {
   margin: 0;
   font-size: 15px;
-  line-height: 1.4;
+  font-weight: 500;
+  line-height: 1.35;
   color: var(--texto);
 }
 @media (max-width: 720px) {
   .trust {
     flex-direction: column;
-    gap: 16px;
+    align-items: stretch;
+    gap: 18px;
   }
   .trust .item {
     border-left: none;

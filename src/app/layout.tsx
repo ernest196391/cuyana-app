@@ -24,10 +24,14 @@ const jetBrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const TITLE = "Cuyana — Remesas de Guyana a Cuba";
+const DESCRIPTION =
+  "Remesas de Guyana a Cuba con gente real detrás. Calcula cuánto recibe tu familia y pide tu envío por WhatsApp, sin formularios ni esperas.";
+
 export const metadata: Metadata = {
-  title: "Cuyana — Remesas de Guyana a Cuba",
-  description:
-    "Remesas de Guyana a Cuba con gente real detrás. Calcula cuánto recibe tu familia y pide tu envío por WhatsApp, sin formularios ni esperas.",
+  metadataBase: new URL("https://cuyana.casavivadecuba.com"),
+  title: TITLE,
+  description: DESCRIPTION,
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -35,6 +39,28 @@ export const metadata: Metadata = {
       { url: "/icon-32.png", sizes: "32x32", type: "image/png" },
     ],
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/",
+    siteName: "Cuyana",
+    locale: "es",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Cuyana — Remesas de Guyana a Cuba",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/og-image.png"],
   },
 };
 

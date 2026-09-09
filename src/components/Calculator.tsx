@@ -3,13 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLiveRate } from "@/lib/useLiveRate";
 import { supabase } from "@/lib/supabase";
+import Skeleton from "./Skeleton";
 
 // Número de WhatsApp del negocio (formato internacional, sin + ni espacios)
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5355879222";
 
+// Formato latinoamericano: punto para miles, coma para decimales (ej. 10.000).
 function parseAmount(str: string) {
-  const clean = str.replace(/[^0-9.]/g, "");
-  return parseFloat(clean) || 0;
+  const clean = str.replace(/[^0-9.,]/g, "");
+  const normalized = clean.replace(/\./g, "").replace(",", ".");
+  return parseFloat(normalized) || 0;
 }
 
 function formatNumber(n: number) {
@@ -17,8 +20,8 @@ function formatNumber(n: number) {
 }
 
 export default function Calculator() {
-  const rate = useLiveRate();
-  const [sendValue, setSendValue] = useState("10,000");
+  const { rate, status } = useLiveRate();
+  const [sendValue, setSendValue] = useState(() => formatNumber(10000));
   const [ref, setRef] = useState<string | null>(null);
 
   useEffect(() => {
@@ -77,7 +80,11 @@ export default function Calculator() {
       <div className="result">
         <label>Tu familia recibe en Cuba</label>
         <div className="amount">
-          <span>{gyd > 0 && rate ? formatNumber(cup) : "—"}</span>
+          {status === "loading" ? (
+            <Skeleton width="5em" dark />
+          ) : (
+            <span>{gyd > 0 && rate ? formatNumber(cup) : "—"}</span>
+          )}
           <span>CUP</span>
         </div>
       </div>
