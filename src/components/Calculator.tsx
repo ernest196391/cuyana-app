@@ -3,21 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLiveRate } from "@/lib/useLiveRate";
 import { supabase } from "@/lib/supabase";
+import { parseAmount, formatNumber } from "@/lib/format";
 import Skeleton from "./Skeleton";
 
 // Número de WhatsApp del negocio (formato internacional, sin + ni espacios)
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5355879222";
-
-// Formato latinoamericano: punto para miles, coma para decimales (ej. 10.000).
-function parseAmount(str: string) {
-  const clean = str.replace(/[^0-9.,]/g, "");
-  const normalized = clean.replace(/\./g, "").replace(",", ".");
-  return parseFloat(normalized) || 0;
-}
-
-function formatNumber(n: number) {
-  return Math.round(n).toLocaleString("es");
-}
 
 export default function Calculator() {
   const { rate, status } = useLiveRate();

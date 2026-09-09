@@ -1,6 +1,7 @@
 "use client";
 
 import { useLiveRate } from "@/lib/useLiveRate";
+import { formatDecimal } from "@/lib/format";
 import Skeleton from "./Skeleton";
 
 export default function RatePill() {
@@ -13,7 +14,7 @@ export default function RatePill() {
       {status === "loading" ? (
         <Skeleton width="3.4em" />
       ) : (
-        <b>{rate !== null ? rate.toLocaleString("es", { minimumFractionDigits: 2 }) : "—"}</b>
+        <b>{rate !== null ? formatDecimal(rate) : "—"}</b>
       )}{" "}
       CUP
     </div>
