@@ -40,16 +40,23 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   padding: 22px 0 10px;
 }
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
+}
+.rate-pill {
+  min-width: 0;
 }
 .brand svg {
   width: 26px;
   height: 26px;
+  flex-shrink: 0;
+  display: block;
 }
 .brand span {
   font-family: var(--font-instrument-serif), serif;
@@ -79,11 +86,14 @@ header {
   align-items: center;
   padding: 36px 0 56px;
 }
+.hero > * {
+  min-width: 0;
+}
 @media (max-width: 860px) {
   .hero {
     grid-template-columns: 1fr;
-    gap: 28px;
-    padding: 20px 0 40px;
+    gap: 22px;
+    padding: 14px 0 36px;
   }
 }
 
@@ -96,12 +106,24 @@ header {
   margin: 0 0 18px;
   color: var(--vino-deep);
 }
+@media (max-width: 860px) {
+  .hero h1 {
+    font-size: clamp(27px, 7.5vw, 36px);
+    margin: 0 0 12px;
+  }
+}
 .hero p.sub {
   font-size: 17px;
   line-height: 1.55;
   color: var(--texto-suave);
   max-width: 46ch;
   margin: 0;
+}
+@media (max-width: 860px) {
+  .hero p.sub {
+    font-size: 15.5px;
+    line-height: 1.5;
+  }
 }
 
 /* ---------- calculator card ---------- */
@@ -179,6 +201,7 @@ header {
   justify-content: center;
   gap: 10px;
   width: 100%;
+  min-height: 48px;
   background: var(--vino);
   color: #fff;
   border: none;
@@ -249,6 +272,11 @@ header {
 .how {
   padding-bottom: 60px;
 }
+@media (max-width: 720px) {
+  .how {
+    padding-bottom: 88px;
+  }
+}
 .how h2 {
   font-family: var(--font-instrument-serif), serif;
   font-weight: 400;
@@ -281,7 +309,7 @@ header {
 
 footer {
   border-top: 1px solid var(--linea);
-  padding: 22px 0 40px;
+  padding: 22px 0 max(40px, env(safe-area-inset-bottom));
   display: flex;
   justify-content: space-between;
   align-items: center;
