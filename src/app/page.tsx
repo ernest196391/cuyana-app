@@ -7,11 +7,13 @@ export default function Home() {
     <div className="wrap">
       <header>
         <div className="brand">
-          <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="20" cy="20" r="20" fill="#6E1423" />
-            <path d="M15 11 L28.5 20 L15 29 Z" fill="#C89B3C" />
+          <svg viewBox="0 0 20 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 3 L18 12 L2 21 Z" fill="#C89B3C" />
           </svg>
-          <span>Cuyana</span>
+          <div className="brand-text">
+            <span className="brand-name">Cuyana</span>
+            <span className="brand-tagline">Guyana &rarr; Cuba</span>
+          </div>
         </div>
         <RatePill />
       </header>
@@ -24,8 +26,8 @@ export default function Home() {
             y ya llegó.
           </h1>
           <p className="sub">
-            Remesas de Guyana a Cuba con gente real detrás. Calcula cuánto recibe tu familia y
-            pide tu envío por WhatsApp, sin formularios ni esperas.
+            Calcula cuánto recibe tu familia y pide tu envío por WhatsApp, sin formularios ni
+            esperas.
           </p>
         </div>
 
