@@ -42,7 +42,7 @@ export default function Calculator() {
   }
 
   async function handleWhatsAppClick() {
-    if (!rate || gyd <= 0) return;
+    if (!supabase || !rate || gyd <= 0) return;
     try {
       const { error } = await supabase.from("orders").insert({
         amount_gyd: gyd,

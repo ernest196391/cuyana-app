@@ -6,6 +6,7 @@ export function useLiveRate() {
   const [rate, setRate] = useState<number | null>(null);
 
   useEffect(() => {
+    if (!supabase) return;
     let active = true;
 
     supabase
