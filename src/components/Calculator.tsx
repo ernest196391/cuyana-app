@@ -5,7 +5,7 @@ import { useLiveRate } from "@/lib/useLiveRate";
 import { supabase } from "@/lib/supabase";
 
 // Número de WhatsApp del negocio (formato internacional, sin + ni espacios)
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5219999999999"; // PLACEHOLDER — reemplazar con el número real
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5355879222";
 
 function parseAmount(str: string) {
   const clean = str.replace(/[^0-9.]/g, "");
