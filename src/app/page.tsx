@@ -1,4 +1,3 @@
-import RatePill from "@/components/RatePill";
 import Calculator from "@/components/Calculator";
 import UpdatedAtNote from "@/components/UpdatedAtNote";
 
@@ -15,7 +14,6 @@ export default function Home() {
             <span className="brand-tagline">Guyana &rarr; Cuba</span>
           </div>
         </div>
-        <RatePill />
       </header>
 
       <section className="hero">
@@ -48,13 +46,6 @@ export default function Home() {
             <path d="M9 12l2 2 4-4" />
           </svg>
           <p>Tasa clara, sin sorpresas</p>
-        </div>
-        <div className="item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z" />
-            <circle cx="12" cy="9" r="2.3" />
-          </svg>
-          <p>Entrega en toda Cuba</p>
         </div>
       </section>
 

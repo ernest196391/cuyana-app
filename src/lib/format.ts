@@ -29,3 +29,28 @@ export function formatDecimal(n: number, digits = 2) {
 export function formatPercent(n: number) {
   return n.toLocaleString("es", { maximumFractionDigits: 2 });
 }
+
+/**
+ * Decimales según la moneda destino: CUP no lleva (son montos grandes, los
+ * centavos son ruido); cualquier otra moneda lleva 2. Esto vale también para
+ * monedas que el admin agregue en el futuro.
+ */
+function decimalesPara(currency: string) {
+  return currency === "CUP" ? 0 : 2;
+}
+
+/**
+ * Redondea al mismo valor que se le muestra al cliente. Lo que se guarda en la
+ * base debe ser exactamente lo que se le prometió, no el número crudo.
+ */
+export function roundMoney(amount: number, currency: string) {
+  const d = decimalesPara(currency);
+  const factor = 10 ** d;
+  return Math.round(amount * factor) / factor;
+}
+
+/** Formatea un monto en su moneda: 32000/CUP -> "32.000", 36.36/USD -> "36,36". */
+export function formatMoney(amount: number, currency: string) {
+  const d = decimalesPara(currency);
+  return amount.toLocaleString("es", { minimumFractionDigits: d, maximumFractionDigits: d });
+}
