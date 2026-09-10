@@ -54,3 +54,58 @@ export function formatMoney(amount: number, currency: string) {
   const d = decimalesPara(currency);
   return amount.toLocaleString("es", { minimumFractionDigits: d, maximumFractionDigits: d });
 }
+
+/** Un solo formato de fecha y hora en todo el panel. */
+export function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("es", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+/* ---------- tasas ---------- */
+
+/** La columna rate_per_gyd es numeric(18,8): nunca mandamos más precisión que esa. */
+export const RATE_DECIMALS = 8;
+
+/** Redondea una tasa a lo que la base realmente puede guardar. */
+export function roundRate(rate: number) {
+  const factor = 10 ** RATE_DECIMALS;
+  return Math.round(rate * factor) / factor;
+}
+
+/**
+ * Una tasa menor a 1 se lee al revés: "0,00363636 USD por GYD" no le dice nada
+ * a nadie, "275 GYD = 1 USD" sí. La dirección la decide la magnitud, no la
+ * moneda, para que valga también con monedas que se agreguen después.
+ */
+export function tasaSeLeeInvertida(rate: number) {
+  return rate > 0 && rate < 1;
+}
+
+/** Cuántos GYD cuesta una unidad de la moneda destino. */
+export function gydPorUnidad(rate: number) {
+  return rate > 0 ? 1 / rate : 0;
+}
+
+/** Formatea una tasa cruda con los decimales que haga falta, sin ceros de más. */
+export function formatRate(rate: number) {
+  return rate.toLocaleString("es", { maximumFractionDigits: RATE_DECIMALS });
+}
+
+/**
+ * La tasa escrita en la dirección en la que la gente razona:
+ *   3.2        / CUP -> "1 GYD = 3,2 CUP"
+ *   0.00363636 / USD -> "275 GYD = 1 USD"
+ */
+export function formatRateNatural(rate: number, currency: string) {
+  if (!(rate > 0)) return "—";
+  if (tasaSeLeeInvertida(rate)) {
+    const porUnidad = gydPorUnidad(rate).toLocaleString("es", { maximumFractionDigits: 2 });
+    return `${porUnidad} GYD = 1 ${currency}`;
+  }
+  return `1 GYD = ${formatRate(rate)} ${currency}`;
+}

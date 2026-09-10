@@ -443,6 +443,189 @@
   background: rgba(30, 122, 75, 0.1);
 }
 
+/* ---------- métodos y tasas ---------- */
+.admin-method {
+  background: var(--papel-card);
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  padding: 18px 20px 20px;
+  margin-bottom: 14px;
+}
+.admin-method.inactivo {
+  background: var(--papel);
+  border-style: dashed;
+}
+.admin-method.inactivo .admin-method-label,
+.admin-method.inactivo .admin-method-rate {
+  opacity: 0.55;
+}
+.admin-method-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.admin-method-id {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.admin-method-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--texto);
+}
+.admin-method-key {
+  font-size: 11px;
+  color: var(--texto-suave);
+}
+.admin-method-rate {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--vino-deep);
+  margin-bottom: 4px;
+}
+.admin-method-note {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+.admin-method .admin-btn-secondary,
+.admin-method-actions {
+  margin-top: 14px;
+}
+.admin-method-actions {
+  display: flex;
+  gap: 10px;
+}
+.admin-method-actions button {
+  flex: 1;
+}
+.admin-method-edit {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--linea);
+}
+
+/* entrada de tasa con dirección elegible */
+.admin-dir-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.admin-dir {
+  flex: 1;
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px solid var(--linea);
+  background: var(--papel);
+  color: var(--texto-suave);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.admin-dir.on {
+  border-color: var(--vino);
+  background: rgba(110, 20, 35, 0.06);
+  color: var(--vino-deep);
+  font-weight: 600;
+}
+.admin-rate-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-rate-fix {
+  flex-shrink: 0;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+.admin-rate-field {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+.admin-rate-preview {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+.admin-rate-preview b {
+  font-family: var(--font-jetbrains-mono), monospace;
+  color: var(--vino-deep);
+}
+.admin-hint {
+  margin: -8px 0 16px;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+.admin-empty-hint {
+  margin: 6px 0 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* ---------- error de carga ---------- */
+.admin-load-error {
+  background: var(--papel-card);
+  border: 1px solid rgba(170, 51, 51, 0.4);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.admin-load-error-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #a33;
+}
+.admin-load-error-detail {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--texto-suave);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- pedidos ---------- */
+.admin-row-pedidos {
+  grid-template-columns: 1fr 1.2fr 0.9fr 0.9fr 1.1fr 1fr;
+}
+.admin-wa-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 2px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  color: var(--vino) !important;
+  text-decoration: underline !important;
+}
+.admin-subtext {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--texto-suave);
+}
+
+@media (max-width: 720px) {
+  .admin-row-pedidos {
+    grid-template-columns: 1fr 1fr;
+  }
+  .admin-wa-link {
+    font-size: 13px;
+  }
+  .admin-subtext {
+    font-size: 12px;
+  }
+}
+
 .admin-copy-btn {
   min-height: 44px;
   padding: 8px 14px;

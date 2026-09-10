@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabase";
 const TABS = [
   {
     href: "/admin",
-    label: "Tasa",
+    label: "Métodos",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 3v18M8.5 7h5a2.5 2.5 0 0 1 0 5h-3a2.5 2.5 0 0 0 0 5h5.5" />

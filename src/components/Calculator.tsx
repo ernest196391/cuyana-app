@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { useDeliveryMethods } from "@/lib/useDeliveryMethods";
 import { supabase } from "@/lib/supabase";
-import { parseAmount, formatNumber, formatMoney, roundMoney } from "@/lib/format";
+import { parseAmount, formatNumber, formatMoney, formatRateNatural, roundMoney } from "@/lib/format";
 import Skeleton from "./Skeleton";
 
 // Número de WhatsApp del negocio (formato internacional, sin + ni espacios)
@@ -133,7 +133,10 @@ export default function Calculator() {
                 onClick={() => setSelectedKey(m.key)}
                 aria-pressed={m.key === method?.key}
               >
-                {m.label}
+                <span className="metodo-label">{m.label}</span>
+                {/* La tasa, escrita como la lee una persona: "275 GYD = 1 USD",
+                    nunca "1 GYD = 0,0036 USD". */}
+                <span className="metodo-tasa">{formatRateNatural(m.rate_per_gyd, m.target_currency)}</span>
               </button>
             ))}
           </div>

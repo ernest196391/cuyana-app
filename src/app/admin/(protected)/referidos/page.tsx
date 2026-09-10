@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
+import { conTimeout, mensajeDeError } from "@/lib/adminFetch";
 import { formatPercent } from "@/lib/format";
+import LoadError from "@/components/admin/LoadError";
 
 interface ReferralRow {
   code: string;
@@ -17,6 +19,7 @@ const SITE_URL = "https://cuyana.casavivadecuba.com";
 export default function ReferidosPage() {
   const [referrals, setReferrals] = useState<ReferralRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [code, setCode] = useState("");
   const [ownerName, setOwnerName] = useState("");
@@ -26,20 +29,29 @@ export default function ReferidosPage() {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [togglingCode, setTogglingCode] = useState<string | null>(null);
 
-  async function load() {
-    if (!supabase) return;
+  const load = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("referrals")
-      .select("code, owner_name, commission_pct, active, created_at")
-      .order("created_at", { ascending: false });
-    if (!error && data) setReferrals(data as ReferralRow[]);
-    setLoading(false);
-  }
+    setLoadError(null);
+    try {
+      if (!supabase) throw new Error("La conexión con la base de datos no está configurada.");
+      const { data, error } = await conTimeout(
+        supabase
+          .from("referrals")
+          .select("code, owner_name, commission_pct, active, created_at")
+          .order("created_at", { ascending: false })
+      );
+      if (error) throw error;
+      setReferrals((data ?? []) as ReferralRow[]);
+    } catch (err) {
+      setLoadError(mensajeDeError(err));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   async function handleCreate(e: FormEvent) {
     e.preventDefault();
@@ -133,9 +145,12 @@ export default function ReferidosPage() {
 
       {loading ? (
         <p className="admin-empty">Cargando…</p>
+      ) : loadError ? (
+        <LoadError que="los referidos" detalle={loadError} onRetry={load} />
       ) : referrals.length === 0 ? (
         <div className="admin-empty-state">
-          <p>Todavía no hay referidos creados.</p>
+          <p>Aún no hay referidos.</p>
+          <p className="admin-empty-hint">Crea el primero con el botón «+ Nuevo».</p>
         </div>
       ) : (
         <div className="admin-table">
