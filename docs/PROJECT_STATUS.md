@@ -53,7 +53,7 @@ adaptador de catálogo, SEO técnico y páginas legales.
       producción. Sin iframe ni redirección visible a NEXO.
 - [x] **Fase F — Supabase**: migración aplicada directamente al proyecto
       real (`dkiiknsfbefpkrnmbzid`) vía MCP y versionada en
-      `supabase/migrations/20260911173659_rebranding_config_vigencia_y_rls.sql`:
+      `supabase/migrations/20260911173650_rebranding_config_vigencia_y_rls.sql`:
       corrige políticas RLS duplicadas/permisivas (ver Riesgos — hallazgo
       de seguridad real), añade `app_config` (RLS: lectura pública,
       escritura solo admin) y `delivery_methods.rate_source`. Advisor de
