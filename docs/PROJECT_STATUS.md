@@ -62,7 +62,13 @@ adaptador de catálogo, SEO técnico y páginas legales.
 - [x] **Fase G — SEO/legal**: `robots.ts` y `sitemap.ts` (App Router,
       responden 200), `/contacto`, `/privacidad`, `/terminos`, `/ayuda`
       con contenido honesto (datos legales marcados como pendientes, no
-      inventados). Metadata/OG/canonical por página.
+      inventados). Metadata/OG/canonical por página. Cierra P1-4.
+      Instrumentación mínima del embudo (`src/lib/analytics.ts`, cierra
+      P1-5): `need_selected`, `remesa_method_selected`,
+      `remesa_whatsapp_click`, `store_add_to_cart`,
+      `store_checkout_requested`. Sin PII; se degrada a no-op si no hay
+      `window.plausible`/`window.gtag` configurado (no se eligió
+      proveedor sin aprobación del negocio).
 - [x] **Pruebas automatizadas**: Vitest añadido (`npm test`), 31 pruebas
       en 3 suites (`format.test.ts`, `remesaMessage.test.ts`,
       `rateFreshness.test.ts`) cubriendo cálculo, redondeo, vigencia,

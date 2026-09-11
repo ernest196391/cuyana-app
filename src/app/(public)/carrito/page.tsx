@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { cartTotalUsd, clearCart, getCart, removeFromCart, type CartItem } from "@/lib/cart";
 import { WHATSAPP_NUMBER } from "@/lib/config/site";
+import { track, ANALYTICS_EVENTS } from "@/lib/analytics";
 
 export default function CarritoPage() {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -19,6 +20,7 @@ export default function CarritoPage() {
   const total = cartTotalUsd(items);
 
   function solicitarPedido() {
+    track(ANALYTICS_EVENTS.storeCheckoutRequested, { itemCount: items.length });
     // La tienda todavía no tiene integración real con el sistema canónico
     // (Product Studio One / NEXO): no se crea un pedido falso. Se ofrece un
     // resumen honesto y un canal para confirmar por WhatsApp.

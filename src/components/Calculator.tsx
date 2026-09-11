@@ -9,6 +9,7 @@ import { parseAmount, formatNumber, formatMoney, formatRateNatural, roundMoney }
 import { validarFormularioRemesa, construirMensajeRemesa } from "@/lib/remesaMessage";
 import { RATE_FRESHNESS_LABEL } from "@/lib/rateFreshness";
 import { WHATSAPP_NUMBER } from "@/lib/config/site";
+import { track, ANALYTICS_EVENTS } from "@/lib/analytics";
 import Skeleton from "./Skeleton";
 
 export default function Calculator() {
@@ -103,6 +104,8 @@ export default function Calculator() {
       return;
     }
     setFormError(null);
+    // Sin PII: solo método y moneda, nunca nombre ni teléfono.
+    track(ANALYTICS_EVENTS.remesaWhatsappClick, { method: method?.key ?? "", currency: method?.target_currency ?? "" });
     // Sin await: la navegación a WhatsApp ocurre dentro del gesto del usuario,
     // que es lo que evita que el navegador la bloquee.
     void guardarPedido();
@@ -139,7 +142,10 @@ export default function Calculator() {
                 key={m.key}
                 type="button"
                 className={`metodo${m.key === method?.key ? " activo" : ""}`}
-                onClick={() => setSelectedKey(m.key)}
+                onClick={() => {
+                  setSelectedKey(m.key);
+                  track(ANALYTICS_EVENTS.remesaMethodSelected, { method: m.key, currency: m.target_currency });
+                }}
                 aria-pressed={m.key === method?.key}
               >
                 <span className="metodo-label">{m.label}</span>
