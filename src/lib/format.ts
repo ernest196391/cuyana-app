@@ -101,6 +101,18 @@ export function formatRate(rate: number) {
  *   3.2        / CUP -> "1 GYD = 3,2 CUP"
  *   0.00363636 / USD -> "275 GYD = 1 USD"
  */
+/**
+ * Precio de producto: GYD primario derivado de la tasa comercial vigente
+ * (nunca la de remesas) y USD secundario, el precio canónico. Si no hay
+ * tasa comercial vigente, no se inventa una: se muestra solo USD.
+ */
+export function formatProductPrice(priceUsd: number, gydPerUsd: number | null) {
+  const usd = `${priceUsd.toLocaleString("es", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`;
+  if (!gydPerUsd || gydPerUsd <= 0) return { primary: usd, secondary: null as string | null };
+  const gyd = `${Math.round(priceUsd * gydPerUsd).toLocaleString("es")} GYD`;
+  return { primary: gyd, secondary: usd };
+}
+
 export function formatRateNatural(rate: number, currency: string) {
   if (!(rate > 0)) return "—";
   if (tasaSeLeeInvertida(rate)) {

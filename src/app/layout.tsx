@@ -1,22 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Instrument_Sans, JetBrains_Mono } from "next/font/google";
+import { Playfair_Display, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const instrumentSerif = Instrument_Serif({
+// Tipografía de marca Cuyana: Playfair Display para títulos y logotipo,
+// Inter para interfaz. Ver docs/DECISIONS.md.
+const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "600", "700"],
   style: ["normal", "italic"],
-  variable: "--font-instrument-serif",
+  variable: "--font-playfair",
   display: "swap",
 });
 
-const instrumentSans = Instrument_Sans({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-instrument-sans",
+  variable: "--font-inter",
   display: "swap",
 });
 
+// Monoespaciada usada solo para cifras (montos y tasas): dígitos de ancho
+// fijo reducen errores de lectura en cantidades de dinero. No sustituye a
+// Inter como fuente de interfaz.
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -24,22 +29,19 @@ const jetBrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-const TITLE = "Cuyana — Remesas de Guyana a Cuba";
+const TITLE = "Cuyana — Cerca de los tuyos. Remesas de Guyana a Cuba";
 const DESCRIPTION =
-  "Remesas de Guyana a Cuba con gente real detrás. Calcula cuánto recibe tu familia y pide tu envío por WhatsApp, sin formularios ni esperas.";
+  "Envía dinero, alimentos o energía para tu familia en Cuba desde Guyana, con el total claro antes de continuar.";
+
+const SITE_URL = "https://cuyana.casavivadecuba.com";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://cuyana.casavivadecuba.com"),
-  title: TITLE,
+  metadataBase: new URL(SITE_URL),
+  title: { default: TITLE, template: "%s — Cuyana" },
   description: DESCRIPTION,
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon-16.png", sizes: "16x16", type: "image/png" },
-      { url: "/icon-32.png", sizes: "32x32", type: "image/png" },
-    ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
-  },
+  applicationName: "Cuyana",
+  manifest: "/manifest.webmanifest",
+  alternates: { canonical: "/" },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
@@ -47,20 +49,11 @@ export const metadata: Metadata = {
     siteName: "Cuyana",
     locale: "es",
     type: "website",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Cuyana — Remesas de Guyana a Cuba",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og-image.png"],
   },
 };
 
@@ -68,6 +61,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#7A0E2E",
 };
 
 export default function RootLayout({
@@ -78,7 +72,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${instrumentSerif.variable} ${instrumentSans.variable} ${jetBrainsMono.variable}`}
+      className={`${playfairDisplay.variable} ${inter.variable} ${jetBrainsMono.variable}`}
     >
       <body>{children}</body>
     </html>

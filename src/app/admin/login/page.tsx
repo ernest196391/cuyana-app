@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAdminAuth } from "@/lib/useAdminAuth";
+import Logo from "@/components/Logo";
 
 export default function AdminLoginPage() {
   const { user, loading } = useAdminAuth();
@@ -39,10 +40,7 @@ export default function AdminLoginPage() {
     <div className="admin-login-wrap">
       <div className="admin-login-card">
         <div className="admin-login-brand">
-          <svg viewBox="0 0 20 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M2 3 L18 12 L2 21 Z" fill="#C89B3C" />
-          </svg>
-          <span>Cuyana</span>
+          <Logo variant="horizontal" height={24} />
         </div>
         <p className="admin-login-sub">Panel de administración</p>
 
