@@ -491,6 +491,52 @@ verdes. No se pudo repetir el checkout completo desde esta sesión (depende
 de `localStorage`/clics reales) — pendiente de que el usuario lo vuelva a
 probar en su teléfono tras el próximo merge.
 
+## 14. Otra sesión arregló el mismo bug en paralelo (conflicto real de merge) + por qué Cuadre queda pendiente de verdad (2026-09-12T16:50:00Z)
+
+Mientras esto se implementaba, **otra sesión de Claude** (Opus 5,
+`session_01SZgjPcb3UKrAp1PLEwsnUp`) diagnosticó y corrigió el mismo bug de
+RLS/`RETURNING` directamente en `main` (commit `0a420c8`, con su propio
+`orders.test.ts` que fija el comportamiento correcto: 4 pruebas nuevas).
+Al traer `main` a esta rama hubo un conflicto real de Git en
+`src/lib/store/orders.ts` — se resolvió tomando la versión de `main`
+completa (mejor: registra el error real con `console.error` sin filtrar
+nombre/teléfono, y el mensaje al cliente ofrece una salida —"Escríbenos
+por WhatsApp"— en vez de solo "intenta de nuevo"). Nada se perdió de esta
+sesión: los cambios de diseño (imagen contenida, barra fija, ícono de
+papelera) no tocan ese archivo y quedaron intactos.
+
+**Sobre pedir que el pedido de tienda también aparezca en Cuadre:** antes
+de escribir el código, leí `src/app/api/cuadre/route.ts` completo — es el
+único contrato de Cuadre visible desde este repo. Está construido
+específicamente para remesas: exige `ref` (UUID de una fila en `orders`),
+`gyd` (monto en GYD, porque una remesa siempre sale en GYD) y `method_key`
+(una fila de `delivery_methods`, para recalcular la tasa) — y con esos
+datos rearma un pedido en formato "envío de dinero" (`amount_source`,
+`currency_source: GYD`, `method_label`, `rate_used`...) antes de
+mandarlo a `${CUADRE_URL}/api/pedidos`.
+
+Un pedido de tienda no tiene nada de eso: no sale en GYD (sale en USD),
+no tiene método de entrega, y son productos con nombre y cantidad, no un
+monto a convertir. Reusar esa ruta tal cual haría que la llamada devuelva
+`400` siempre (falla su propia validación). Intenté una versión que le
+mandaba un cuerpo distinto (`origin: "tienda"`, `items`, `totalUsd`...) y
+la revertí antes de dejarla a medias: esa ruta ignoraría esos campos
+igual, porque la validación se detiene en `!gyd || !metodoKey` antes de
+llegar a nada más.
+
+**Lo que hace falta para hacerlo bien, y que no puedo adivinar desde
+aquí:** saber si el backend real de Cuadre (`CUADRE_URL/api/pedidos`,
+fuera de este repo) tiene o puede tener un endpoint/formato para pedidos
+de producto en USD (sin método de entrega ni monto en GYD). Si existe,
+solo hay que enseñarle a esta ruta —o crear una hermana, p.ej.
+`/api/cuadre/tienda`— el formato correcto. Si no existe todavía, hay que
+decidir con quien mantiene Cuadre qué campos espera antes de construir
+nada; inventar un formato a ciegas dejaría el aviso a Cuadre fallando en
+silencio (como la propia ruta hace hoy si Cuadre no responde: nunca
+rompe al cliente, pero tampoco avisa que no llegó). Mientras tanto, el
+pedido de tienda sigue quedando completo y correcto en `store_orders`
+(Supabase) — lo único que falta es la copia en Cuadre.
+
 ---
 
 # HANDOFF — CUYANA-WEB-001

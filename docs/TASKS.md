@@ -120,7 +120,15 @@ archivos o toma la siguiente tarea libre y déjalo escrito aquí.
   (ahora contenida + barra fija en móvil), y "Quitar" como ícono de
   papelera en vez de texto. Pendiente de decisión (no bug): si el pedido
   de tienda debe replicarse también en "Cuadre" además de `store_orders`
-  — ver `docs/HANDOFF.md` §12-13.
+  — ver `docs/HANDOFF.md` §12-13. **Actualización (2026-09-12T16:50:00Z):**
+  otra sesión (Opus 5) arregló el mismo bug de RLS/`RETURNING` en paralelo
+  directo en `main` (commit `0a420c8`) — se resolvió el conflicto real de
+  Git tomando su versión (mejor: loguea el error real, mensaje de
+  respaldo al cliente). Usuario confirmó que sí quiere el pedido también
+  en Cuadre; `src/app/api/cuadre/route.ts` es exclusivo de remesas (exige
+  GYD + método de entrega) y rechazaría un pedido de tienda tal cual —
+  falta confirmar el contrato real de Cuadre para pedidos de producto en
+  USD antes de construir nada. Ver `docs/HANDOFF.md` §14.
 
 ## Libres / futuras
 

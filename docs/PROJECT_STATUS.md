@@ -187,10 +187,14 @@ adaptador de catálogo, SEO técnico y páginas legales.
       (mismo patrón `fill`+`aspect-ratio` que las tarjetas), barra fija
       de "Añadir al carrito" en móvil, ícono de papelera en vez de texto
       "Quitar". Detalle en `docs/HANDOFF.md` §12-13.
-- [ ] **Pendiente de decisión de negocio (no es un bug)**: si el pedido de
-      tienda debe llegar también a "Cuadre" (bandeja operativa que otra
-      sesión conectó para remesas) además de `store_orders`. No
-      implementado a propósito hasta que se confirme.
+- [ ] **Pendiente, requiere info externa (no un bug ni una decisión que se
+      pueda tomar desde el código)**: usuario confirmó que sí quiere el
+      pedido de tienda también en Cuadre. `src/app/api/cuadre/route.ts` es
+      solo para remesas (exige monto en GYD y método de entrega); un
+      pedido de tienda no tiene ninguno de los dos. Hace falta saber si el
+      backend real de Cuadre tiene/puede tener un endpoint para pedidos de
+      producto en USD antes de construir algo — no se inventó un formato a
+      ciegas. Detalle en `docs/HANDOFF.md` §14.
 - [ ] **Pendiente (prueba manual, no automatizable con las herramientas
       disponibles)**: repetir el checkout completo en el teléfono tras el
       próximo merge, para confirmar que el pedido ya se guarda sin error
