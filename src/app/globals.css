@@ -135,7 +135,11 @@ body {
   font-size: 16px;
   font-weight: 500;
 }
-.site-cta-header-movil {
+.site-nav-movil a.site-cta-header-movil {
+  /* Sin este empate de especificidad, ".site-nav-movil a" (dos clases)
+     le gana a ".site-cta-header" y el botón queda con texto oscuro sobre
+     fondo burdeos — casi ilegible. */
+  color: #fff;
   justify-content: center;
   margin-top: 8px;
 }
