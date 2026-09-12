@@ -123,6 +123,117 @@ repositorio. Quien retome trabajo ahí debería coordinar con esa tarea antes
 de tocar `lib/commerce/`, `lib/commercial/` o los endpoints de
 `app/api/marketplace|gestoras` para evitar pisarse.
 
+## 6. Intento de puesta en producción y certificación (2026-09-12T03:30:00Z)
+
+Se intentó ejecutar los 9 pasos pedidos (configurar `NEXO_CATALOG_URL` en
+Vercel, verificar variables, desplegar el commit
+`dbeef7144efbb8b3bf31c3afadfaa97b6f747f4f` a producción, probar el flujo en
+la URL pública móvil, confirmar que no se crea pedido en WooCommerce,
+revisar logs de Vercel). **Bloqueado en el paso 1**, antes de poder tocar
+nada en Vercel: esta sesión no tiene acceso funcional a la cuenta/proyecto
+Vercel reales. No es un fallo de código ni de esta implementación — es el
+mismo tipo de bloqueo de acceso ya documentado en el HANDOFF de
+CUYANA-WEB-001 (§3), confirmado de nuevo hoy con evidencia adicional:
+
+- `mcp__Vercel__list_teams` → `{"teams": []}` (ningún equipo visible para
+  esta sesión).
+- `mcp__Vercel__list_projects` → error genérico (sin equipo, no hay de
+  dónde listar proyectos).
+- `mcp__Vercel__web_fetch_vercel_url` sobre
+  `https://cuyana.casavivadecuba.com/tienda/energia` → `403 Forbidden` al
+  intentar verificar el deployment (esta herramienta está pensada para
+  saltarse restricciones de acceso cuando el usuario del MCP sí tiene
+  permiso; aquí ni así funciona).
+- No existe `.vercel/project.json` en el repo para inferir el project ID.
+- No hay `.github/workflows` en este repo: el despliegue depende
+  enteramente de la integración Git↔Vercel ya configurada del lado de
+  Vercel, que esta sesión no puede inspeccionar ni disparar.
+
+**Diagnóstico de red pedido en el paso 8 — respondido, aunque de forma
+parcial por la misma razón:** desde esta sesión, tanto `curl` (vía el
+proxy de egress local, `__agentproxy/status`) como la herramienta
+`WebFetch` (infraestructura separada) devuelven **el mismo tipo de error**
+para ambos dominios:
+
+```
+WebFetch → https://nexotienda.casavivadecuba.com/api/marketplace/products
+  {"error_type":"EGRESS_BLOCKED","domain":"nexotienda.casavivadecuba.com",
+   "message":"Access to nexotienda.casavivadecuba.com is blocked by the
+   network egress proxy."}
+
+WebFetch → https://cuyana.casavivadecuba.com/tienda/energia
+  {"error_type":"EGRESS_BLOCKED","domain":"cuyana.casavivadecuba.com",
+   "message":"Access to cuyana.casavivadecuba.com is blocked by the
+   network egress proxy."}
+```
+
+Esto es una política de egress de **esta sesión/entorno** (bloquea
+dominios arbitrarios por defecto, no solo estos dos — el propio dominio de
+Cuyana, que sí está en línea, da el mismo error), no una señal de que
+`nexotienda.casavivadecuba.com` esté caído, mal resuelto en DNS, o
+bloqueado por Cloudflare/Hostinger/Render del lado de NEXO. De hecho, la
+propia auditoría de NEXO (`docs/PROJECT_STATUS.md` de ese repo, fila
+"NEXO") ya había registrado `https://nexotienda.casavivadecuba.com` como
+`200 funcional` desde una sesión con otro tipo de acceso de red. **No se
+puede completar el diagnóstico DNS/Cloudflare/Hostinger/Render/endpoint
+específico del lado de Vercel** porque esta sesión no puede pedirle a
+Vercel que intente esa conexión ni leer sus logs — ese diagnóstico solo se
+puede completar una vez que exista una ejecución real en Vercel para
+inspeccionar (ver siguiente sección).
+
+## 7. Qué falta y qué necesita acción manual (no técnica) del usuario
+
+Todo lo de código, migración y pruebas locales (secciones 1-2) quedó
+terminado y verificado. Lo que sigue requiere una de estas dos cosas,
+porque esta sesión no tiene el acceso necesario:
+
+**Opción A — dar acceso real a esta sesión:** conectar/actualizar la
+integración de Vercel de esta sesión para que incluya el equipo/proyecto
+real de `cuyana-app` (hoy `list_teams` no ve ninguno). Con eso puedo
+retomar y ejecutar yo mismo los pasos 1, 3, 4, 6, 7 y 8 pedidos.
+
+**Opción B — que alguien con acceso al dashboard de Vercel ejecute esto y
+me pase el resultado** (5-10 minutos):
+
+1. En el proyecto `cuyana-app` → Settings → Environment Variables, agregar
+   (Production, y Preview si se quiere probar antes):
+   `NEXO_CATALOG_URL=https://nexotienda.casavivadecuba.com/api/marketplace/products`
+   No hace falta `NEXO_CATALOG_API_KEY` (el endpoint de NEXO no exige clave
+   hoy).
+2. Confirmar (sin revelar valores) que ya existen: `NEXT_PUBLIC_SUPABASE_URL`,
+   `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_WHATSAPP_NUMBER` (la app
+   funciona con valores por defecto en código si faltan, pero es mejor
+   tenerlas explícitas).
+3. Desplegar `claude/ecstatic-ramanujan-iv70r6` (commit
+   `dbeef7144efbb8b3bf31c3afadfaa97b6f747f4f`) — o mergearlo a la rama de
+   producción si el proyecto la sigue por Git — y promoverlo a Production.
+4. Abrir `https://cuyana.casavivadecuba.com/tienda/energia` en un móvil
+   real o con DevTools en modo responsive (390px) y confirmar: productos
+   reales de energía con nombre/precio/imagen, entrar a una ficha, agregar
+   al carrito, ir a `/carrito`, poner nombre y WhatsApp, confirmar pedido.
+5. Confirmar en Supabase (`select * from store_orders order by created_at desc limit 1`)
+   que el pedido quedó guardado con el código que apareció en el mensaje de
+   WhatsApp, y que el WhatsApp que se abrió es `wa.me/5355879222` (no un
+   número de NEXO) con los productos, cantidades, precios y datos del
+   cliente correctos.
+6. Si en ese momento no hay fila en `commercial_rates`, confirmar que el
+   precio se ve solo en USD (sin GYD) y que el checkout igual funciona.
+7. Revisar Runtime Logs / Errors de Vercel del deployment; si hay un error
+   real (no de red de este entorno), pegarlo aquí para corregirlo.
+8. Si en ese entorno real Vercel **tampoco** logra conectar con
+   `nexotienda.casavivadecuba.com`, el log de Vercel dirá la causa exacta
+   (timeout de conexión = red/firewall; error TLS = certificado; 404/521/522
+   = Cloudflare o el origen Hostinger/Render caído; DNS_PROBE/ENOTFOUND =
+   DNS) — con ese mensaje exacto puedo diagnosticar y corregir sin
+   necesidad de adivinar.
+
+No se generaron capturas de la tienda ni del WhatsApp: esta sesión no puede
+renderizar la URL pública real (bloqueada, sección 6) y una captura del
+`next start` local solo mostraría el estado honesto "Catálogo en
+preparación" (sin `NEXO_CATALOG_URL` alcanzable desde aquí), no el
+resultado real con productos de NEXO — no se quiso presentar eso como si
+fuera la prueba pedida.
+
 ---
 
 # HANDOFF — CUYANA-WEB-001

@@ -76,12 +76,14 @@ archivos o toma la siguiente tarea libre y déjalo escrito aquí.
 - **Estado:** implementación completa del flujo mínimo (catálogo de
   energía → ficha → carrito → checkout → pedido persistido → WhatsApp
   Cuyana). Migración aplicada al Supabase real. `npm run build`/`lint`/
-  `tsc --noEmit`/`vitest run` verdes (57/57 pruebas). **Bloqueado**: no se
-  pudo verificar en vivo contra `https://nexotienda.casavivadecuba.com` —
-  el proxy de egress de este entorno lo rechaza (`connect_rejected`, mismo
-  tipo de bloqueo ya documentado para `cuyana.casavivadecuba.com` en
-  CUYANA-WEB-001). Ver `docs/HANDOFF.md` para el detalle y el siguiente
-  paso.
+  `tsc --noEmit`/`vitest run` verdes (57/57 pruebas). Commit
+  `dbeef7144efbb8b3bf31c3afadfaa97b6f747f4f` pusheado a
+  `claude/ecstatic-ramanujan-iv70r6`. **Bloqueado — certificación en
+  producción (2026-09-12T03:30:00Z):** intento de puesta en producción
+  desde esta sesión sin éxito por falta de acceso, no por un fallo de
+  código. Evidencia exacta en `docs/HANDOFF.md` §6-7. Necesita acción
+  manual: acceso real a Vercel para esta sesión, o que alguien con acceso
+  al dashboard ejecute los pasos y reporte el resultado.
 
 ## Libres / futuras
 

@@ -133,5 +133,17 @@ adaptador de catálogo, SEO técnico y páginas legales.
       (`connect_rejected`), mismo tipo de bloqueo ya documentado para
       Vercel/`cuyana.casavivadecuba.com` en CUYANA-WEB-001. Ver
       `docs/HANDOFF.md` §3.
+- [ ] **Puesta en producción y certificación (2026-09-12T03:30:00Z)**:
+      intentada, bloqueada antes de tocar Vercel. `mcp__Vercel__list_teams`
+      devuelve `[]`, `web_fetch_vercel_url` da `403 Forbidden` sobre
+      `cuyana.casavivadecuba.com` — esta sesión no tiene acceso real al
+      proyecto Vercel. `WebFetch` confirma `EGRESS_BLOCKED` para
+      `nexotienda.casavivadecuba.com` y también para
+      `cuyana.casavivadecuba.com` por igual (política de red de este
+      entorno, no un problema del lado de NEXO: su propio audit ya había
+      registrado ese dominio como `200 funcional`). Commit listo para
+      desplegar: `dbeef7144efbb8b3bf31c3afadfaa97b6f747f4f`
+      (`claude/ecstatic-ramanujan-iv70r6`). Pasos exactos para quien tenga
+      acceso al dashboard, en `docs/HANDOFF.md` §6-7.
 
 Detalle completo, con pasos siguientes, en `docs/HANDOFF.md`.
