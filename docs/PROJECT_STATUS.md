@@ -145,5 +145,41 @@ adaptador de catálogo, SEO técnico y páginas legales.
       desplegar: `dbeef7144efbb8b3bf31c3afadfaa97b6f747f4f`
       (`claude/ecstatic-ramanujan-iv70r6`). Pasos exactos para quien tenga
       acceso al dashboard, en `docs/HANDOFF.md` §6-7.
+- [x] **Merge a `main`** (2026-09-12T03:58:33Z, por `ernest196391`):
+      PR #1 y PR #2 mergeados. Merge commit `e403f54735f1bdcdceb49d8a49d1bc7e5a3abc82`.
+      Vercel construyó el Preview del PR #2 con éxito (`Ready`).
+- [x] **Certificación en producción (parcial, 2026-09-12T15:35:00Z)**:
+      usuario reautorizó Vercel. Confirmado en vivo contra
+      `cuyana.casavivadecuba.com`: build de producción sin errores, sin
+      errores de runtime en 24h, `/tienda/energia` y `/carrito` responden
+      `200` con el estado honesto `not_configured` (sin `NEXO_CATALOG_URL`
+      todavía), `gydPerUsd: null` fluye correctamente al carrito sin
+      romper nada, dominio custom sin muro de autenticación de Vercel.
+      Detectado (sin colisión, verificado por diff) un deployment más
+      nuevo de otra sesión de Claude (`59c39c3`, integración con "Cuadre"
+      para remesas) por encima de mi merge — no toca ningún archivo de
+      esta tarea.
+- [x] **`NEXO_CATALOG_URL` configurada y catálogo real en producción
+      (2026-09-12T15:51:00Z)**: usuario cargó la variable y redesplegó.
+      Verificado en vivo: `/tienda/energia` muestra 19 productos reales de
+      NEXO (paneles, BLUETTI, EcoFlow, SUMRY, SIGMA, etc.) con precio en
+      USD, imágenes resueltas correctamente (absolutas y relativas), y la
+      ficha de producto completa y funcional. Cero errores de build o
+      runtime. Detalle en `docs/HANDOFF.md` §10.
+- [x] **Auditoría UX + corrección (2026-09-12T16:10:00Z)**: el usuario
+      probó en su teléfono y encontró que agregar al carrito no llevaba a
+      ningún lado — el header no tenía ningún acceso a `/carrito`.
+      Corregido: ícono de carrito con contador en el header
+      (`CartIndicator`), aviso de confirmación con salida directa al
+      carrito (`CartToast`), stepper de cantidad (ficha y carrito), barra
+      de acción fija en móvil, y pantalla de confirmación con el código
+      de pedido (WhatsApp se abre en pestaña nueva, ya no navega fuera).
+      Detalle completo en `docs/HANDOFF.md` §11.
+- [ ] **Pendiente (prueba manual, no automatizable con las herramientas
+      disponibles)**: agregar al carrito → checkout → WhatsApp depende de
+      `localStorage` del navegador del cliente. Falta que el usuario lo
+      pruebe una vez en su teléfono y confirme que el pedido queda en
+      `store_orders` y que el WhatsApp llega a `5355879222` con marca
+      Cuyana.
 
 Detalle completo, con pasos siguientes, en `docs/HANDOFF.md`.

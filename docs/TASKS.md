@@ -78,12 +78,39 @@ archivos o toma la siguiente tarea libre y déjalo escrito aquí.
   Cuyana). Migración aplicada al Supabase real. `npm run build`/`lint`/
   `tsc --noEmit`/`vitest run` verdes (57/57 pruebas). Commit
   `dbeef7144efbb8b3bf31c3afadfaa97b6f747f4f` pusheado a
-  `claude/ecstatic-ramanujan-iv70r6`. **Bloqueado — certificación en
-  producción (2026-09-12T03:30:00Z):** intento de puesta en producción
-  desde esta sesión sin éxito por falta de acceso, no por un fallo de
-  código. Evidencia exacta en `docs/HANDOFF.md` §6-7. Necesita acción
-  manual: acceso real a Vercel para esta sesión, o que alguien con acceso
-  al dashboard ejecute los pasos y reporte el resultado.
+  `claude/ecstatic-ramanujan-iv70r6`. **Actualización
+  (2026-09-12T04:10:00Z):** el usuario mergeó
+  [PR #1](https://github.com/ernest196391/cuyana-app/pull/1) y
+  [PR #2](https://github.com/ernest196391/cuyana-app/pull/2) a `main`
+  (merge commit `e403f54735f1bdcdceb49d8a49d1bc7e5a3abc82`). Vercel
+  (proyecto real `cuyana-app`, equipo `ernest196391s-projects`) construyó
+  con éxito el Preview del PR #2 (`Ready`, ver comentario del bot en el
+  PR). **Actualización (2026-09-12T15:35:00Z):** usuario reautorizó
+  Vercel. Verificado en vivo contra `cuyana.casavivadecuba.com`: build de
+  producción sin errores, sin errores de runtime, `/tienda/energia` y
+  `/carrito` responden `200` con el estado honesto esperado
+  (`not_configured`, `gydPerUsd: null`), dominio custom sin muro de auth
+  de Vercel. Detectado un deployment más nuevo de otra sesión de Claude
+  (commit `59c39c3`, integración de remesas con "Cuadre") por encima del
+  mío — diff revisado, sin colisión con archivos de esta tarea. **Único
+  pendiente real:** este conector de Vercel no tiene ninguna herramienta
+  para leer/crear variables de entorno (verificado); falta que el usuario
+  cargue `NEXO_CATALOG_URL` en Production y le dé "Redeploy" al último
+  deployment. **Hecho (2026-09-12T15:51:00Z):** catálogo real de energía
+  confirmado en vivo en `cuyana.casavivadecuba.com` (19 productos reales
+  de NEXO, precios USD, imágenes OK, ficha de producto completa, cero
+  errores). Único pendiente: prueba manual del checkout completo
+  (carrito→WhatsApp) desde el teléfono del usuario, ya que depende de
+  `localStorage` del navegador y no se puede automatizar con las
+  herramientas de fetch disponibles. **Actualización
+  (2026-09-12T16:10:00Z):** el usuario probó en su teléfono y encontró el
+  motivo exacto — el header no tenía ningún ícono/link al carrito, así que
+  "Añadido" no llevaba a ningún lado. Corregido: `CartIndicator` (ícono +
+  contador en header), `CartToast` (aviso con salida directa a
+  `/carrito`), stepper de cantidad, barra de acción fija en móvil, y
+  confirmación con código de pedido visible (WhatsApp abre en pestaña
+  nueva). `build`/`lint`/`tsc`/`vitest` verdes. Auditoría completa y
+  siguiente prueba pendiente en `docs/HANDOFF.md` §11.
 
 ## Libres / futuras
 

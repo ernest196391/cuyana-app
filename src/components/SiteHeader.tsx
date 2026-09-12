@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
+import CartIndicator from "./CartIndicator";
 import { NAV_LINKS } from "@/lib/config/site";
 
 export default function SiteHeader() {
@@ -24,6 +25,7 @@ export default function SiteHeader() {
         </nav>
 
         <div className="site-header-actions">
+          <CartIndicator />
           <Link href="/enviar-dinero" className="site-cta-header">
             Empezar
           </Link>

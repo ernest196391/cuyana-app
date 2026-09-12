@@ -234,6 +234,174 @@ preparación" (sin `NEXO_CATALOG_URL` alcanzable desde aquí), no el
 resultado real con productos de NEXO — no se quiso presentar eso como si
 fuera la prueba pedida.
 
+## 8. Actualización (2026-09-12T04:10:00Z) — avance real y bloqueo exacto identificado
+
+El propio usuario (`ernest196391`) abrió y mergeó a `main` tanto
+[PR #1](https://github.com/ernest196391/cuyana-app/pull/1)
+(CUYANA-WEB-001) como
+[PR #2](https://github.com/ernest196391/cuyana-app/pull/2)
+(CUYANA-WEB-002, commit `a17e09df14bce8e0f00d9b8fc53f3d4928474217`) — merge
+commit en `main`: `e403f54735f1bdcdceb49d8a49d1bc7e5a3abc82`
+(2026-09-12T03:58:33Z). Esto confirma que la integración Git→Vercel es
+real y funciona: el comentario del bot `vercel[bot]` en el PR #2 muestra un
+build de Preview exitoso (`Ready`) para el commit `a17e09d`:
+
+- Proyecto Vercel real: `cuyana-app`, equipo `ernest196391s-projects`
+  (`teamId=team_Foa2Q8C10yFVFHG7eK2bVrk3`,
+  `projectId=prj_vM3S2ajgshx4VZWnP6YKfmCI4ssv`).
+- Preview: `https://cuyana-app-git-claude-ecstatic-ra-717528-ernest196391s-projects.vercel.app`
+  — `Ready` a las 2026-09-12T03:58:08Z.
+- El check `Vercel` en el PR reporta `state: success`, `"Deployment has
+  completed"`.
+
+Con el `projectId`/`teamId` reales, reintenté las herramientas de Vercel
+de esta sesión y ahora dan un error **específico y accionable** (antes
+era solo "sin equipos visibles"):
+
+```
+403 Forbidden — "Not authorized: Trying to access resource under scope
+\"ernest196391s-projects\". You must re-authenticate to this scope or use
+a token with access to this scope."
+```
+
+Es decir: el conector de Vercel de esta sesión sí existe, pero está
+autorizado para un scope/cuenta distinto al que tiene `cuyana-app`
+(`ernest196391s-projects`). **La acción manual exacta que se necesita:**
+reconectar/reautorizar la integración de Vercel de esta sesión
+seleccionando explícitamente el equipo `ernest196391s-projects` durante la
+autorización. Una vez hecho eso, puedo:
+- confirmar si `main` es la rama de producción y si el merge ya generó un
+  deployment a producción (o dispararlo yo mismo),
+- leer/editar `NEXO_CATALOG_URL` y las demás variables sin exponer valores,
+- leer Runtime Logs/Errors reales del deployment.
+
+Además, confirmé que el bloqueo de red de esta sesión (sección 6) **no es
+específico de `casavivadecuba.com`**: probé también el propio dominio de
+preview de Vercel (`*.vercel.app`, sin relación con NEXO) con `WebFetch` y
+con `mcp__Vercel__web_fetch_vercel_url`, y ambos devuelven el mismo
+`EGRESS_BLOCKED` / `403`. Es una política de egress general de este
+entorno (permite `github.com`, bloquea dominios externos arbitrarios por
+defecto), no una señal sobre la salud real de NEXO ni de Vercel. Por eso,
+incluso con el scope de Vercel corregido, **esta sesión seguirá sin poder
+renderizar visualmente la URL pública o tomar una captura real** — para
+eso sí se necesita que el usuario abra el sitio en su propio teléfono/
+navegador y comparta el resultado, o una sesión con egress habilitado
+hacia dominios públicos arbitrarios.
+
+**Siguiente paso concreto:**
+1. (Usuario) Reautorizar el conector de Vercel de esta sesión con el
+   scope/equipo `ernest196391s-projects`.
+2. (Esta sesión, una vez reautorizado) Confirmar rama de producción,
+   configurar `NEXO_CATALOG_URL`, verificar el deployment de producción del
+   commit `e403f54` (o redeployarlo), y leer logs reales.
+3. (Usuario) Abrir `https://cuyana.casavivadecuba.com/tienda/energia` en un
+   teléfono real y confirmar visualmente el flujo — esta sesión no puede
+   sustituir ese paso por bloqueo de red, tenga o no acceso a Vercel.
+
+## 9. Reconectado Vercel (2026-09-12T15:35:00Z) — verificación real en producción
+
+El usuario reautorizó el conector. Con acceso real confirmado
+(`list_teams` devuelve el equipo `ernest196391s-projects`), pude verificar
+`https://cuyana.casavivadecuba.com` en vivo usando
+`mcp__Vercel__web_fetch_vercel_url` — esta herramienta sí llega al dominio
+real porque pasa por la infraestructura de Vercel, no por el proxy de
+egress bloqueado de esta sesión (ese bloqueo de red sigue intacto y sin
+relación con esto).
+
+**Hallazgo previo, no de esta tarea:** el proyecto ya tiene un deployment
+de producción *más nuevo* que el mío: commit `59c39c3` en `main`
+("Los pedidos de remesa llegan también a la bandeja de Cuadre"), de otra
+sesión de Claude (`session_01SZgjPcb3UKrAp1PLEwsnUp`, Opus 5), pusheado
+directo a `main` sin PR. Revisé su diff completo
+(`.env.example`, `README.md`, `src/app/api/cuadre/route.ts`,
+`src/components/Calculator.tsx`, `vitest.config.ts`): **no toca ningún
+archivo de esta tarea** (`src/lib/catalog/`, `src/lib/store/`,
+`src/app/api/store/`, `src/app/(public)/tienda|carrito|producto/`,
+`next.config.mjs`, `supabase/migrations/`) y el propio mensaje de commit
+dice explícitamente "La tienda no se toca". Sin colisión confirmada.
+
+**Verificación real contra producción (commit `59c39c3`, que incluye mi
+merge `e403f54` debajo):**
+
+| Prueba | Resultado |
+|---|---|
+| Build de producción | `Build Completed in 27s`, sin errores (`get_deployment_build_logs`) |
+| Errores en runtime (24h) | Ninguno (`get_runtime_errors`) |
+| `GET /tienda/energia` | `200`, `x-vercel-cache: MISS` (confirma `force-dynamic`, no HTML congelado del build). Renderiza "Catálogo en preparación" — correcto y honesto, porque `NEXO_CATALOG_URL` **todavía no está configurada** en Vercel (no hay herramienta en este conector para leer/crear env vars; confirmado que no existe ninguna en el toolset de Vercel disponible). Botón de WhatsApp apunta a `wa.me/5355879222` con mensaje coherente. |
+| `GET /carrito` | `200`, "Tu carrito está vacío", `gydPerUsd: null` pasado correctamente al cliente (confirma que sin fila en `commercial_rates` no se rompe nada y el componente recibe `null` tal como se diseñó) |
+| Protección de despliegue | `ssoProtection.enabled=true` pero `deploymentType: "all_except_custom_domains"` — el dominio custom `cuyana.casavivadecuba.com` **no** tiene el muro de autenticación de Vercel; un cliente real nunca lo ve. Sin password protection ni IP allowlist. |
+
+**Lo único que falta y que esta sesión no puede hacer por falta de
+herramienta (no de permiso):** el conector de Vercel de este entorno no
+tiene ningún tool para leer o escribir Environment Variables (verificado
+buscando explícitamente). Falta:
+
+1. (Usuario, dashboard de Vercel → `cuyana-app` → Settings →
+   Environment Variables → Production) agregar:
+   `NEXO_CATALOG_URL=https://nexotienda.casavivadecuba.com/api/marketplace/products`
+2. (Usuario) Redesplegar: en Deployments, abrir el último deployment de
+   producción y usar "Redeploy" (no hace falta ningún cambio de código;
+   Vercel solo aplica variables de entorno nuevas en un deployment nuevo).
+3. Avisar aquí — en cuanto eso pase, esta sesión puede volver a correr
+   exactamente las mismas verificaciones de la tabla de arriba
+   (`web_fetch_vercel_url`, `get_deployment_build_logs`,
+   `get_runtime_errors`) contra el nuevo deployment y confirmar productos
+   reales, imágenes, ficha, y (con una prueba manual desde el propio
+   teléfono del usuario, ya que el checkout depende de `localStorage` del
+   navegador) el checkout completo hasta WhatsApp.
+
+## 10. `NEXO_CATALOG_URL` configurada y redesplegada — catálogo real confirmado en vivo (2026-09-12T15:51:00Z)
+
+El usuario cargó la variable y redesplegó dos veces (`dpl_8ZqL1mUz`,
+`dpl_xyvzJzfD`, ambas `action: redeploy` del mismo commit `59c39c3`,
+`state: READY`, `target: production`). Build sin errores (40 s), cero
+errores de runtime. Verificación real contra
+`https://cuyana.casavivadecuba.com`:
+
+| Prueba | Resultado |
+|---|---|
+| `GET /tienda/energia` | `200`. **19 productos reales** de NEXO (Paneles MIESI/LONGi/monocristalino, kits solares, BLUETTI AC70/AC180/Apex 300/Elite 100, EcoFlow DELTA 3/RIVER 3, SUMRY, SIGMA, Infinity Solar, SACO, lámpara LED), precios en USD formato latinoamericano (ej. "575,00 USD"), sin GYD (correcto: no hay fila en `commercial_rates` todavía) |
+| Imágenes | Resuelven correctamente: absolutas de `casavivadecuba.com/wp-content/uploads/...` intactas, y la relativa `/api/catalog-image/panel-120w.webp` de NEXO resuelta contra su origin — ninguna rota |
+| `GET /producto/inversor-solar-hibrido-sumry-4000w-24v-120v-con-mppt` | `200`. Ficha completa: título, descripción, precio "575,00 USD", imagen real optimizada por `next/image`, botón "Añadir al carrito", `Fuente: nexo · sincronizado 12/9/2026`. Objeto `product` correcto: `sourceSystem: "nexo"`, `sourceProductId: "1058"`, `category: "energia"`, `available: true` |
+
+**Sin colisión con WooCommerce** (confirmado por código, no por suposición): `grep` en `src/` no encuentra ninguna referencia a WooCommerce; el único tráfico hacia NEXO es el `GET` de solo lectura al catálogo.
+
+**Pendiente, ya no de esta sesión sino de una prueba manual real:** agregar al carrito y hacer el checkout completo hasta WhatsApp depende de `localStorage` del navegador del cliente — no se puede automatizar con las herramientas de fetch disponibles (no soportan POST ni JS). Queda para que el usuario lo pruebe una vez en su teléfono: agregar un producto, ir a `/carrito`, poner nombre y WhatsApp, confirmar pedido, y verificar que (a) llega un WhatsApp a `5355879222` con marca Cuyana y los datos correctos, y (b) el pedido aparece en `store_orders` en Supabase.
+
+## 11. Auditoría UX real (capturas del usuario) y corrección — el carrito era un callejón sin salida (2026-09-12T16:10:00Z)
+
+El usuario probó el flujo real en su teléfono (capturas adjuntas) y encontró
+lo mismo que el §10 no podía detectar por fetch: **agregar al carrito no
+llevaba a ningún lado**. Auditoría de código confirmó la causa raíz:
+`SiteHeader.tsx`/`NAV_LINKS` no tenían ningún ícono, contador ni link hacia
+`/carrito` — después de "Añadido" no había ninguna pista de que el carrito
+existiera. Hallazgos completos (por severidad) y qué se corrigió:
+
+| Hallazgo | Severidad | Corrección |
+|---|---|---|
+| Sin acceso al carrito desde el header | 🔴 Crítico | `CartIndicator.tsx` nuevo: ícono + contador en el header (desktop y móvil), leyendo `localStorage` vía el evento `cuyana-cart-updated` ya existente |
+| "Añadido" sin siguiente paso | 🔴 Crítico | `CartToast.tsx` nuevo: aviso flotante con el producto agregado y un botón directo "Ver carrito", montado una vez en `(public)/layout.tsx`; `addToCart()` ahora dispara `cuyana-cart-added` con nombre y cantidad |
+| Sin control de cantidad | 🟠 Alto | Stepper +/− en la ficha de producto (`AddToCartButton.tsx`) y en cada línea del carrito (`updateQuantity()` nuevo en `cart.ts`) |
+| Tarjetas sin interacción | 🟠 Alto | `.product-card` con elevación/sombra al pasar el mouse o tocar (`:hover`/`:focus-visible`/`:active`) |
+| Botón de confirmar fuera de vista en móvil | 🟡 Medio | Barra fija (`cart-sticky-bar`) con el total y "Confirmar pedido" siempre visibles al fondo de `/carrito` |
+| Código de pedido se perdía si se cerraba WhatsApp | 🟡 Medio | El checkout abre WhatsApp en pestaña nueva (`window.open`, ya no navega fuera) y deja una pantalla de confirmación con el código del pedido visible en Cuyana |
+
+**No corregido a propósito, por ser decisión de marca ya documentada**: la
+fuente monoespaciada (JetBrains Mono) en precios — `docs/DECISIONS.md`
+(2026-09-11) la fija para toda cifra de la app, remesas incluidas; cambiarla
+solo en la tienda rompería esa consistencia sin que el negocio lo haya
+pedido. Sí quedan pendientes, no bloqueantes: ficha de producto sin galería/
+specs estructuradas ni breadcrumb (limitado por lo que NEXO realmente
+entrega — no se inventa contenido), y sin "vaciar carrito completo" (se
+reemplazó por quitar línea por línea, más el stepper a 0).
+
+Verificado: `npm run build`/`lint`/`tsc --noEmit`/`vitest run` (57/57)
+verdes; smoke test local (`next start`) confirma que el ícono de carrito
+aparece en portada y que `/carrito` renderiza bien vacío. **No verificado
+en vivo con productos reales** (agregar al carrito depende de JS/
+`localStorage` del navegador, no de un fetch) — pendiente de que el
+usuario lo prueble en su teléfono tras el próximo despliegue.
+
 ---
 
 # HANDOFF — CUYANA-WEB-001

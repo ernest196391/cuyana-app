@@ -53,11 +53,27 @@ export function addToCart(item: Omit<CartItem, "quantity">, quantity = 1) {
     items.push({ ...item, quantity });
   }
   guardar(items);
+  // Aparte de "el carrito cambió" (para el contador del header), este evento
+  // lleva el nombre del producto para que el aviso de confirmación pueda
+  // decir qué se agregó, sin que el header tenga que adivinarlo.
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("cuyana-cart-added", { detail: { name: item.name, quantity } }));
+  }
   return items;
 }
 
 export function removeFromCart(slug: string) {
   const items = leer().filter((i) => i.slug !== slug);
+  guardar(items);
+  return items;
+}
+
+/** Cambia la cantidad de una línea. Si queda en 0 o menos, la quita. */
+export function updateQuantity(slug: string, quantity: number) {
+  if (quantity <= 0) return removeFromCart(slug);
+  const items = leer();
+  const item = items.find((i) => i.slug === slug);
+  if (item) item.quantity = quantity;
   guardar(items);
   return items;
 }
@@ -68,4 +84,8 @@ export function clearCart() {
 
 export function cartTotalUsd(items: CartItem[]) {
   return items.reduce((sum, i) => sum + i.priceUsd * i.quantity, 0);
+}
+
+export function cartCount(items: CartItem[]) {
+  return items.reduce((sum, i) => sum + i.quantity, 0);
 }
