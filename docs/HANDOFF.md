@@ -350,6 +350,24 @@ buscando explícitamente). Falta:
    teléfono del usuario, ya que el checkout depende de `localStorage` del
    navegador) el checkout completo hasta WhatsApp.
 
+## 10. `NEXO_CATALOG_URL` configurada y redesplegada — catálogo real confirmado en vivo (2026-09-12T15:51:00Z)
+
+El usuario cargó la variable y redesplegó dos veces (`dpl_8ZqL1mUz`,
+`dpl_xyvzJzfD`, ambas `action: redeploy` del mismo commit `59c39c3`,
+`state: READY`, `target: production`). Build sin errores (40 s), cero
+errores de runtime. Verificación real contra
+`https://cuyana.casavivadecuba.com`:
+
+| Prueba | Resultado |
+|---|---|
+| `GET /tienda/energia` | `200`. **19 productos reales** de NEXO (Paneles MIESI/LONGi/monocristalino, kits solares, BLUETTI AC70/AC180/Apex 300/Elite 100, EcoFlow DELTA 3/RIVER 3, SUMRY, SIGMA, Infinity Solar, SACO, lámpara LED), precios en USD formato latinoamericano (ej. "575,00 USD"), sin GYD (correcto: no hay fila en `commercial_rates` todavía) |
+| Imágenes | Resuelven correctamente: absolutas de `casavivadecuba.com/wp-content/uploads/...` intactas, y la relativa `/api/catalog-image/panel-120w.webp` de NEXO resuelta contra su origin — ninguna rota |
+| `GET /producto/inversor-solar-hibrido-sumry-4000w-24v-120v-con-mppt` | `200`. Ficha completa: título, descripción, precio "575,00 USD", imagen real optimizada por `next/image`, botón "Añadir al carrito", `Fuente: nexo · sincronizado 12/9/2026`. Objeto `product` correcto: `sourceSystem: "nexo"`, `sourceProductId: "1058"`, `category: "energia"`, `available: true` |
+
+**Sin colisión con WooCommerce** (confirmado por código, no por suposición): `grep` en `src/` no encuentra ninguna referencia a WooCommerce; el único tráfico hacia NEXO es el `GET` de solo lectura al catálogo.
+
+**Pendiente, ya no de esta sesión sino de una prueba manual real:** agregar al carrito y hacer el checkout completo hasta WhatsApp depende de `localStorage` del navegador del cliente — no se puede automatizar con las herramientas de fetch disponibles (no soportan POST ni JS). Queda para que el usuario lo pruebe una vez en su teléfono: agregar un producto, ir a `/carrito`, poner nombre y WhatsApp, confirmar pedido, y verificar que (a) llega un WhatsApp a `5355879222` con marca Cuyana y los datos correctos, y (b) el pedido aparece en `store_orders` en Supabase.
+
 ---
 
 # HANDOFF — CUYANA-WEB-001

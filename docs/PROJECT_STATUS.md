@@ -159,10 +159,18 @@ adaptador de catálogo, SEO técnico y páginas legales.
       nuevo de otra sesión de Claude (`59c39c3`, integración con "Cuadre"
       para remesas) por encima de mi merge — no toca ningún archivo de
       esta tarea.
-- [ ] **Pendiente, requiere al usuario (sin tool disponible para esto)**:
-      cargar `NEXO_CATALOG_URL` en Vercel (Production) y darle "Redeploy"
-      al último deployment. Sin eso el catálogo real de NEXO no puede
-      probarse en vivo — el resto de la tienda ya está verificado
-      funcionando. Detalle en `docs/HANDOFF.md` §9.
+- [x] **`NEXO_CATALOG_URL` configurada y catálogo real en producción
+      (2026-09-12T15:51:00Z)**: usuario cargó la variable y redesplegó.
+      Verificado en vivo: `/tienda/energia` muestra 19 productos reales de
+      NEXO (paneles, BLUETTI, EcoFlow, SUMRY, SIGMA, etc.) con precio en
+      USD, imágenes resueltas correctamente (absolutas y relativas), y la
+      ficha de producto completa y funcional. Cero errores de build o
+      runtime. Detalle en `docs/HANDOFF.md` §10.
+- [ ] **Pendiente (prueba manual, no automatizable con las herramientas
+      disponibles)**: agregar al carrito → checkout → WhatsApp depende de
+      `localStorage` del navegador del cliente. Falta que el usuario lo
+      pruebe una vez en su teléfono y confirme que el pedido queda en
+      `store_orders` y que el WhatsApp llega a `5355879222` con marca
+      Cuyana.
 
 Detalle completo, con pasos siguientes, en `docs/HANDOFF.md`.

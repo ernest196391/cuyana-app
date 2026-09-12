@@ -96,7 +96,13 @@ archivos o toma la siguiente tarea libre y déjalo escrito aquí.
   pendiente real:** este conector de Vercel no tiene ninguna herramienta
   para leer/crear variables de entorno (verificado); falta que el usuario
   cargue `NEXO_CATALOG_URL` en Production y le dé "Redeploy" al último
-  deployment. Detalle en `docs/HANDOFF.md` §9.
+  deployment. **Hecho (2026-09-12T15:51:00Z):** catálogo real de energía
+  confirmado en vivo en `cuyana.casavivadecuba.com` (19 productos reales
+  de NEXO, precios USD, imágenes OK, ficha de producto completa, cero
+  errores). Único pendiente: prueba manual del checkout completo
+  (carrito→WhatsApp) desde el teléfono del usuario, ya que depende de
+  `localStorage` del navegador y no se puede automatizar con las
+  herramientas de fetch disponibles. Detalle en `docs/HANDOFF.md` §10.
 
 ## Libres / futuras
 
