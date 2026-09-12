@@ -97,6 +97,19 @@ dentro del adaptador, porque en este entorno de build no hay
 explícitamente para que precio, stock e imagen se sirvan siempre en vivo en
 producción.
 
+## 2026-09-12 — Autorización del usuario para fusionar Pull Requests sin pedir confirmación
+
+El usuario (dueño del repo) autorizó explícitamente que esta sesión (y por
+extensión, cualquier sesión de Claude Code que retome esta tarea) cree Y
+fusione Pull Requests hacia `main` sin pedir confirmación previa cada vez,
+priorizando siempre avanzar. Esto reemplaza el flujo anterior (crear PR,
+esperar que el usuario lo fusione manualmente desde el navegador) para
+cambios dentro del alcance ya acordado con el usuario. No cubre acciones
+fuera de ese alcance (p. ej. tocar `src/app/admin/**` más allá de lo
+acordado, o integrar Cuadre sin contrato confirmado — ver
+`docs/HANDOFF.md` §14): esas siguen requiriendo confirmación explícita
+antes de construirlas, aunque el merge en sí ya no la requiera.
+
 ## 2026-09-11 — Vercel
 
 El MCP de Vercel de esta sesión no devuelve equipos/proyectos
