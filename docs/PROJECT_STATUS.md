@@ -166,6 +166,15 @@ adaptador de catálogo, SEO técnico y páginas legales.
       USD, imágenes resueltas correctamente (absolutas y relativas), y la
       ficha de producto completa y funcional. Cero errores de build o
       runtime. Detalle en `docs/HANDOFF.md` §10.
+- [x] **Auditoría UX + corrección (2026-09-12T16:10:00Z)**: el usuario
+      probó en su teléfono y encontró que agregar al carrito no llevaba a
+      ningún lado — el header no tenía ningún acceso a `/carrito`.
+      Corregido: ícono de carrito con contador en el header
+      (`CartIndicator`), aviso de confirmación con salida directa al
+      carrito (`CartToast`), stepper de cantidad (ficha y carrito), barra
+      de acción fija en móvil, y pantalla de confirmación con el código
+      de pedido (WhatsApp se abre en pestaña nueva, ya no navega fuera).
+      Detalle completo en `docs/HANDOFF.md` §11.
 - [ ] **Pendiente (prueba manual, no automatizable con las herramientas
       disponibles)**: agregar al carrito → checkout → WhatsApp depende de
       `localStorage` del navegador del cliente. Falta que el usuario lo

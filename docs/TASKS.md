@@ -102,7 +102,15 @@ archivos o toma la siguiente tarea libre y déjalo escrito aquí.
   errores). Único pendiente: prueba manual del checkout completo
   (carrito→WhatsApp) desde el teléfono del usuario, ya que depende de
   `localStorage` del navegador y no se puede automatizar con las
-  herramientas de fetch disponibles. Detalle en `docs/HANDOFF.md` §10.
+  herramientas de fetch disponibles. **Actualización
+  (2026-09-12T16:10:00Z):** el usuario probó en su teléfono y encontró el
+  motivo exacto — el header no tenía ningún ícono/link al carrito, así que
+  "Añadido" no llevaba a ningún lado. Corregido: `CartIndicator` (ícono +
+  contador en header), `CartToast` (aviso con salida directa a
+  `/carrito`), stepper de cantidad, barra de acción fija en móvil, y
+  confirmación con código de pedido visible (WhatsApp abre en pestaña
+  nueva). `build`/`lint`/`tsc`/`vitest` verdes. Auditoría completa y
+  siguiente prueba pendiente en `docs/HANDOFF.md` §11.
 
 ## Libres / futuras
 

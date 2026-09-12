@@ -368,6 +368,40 @@ errores de runtime. Verificación real contra
 
 **Pendiente, ya no de esta sesión sino de una prueba manual real:** agregar al carrito y hacer el checkout completo hasta WhatsApp depende de `localStorage` del navegador del cliente — no se puede automatizar con las herramientas de fetch disponibles (no soportan POST ni JS). Queda para que el usuario lo pruebe una vez en su teléfono: agregar un producto, ir a `/carrito`, poner nombre y WhatsApp, confirmar pedido, y verificar que (a) llega un WhatsApp a `5355879222` con marca Cuyana y los datos correctos, y (b) el pedido aparece en `store_orders` en Supabase.
 
+## 11. Auditoría UX real (capturas del usuario) y corrección — el carrito era un callejón sin salida (2026-09-12T16:10:00Z)
+
+El usuario probó el flujo real en su teléfono (capturas adjuntas) y encontró
+lo mismo que el §10 no podía detectar por fetch: **agregar al carrito no
+llevaba a ningún lado**. Auditoría de código confirmó la causa raíz:
+`SiteHeader.tsx`/`NAV_LINKS` no tenían ningún ícono, contador ni link hacia
+`/carrito` — después de "Añadido" no había ninguna pista de que el carrito
+existiera. Hallazgos completos (por severidad) y qué se corrigió:
+
+| Hallazgo | Severidad | Corrección |
+|---|---|---|
+| Sin acceso al carrito desde el header | 🔴 Crítico | `CartIndicator.tsx` nuevo: ícono + contador en el header (desktop y móvil), leyendo `localStorage` vía el evento `cuyana-cart-updated` ya existente |
+| "Añadido" sin siguiente paso | 🔴 Crítico | `CartToast.tsx` nuevo: aviso flotante con el producto agregado y un botón directo "Ver carrito", montado una vez en `(public)/layout.tsx`; `addToCart()` ahora dispara `cuyana-cart-added` con nombre y cantidad |
+| Sin control de cantidad | 🟠 Alto | Stepper +/− en la ficha de producto (`AddToCartButton.tsx`) y en cada línea del carrito (`updateQuantity()` nuevo en `cart.ts`) |
+| Tarjetas sin interacción | 🟠 Alto | `.product-card` con elevación/sombra al pasar el mouse o tocar (`:hover`/`:focus-visible`/`:active`) |
+| Botón de confirmar fuera de vista en móvil | 🟡 Medio | Barra fija (`cart-sticky-bar`) con el total y "Confirmar pedido" siempre visibles al fondo de `/carrito` |
+| Código de pedido se perdía si se cerraba WhatsApp | 🟡 Medio | El checkout abre WhatsApp en pestaña nueva (`window.open`, ya no navega fuera) y deja una pantalla de confirmación con el código del pedido visible en Cuyana |
+
+**No corregido a propósito, por ser decisión de marca ya documentada**: la
+fuente monoespaciada (JetBrains Mono) en precios — `docs/DECISIONS.md`
+(2026-09-11) la fija para toda cifra de la app, remesas incluidas; cambiarla
+solo en la tienda rompería esa consistencia sin que el negocio lo haya
+pedido. Sí quedan pendientes, no bloqueantes: ficha de producto sin galería/
+specs estructuradas ni breadcrumb (limitado por lo que NEXO realmente
+entrega — no se inventa contenido), y sin "vaciar carrito completo" (se
+reemplazó por quitar línea por línea, más el stepper a 0).
+
+Verificado: `npm run build`/`lint`/`tsc --noEmit`/`vitest run` (57/57)
+verdes; smoke test local (`next start`) confirma que el ícono de carrito
+aparece en portada y que `/carrito` renderiza bien vacío. **No verificado
+en vivo con productos reales** (agregar al carrito depende de JS/
+`localStorage` del navegador, no de un fetch) — pendiente de que el
+usuario lo prueble en su teléfono tras el próximo despliegue.
+
 ---
 
 # HANDOFF — CUYANA-WEB-001
