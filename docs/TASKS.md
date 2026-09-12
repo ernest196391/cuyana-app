@@ -129,6 +129,19 @@ archivos o toma la siguiente tarea libre y déjalo escrito aquí.
   GYD + método de entrega) y rechazaría un pedido de tienda tal cual —
   falta confirmar el contrato real de Cuadre para pedidos de producto en
   USD antes de construir nada. Ver `docs/HANDOFF.md` §14.
+- **Actualización (2026-09-12T16:58:00Z):** confirmado que el usuario
+  mergeó el PR con el arreglo del bug y el rediseño (commit `f417fcc`).
+  Verificado en Vercel: build de producción limpio (sin errores reales,
+  solo warnings benignos de npm), cero errores de runtime en los últimos
+  30 minutos. Verificado el HTML real servido en producción: la ficha de
+  producto ya no tiene la imagen a pantalla completa (ahora contenida en
+  `object-fit:contain`), tiene la barra fija inferior en móvil con precio
+  y botón, y el header de todas las páginas trae el ícono del carrito. El
+  carrito responde `200` sin errores (el contenido depende del
+  `localStorage` del navegador de cada usuario, así que desde el
+  servidor se ve vacío por diseño). Pendiente real: que el usuario
+  confirme desde su teléfono que un pedido completo ya se guarda sin el
+  error "No se pudo registrar el pedido".
 
 ## Libres / futuras
 
