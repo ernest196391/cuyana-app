@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import CategoryPage from "@/components/store/CategoryPage";
 
+// Mismo motivo que /tienda/energia: catálogo y tasa comercial en vivo, sin
+// congelar la página como HTML estático del momento del build.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Alimentos",
   description: "Combos de alimentos para enviar a tu familia en Cuba.",

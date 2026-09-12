@@ -5,6 +5,10 @@ import { getCatalogProvider } from "@/lib/catalog";
 import { formatProductPrice } from "@/lib/format";
 import AddToCartButton from "@/components/store/AddToCartButton";
 
+// Precio, disponibilidad e imagen vienen del catálogo en vivo (NEXO) y de la
+// tasa comercial en Supabase: nunca se congela como HTML estático.
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const provider = getCatalogProvider();
   const result = await provider.getProduct(params.slug);

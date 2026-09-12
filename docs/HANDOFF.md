@@ -1,3 +1,130 @@
+# HANDOFF — CUYANA-WEB-002
+
+De: Claude Code (sesión `session_011YVe5XSew1neZgVdirhS38`)
+Fecha: 2026-09-12T03:15:00Z (UTC)
+Rama: `claude/ecstatic-ramanujan-iv70r6`
+
+## 1. Qué se implementó
+
+Auditoría de `ernesto-rondon-nexo` (con evidencia de código, no
+suposiciones) confirmó: WooCommerce real por debajo (no "B/Google
+Commerce"); precios en USD; el checkout y las "gestoras" de NEXO siempre
+abren **su propio** WhatsApp (`5354056173`), nunca el del canal; su
+endpoint público `GET /api/marketplace/products` no exige credenciales
+pero su parámetro `category` espera un ID numérico de WooCommerce (no un
+slug, no sirve para filtrar por fuera). Con eso, se implementó el flujo
+mínimo completo para energía:
+
+- `src/lib/catalog/nexoAdapter.ts` (reescrito): `listByCategory("energia")`
+  y `getProduct()` leen `NEXO_CATALOG_URL` en vivo, paginando y filtrando
+  por categoría real (`nexoCategories.ts`, replica el filtro de la propia
+  tienda NEXO). "alimentos" sigue `not_configured` a propósito.
+- `src/lib/catalog/nexoProducts.ts`: mapeo WooCommerce → `CatalogProduct`,
+  resolución de imágenes relativas contra el origin de NEXO, limpieza de
+  HTML de la descripción.
+- `src/lib/catalog/commercialRate.ts`: tasa GYD/USD propia de la tienda
+  (tabla nueva `commercial_rates`), con vigencia (`expires_at`);
+  independiente de la tasa de remesas.
+- `src/lib/store/orders.ts` + `src/app/api/store/order/route.ts`: checkout
+  server-side. Revalida el precio de cada línea contra el catálogo en vivo
+  (nunca confía en el precio del navegador), persiste en `store_orders`
+  (Supabase de Cuyana) y solo entonces devuelve el código real del pedido.
+  Nunca escribe en WooCommerce.
+- `src/lib/store/orderMessage.ts`: mensaje de WhatsApp con marca Cuyana
+  (sin mencionar NEXO), armado con el código ya persistido.
+- `src/app/(public)/carrito/CarritoClient.tsx`: pide nombre y WhatsApp,
+  llama al checkout, y solo si el pedido quedó guardado abre
+  `wa.me/5355879222` con el mensaje. Si falla, muestra el error y un
+  enlace de contacto genérico (sin inventar un pedido).
+- `supabase/migrations/20260912030637_tienda_pedidos_y_tasa_comercial.sql`:
+  aplicada directamente al Supabase real (`dkiiknsfbefpkrnmbzid`) vía MCP
+  y versionada aquí. RLS: `commercial_rates` lectura pública/escritura solo
+  admin; `store_orders` inserción pública (mismo patrón que `orders` de
+  remesas), lectura/actualización solo admin.
+- `next.config.mjs`: `images.remotePatterns` para los dominios de imagen de
+  NEXO (`nexotienda.casavivadecuba.com`, `casavivadecuba.com`).
+- `/tienda/energia`, `/tienda/alimentos`, `/producto/[slug]`, `/carrito`:
+  forzadas a `dynamic = "force-dynamic"` (ver `docs/DECISIONS.md` — sin
+  esto, Next.js las congelaba como HTML estático del build porque en este
+  entorno no hay `NEXO_CATALOG_URL`, así que el código en vivo nunca se
+  ejecutaba durante el build).
+
+## 2. Pruebas y verificación
+
+- `npm run build`, `npm run lint`, `npx tsc --noEmit`: verdes.
+- `npx vitest run`: 57/57 pruebas (21 nuevas: `nexoCategories.test.ts`,
+  `nexoProducts.test.ts`, `orderMessage.test.ts`).
+- Verificación manual local (`next start` + curl) del estado honesto sin
+  `NEXO_CATALOG_URL`: `/tienda/energia` y `/tienda/alimentos` muestran
+  "Catálogo en preparación"; `/carrito` muestra los campos de nombre/
+  WhatsApp y el estado vacío.
+- Migración aplicada al proyecto Supabase real; `get_advisors` (security)
+  no reporta nada nuevo (solo el aviso preexistente de "Leaked Password
+  Protection" ya conocido, fuera de alcance).
+
+## 3. Bloqueo externo real: no se pudo verificar contra NEXO en vivo
+
+Igual que el bloqueo de Vercel/red documentado en CUYANA-WEB-001: el proxy
+de egress de este entorno rechaza explícitamente
+`nexotienda.casavivadecuba.com` (`connect_rejected`, confirmado con
+`curl` y con `__agentproxy/status`). Por lo tanto **no se pudo**:
+
+- confirmar en vivo que `GET /api/marketplace/products` responde y trae
+  productos reales de energía (sí se confirmó por lectura de código: el
+  endpoint existe, es público, y hay SKUs de energía reales en el catálogo
+  editorial de NEXO — paneles Boviet, inversor SUMRY, EcoFlow, BLUETTI,
+  ventiladores solares);
+- probar el flujo completo (agregar al carrito → checkout → WhatsApp) con
+  datos reales de NEXO;
+- confirmar que la resolución de imágenes relativas funciona contra una
+  respuesta real (sí está cubierta por prueba unitaria con un caso
+  representativo tomado del código fuente de NEXO).
+
+**Siguiente paso para quien retome esto (con red hacia
+`nexotienda.casavivadecuba.com` habilitada, o desde Vercel):**
+
+1. Configurar `NEXO_CATALOG_URL=https://nexotienda.casavivadecuba.com/api/marketplace/products`
+   en Vercel (ya está como valor de ejemplo en `.env.example`).
+2. Abrir `/tienda/energia` y `/producto/[slug]` de un producto real; confirmar
+   que cargan nombre, precio, imagen y disponibilidad reales.
+3. Cargar una fila en `commercial_rates` (`id='gyd_usd'`) desde Supabase
+   Studio con la tasa comercial real, y confirmar que el precio pasa a
+   mostrar GYD primero y USD entre paréntesis.
+4. Probar el checkout completo: agregar producto al carrito, confirmar
+   pedido, verificar que aparece en `store_orders` con código y precio
+   correctos, y que el WhatsApp que se abre es el de Cuyana
+   (`5355879222`) con el texto correcto (sin mencionar NEXO).
+5. Si NEXO llega a exigir autenticación en su endpoint público, solo hay
+   que setear `NEXO_CATALOG_API_KEY` — el adaptador ya lo manda como
+   `Authorization: Bearer`.
+
+## 4. Drift de esquema detectado en Supabase (no provocado por esta tarea)
+
+Al inspeccionar el proyecto real antes de migrar, `list_migrations` mostró
+5 migraciones aplicadas el 2026-09-12 (`cuadre_esquema_parte1..4`,
+`cuadre_cerrar_anon_del_esquema`) que **no existen como archivo** en
+`supabase/migrations/` de este repo. Crean un esquema completo aparte
+(`cuadre.*`: tenants, profiles, contacts, workers, destination_accounts,
+pan_reveals, delivery_methods, inbound_orders, purchases, deliveries,
+api_keys, usdt_market_rates, commission_entries, commission_payouts) — no
+colisiona con nada de esta tarea (`public.commercial_rates`,
+`public.store_orders`), así que no se tocó ni se investigó más a fondo por
+estar fuera de alcance. Se deja constancia aquí y en `docs/TASKS.md` para
+que quien aplicó esas migraciones (u otro agente) versione los archivos
+correspondientes y evitar que el repo y la base real sigan divergiendo.
+
+## 5. Coordinación con el repo NEXO
+
+`ernesto-rondon-nexo` no se modificó (esta tarea es de solo lectura sobre
+ese repo). Su propio `docs/ROADMAP.md` ya tiene un bloque 7 — "Cuyana
+ecommerce como canal de marca blanca" — dentro de una tarea de
+consolidación (`PS1-B01-T01`) reclamada por otro agente (ChatGPT) en ese
+repositorio. Quien retome trabajo ahí debería coordinar con esa tarea antes
+de tocar `lib/commerce/`, `lib/commercial/` o los endpoints de
+`app/api/marketplace|gestoras` para evitar pisarse.
+
+---
+
 # HANDOFF — CUYANA-WEB-001
 
 De: Claude Code (sesión `session_01Y7hkVKc2C7hFG1KPakFM81`)
