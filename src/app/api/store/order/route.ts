@@ -1,11 +1,35 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getCatalogProvider } from "@/lib/catalog";
-import { validarPedidoTienda } from "@/lib/store/orderMessage";
+import { validarPedidoTienda, type DestinoEnCuba } from "@/lib/store/orderMessage";
 
 export const dynamic = "force-dynamic";
 
 type OrderItemBody = { slug?: unknown; sourceSystem?: unknown; sourceProductId?: unknown; quantity?: unknown };
+
+/**
+ * Saca el destino del cuerpo sin creerse nada de lo que venga.
+ *
+ * Solo se leen los campos que importan y cada uno se acota: un municipio de
+ * 4.000 caracteres o un objeto con llaves de más no tienen por qué llegar a la
+ * base. La tarifa de mensajería NO se lee de aquí — se recalcula en el servidor
+ * contra la tabla de tarifas, igual que los precios.
+ */
+function leerDestino(bruto: unknown): DestinoEnCuba | undefined {
+  if (!bruto || typeof bruto !== "object" || Array.isArray(bruto)) return undefined;
+  const d = bruto as Record<string, unknown>;
+  const texto = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+  const destino: DestinoEnCuba = {
+    nombre: texto(d.nombre, 120),
+    telefono: texto(d.telefono, 40),
+    municipio: texto(d.municipio, 60),
+    zona: texto(d.zona, 60),
+    direccion: texto(d.direccion, 300),
+    referencia: texto(d.referencia, 300),
+  };
+  // Un objeto vacío es lo mismo que no mandar destino: el carrito viejo.
+  return Object.values(destino).some(Boolean) ? destino : undefined;
+}
 
 /**
  * Checkout de la tienda Cuyana. Corre en el servidor a propósito: aquí (y
@@ -19,6 +43,7 @@ export async function POST(request: Request) {
     items?: OrderItemBody[];
     customerName?: unknown;
     customerWhatsapp?: unknown;
+    destino?: unknown;
   };
   try {
     body = await request.json();
@@ -29,11 +54,13 @@ export async function POST(request: Request) {
   const items = Array.isArray(body.items) ? body.items : [];
   const customerName = typeof body.customerName === "string" ? body.customerName : "";
   const customerWhatsapp = typeof body.customerWhatsapp === "string" ? body.customerWhatsapp : "";
+  const destino = leerDestino(body.destino);
 
   const validationError = validarPedidoTienda({
     items: items.map((item) => ({ quantity: Number(item.quantity) || 0 })),
     customerName,
     customerWhatsapp,
+    destino,
   });
   if (validationError) {
     return NextResponse.json({ status: "error", message: validationError }, { status: 400 });
@@ -57,6 +84,7 @@ export async function POST(request: Request) {
     items: parsedItems,
     customerName,
     customerWhatsapp,
+    destino,
   });
 
   if (result.status === "ok") return NextResponse.json(result);

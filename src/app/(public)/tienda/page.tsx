@@ -11,7 +11,13 @@ export default function TiendaPage() {
   return (
     <div className="wrap page-section">
       <h1 className="page-title">Tienda Cuyana</h1>
-      <p className="page-lead">Elige qué quieres enviar a tu familia en Cuba.</p>
+      {/* La cobertura se dice aquí, en la puerta, y no al final del carrito.
+          Enterarse de que no llega a tu provincia después de haberlo elegido
+          todo es la peor forma de enterarse. Ojo: esto es solo la TIENDA — las
+          remesas sí llegan a toda Cuba, y las dos coberturas no se mezclan. */}
+      <p className="page-lead">
+        Elige qué quieres enviar a tu familia en Cuba. Entregamos en La Habana.
+      </p>
       <div className="need-grid need-grid-store">
         <Link href="/tienda/alimentos" className="need-card">
           <span className="need-title">Alimentos</span>

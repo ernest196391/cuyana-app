@@ -6,12 +6,27 @@ import { cartTotalUsd, clearCart, getCart, updateQuantity, type CartItem } from 
 import { WHATSAPP_NUMBER } from "@/lib/config/site";
 import { formatProductPrice } from "@/lib/format";
 import { validarPedidoTienda, construirMensajePedidoTienda } from "@/lib/store/orderMessage";
+import { catalogoDeEntrega, cotizar, zonasDe } from "@/lib/store/mensajeria";
+import { formatNumber } from "@/lib/format";
 import { track, ANALYTICS_EVENTS } from "@/lib/analytics";
+
+/** Lo que se elige en los desplegables. Solo La Habana, por ahora. */
+const ENTREGA = catalogoDeEntrega();
+/** Para cuando el barrio no esté en la lista: se coordina y no se cobra a ciegas. */
+const OTRA_ZONA = "__otra";
 
 export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [customerName, setCustomerName] = useState("");
   const [customerWhatsapp, setCustomerWhatsapp] = useState("");
+  // Quien recibe en Cuba. Es otra persona que quien paga, y sin esto el pedido
+  // no se puede llevar a ninguna puerta.
+  const [destNombre, setDestNombre] = useState("");
+  const [destTelefono, setDestTelefono] = useState("");
+  const [destMunicipio, setDestMunicipio] = useState("");
+  const [destZona, setDestZona] = useState("");
+  const [destDireccion, setDestDireccion] = useState("");
+  const [destReferencia, setDestReferencia] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [fallo, setFallo] = useState(false);
@@ -27,8 +42,22 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
   const totalUsd = cartTotalUsd(items);
   const totalPrecio = formatProductPrice(totalUsd, gydPerUsd);
 
+  const zonas = destMunicipio ? zonasDe(destMunicipio) : [];
+  const destino = {
+    nombre: destNombre,
+    telefono: destTelefono,
+    municipio: destMunicipio,
+    zona: destZona === OTRA_ZONA ? "" : destZona,
+    direccion: destDireccion,
+    referencia: destReferencia,
+  };
+  // Se cotiza según se elige, no al final: nadie debería descubrir lo que
+  // cuesta la mensajería después de haber dado todos sus datos.
+  const envio = destMunicipio ? cotizar(destMunicipio, destino.zona) : null;
+  const mensajeriaCup = envio?.estado === "zona" ? envio.cup : null;
+
   async function confirmarPedido() {
-    const error = validarPedidoTienda({ items, customerName, customerWhatsapp });
+    const error = validarPedidoTienda({ items, customerName, customerWhatsapp, destino });
     if (error) {
       setFormError(error);
       return;
@@ -51,6 +80,7 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
           })),
           customerName,
           customerWhatsapp,
+          destino,
         }),
       });
       const result = await response.json();
@@ -70,6 +100,8 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
         totalGyd: gydPerUsd ? Math.round(totalUsd * gydPerUsd) : null,
         customerName,
         customerWhatsapp,
+        destino,
+        mensajeriaCup,
       });
       const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
       clearCart();
@@ -160,6 +192,118 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
             })}
           </ul>
 
+          <h2 className="cart-seccion">¿Quién lo recibe en Cuba?</h2>
+          <p className="cart-seccion-nota">
+            Por ahora entregamos solo en La Habana. Pronto en más provincias.
+          </p>
+
+          <div className="field">
+            <label htmlFor="dest-nombre">Nombre y apellidos</label>
+            <input
+              id="dest-nombre"
+              className="campo"
+              type="text"
+              value={destNombre}
+              onChange={(e) => setDestNombre(e.target.value)}
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="dest-telefono">Su teléfono en Cuba</label>
+            <input
+              id="dest-telefono"
+              className="campo"
+              type="tel"
+              inputMode="tel"
+              placeholder="+53 5 234 5678"
+              value={destTelefono}
+              onChange={(e) => setDestTelefono(e.target.value)}
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="dest-municipio">Municipio</label>
+            <select
+              id="dest-municipio"
+              className="campo"
+              value={destMunicipio}
+              onChange={(e) => {
+                setDestMunicipio(e.target.value);
+                // El barrio de antes no tiene por qué existir en el municipio
+                // nuevo: dejarlo puesto cobraría una tarifa de otro sitio.
+                setDestZona("");
+              }}
+            >
+              <option value="">Elige el municipio</option>
+              {ENTREGA.municipios.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {zonas.length > 0 && (
+            <div className="field">
+              <label htmlFor="dest-zona">Barrio o reparto</label>
+              <select
+                id="dest-zona"
+                className="campo"
+                value={destZona}
+                onChange={(e) => setDestZona(e.target.value)}
+              >
+                <option value="">Elige el barrio</option>
+                {zonas.map((z) => (
+                  <option key={z} value={z}>
+                    {z}
+                  </option>
+                ))}
+                <option value={OTRA_ZONA}>No está en la lista</option>
+              </select>
+            </div>
+          )}
+
+          <div className="field">
+            <label htmlFor="dest-direccion">Dirección exacta</label>
+            <input
+              id="dest-direccion"
+              className="campo"
+              type="text"
+              placeholder="Calle 26 #503 e/ 31 y 33, apto 4"
+              value={destDireccion}
+              onChange={(e) => setDestDireccion(e.target.value)}
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="dest-referencia">Cómo llegar (opcional)</label>
+            <input
+              id="dest-referencia"
+              className="campo"
+              type="text"
+              placeholder="Edificio azul, frente a la bodega"
+              value={destReferencia}
+              onChange={(e) => setDestReferencia(e.target.value)}
+            />
+          </div>
+
+          {envio && (
+            <p className="cart-envio" role="status">
+              {envio.estado === "zona" ? (
+                <>
+                  Mensajería a {envio.etiqueta}:{" "}
+                  <strong className="mono">{formatNumber(envio.cup)} CUP</strong>
+                </>
+              ) : (
+                <>
+                  Mensajería <strong>a coordinar por WhatsApp</strong>
+                  {envio.referenciaCup
+                    ? ` — en ${destMunicipio} suele rondar los ${formatNumber(envio.referenciaCup)} CUP.`
+                    : "."}
+                </>
+              )}
+            </p>
+          )}
+
+          <h2 className="cart-seccion">Tus datos</h2>
           <div className="field">
             <label htmlFor="cart-nombre">Tu nombre</label>
             <input

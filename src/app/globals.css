@@ -1324,3 +1324,34 @@ input:focus-visible,
 .cart-toast-close:hover {
   color: #fff;
 }
+
+/* ── Carrito: bloques de «quién recibe» y «tus datos» ─────────────────────── */
+.cart-seccion {
+  margin: 28px 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.cart-seccion-nota {
+  margin: 0 0 18px;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+/* El precio de la mensajería aparece en cuanto se elige el barrio: nadie
+   debería enterarse de lo que cuesta después de dar todos sus datos. */
+.cart-envio {
+  margin: -4px 0 18px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  font-size: 14px;
+}
+/* El desplegable tiene que verse como los demás campos, no como el del sistema. */
+select.campo {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6b70' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+  padding-right: 40px;
+}

@@ -51,8 +51,11 @@ export interface CatalogProductResult {
 export interface CreateOrderInput {
   idempotencyKey: string;
   items: Array<{ slug: string; sourceSystem: string; sourceProductId: string; quantity: number }>;
+  /** Quien paga, desde Guyana. */
   customerName: string;
   customerWhatsapp: string;
+  /** Quien lo recibe, en Cuba. Opcional mientras convivan carritos viejos. */
+  destino?: import("../store/orderMessage").DestinoEnCuba;
 }
 
 export type CreateOrderResult =

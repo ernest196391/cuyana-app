@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { supabase } from "@/lib/supabase";
 import type { CatalogProduct, CatalogProvider, CreateOrderInput, CreateOrderResult } from "@/lib/catalog/types";
+import { cotizar } from "./mensajeria";
 
 /**
  * Persiste el pedido de tienda en el Supabase de Cuyana ANTES de que exista
@@ -74,6 +75,7 @@ export async function createStoreOrder(
       total_gyd: totalGyd,
       customer_name: input.customerName.trim(),
       customer_whatsapp: input.customerWhatsapp.trim(),
+      ...destinoParaGuardar(input.destino),
     });
 
     if (!error) {
@@ -99,6 +101,30 @@ export async function createStoreOrder(
   return {
     status: "error",
     message: "No se pudo registrar el pedido. Escríbenos por WhatsApp y lo tomamos nosotros.",
+  };
+}
+
+/**
+ * Los datos de quien recibe, listos para la fila.
+ *
+ * La mensajería se vuelve a calcular AQUÍ contra la tabla de tarifas, igual que
+ * los precios de los productos: lo que llegue del navegador sobre cuánto cuesta
+ * llevarlo no se guarda. Y cuando no se reconoce el barrio, `shipping_cup`
+ * queda en NULL — un cero ahí se leería como «envío gratis».
+ */
+function destinoParaGuardar(destino: CreateOrderInput["destino"]) {
+  if (!destino) return {};
+  const envio = cotizar(destino.municipio, destino.zona);
+  return {
+    recipient_name: destino.nombre.trim(),
+    recipient_phone: destino.telefono.trim(),
+    recipient_municipality: destino.municipio.trim(),
+    recipient_zone: destino.zona.trim() || null,
+    recipient_address: destino.direccion.trim(),
+    recipient_reference: destino.referencia.trim() || null,
+    shipping_cup: envio.estado === "zona" ? envio.cup : null,
+    shipping_status: envio.estado,
+    shipping_rate_version: envio.version,
   };
 }
 
