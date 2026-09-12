@@ -44,22 +44,33 @@ export default async function ProductoPage({ params }: { params: { slug: string 
     <div className="wrap page-section product-detail">
       <div className="product-detail-img">
         {product.imageUrl ? (
-          <Image src={product.imageUrl} alt={product.name} width={640} height={640} sizes="(max-width: 720px) 100vw, 480px" />
+          <Image src={product.imageUrl} alt={product.name} fill sizes="(max-width: 720px) 100vw, 480px" style={{ objectFit: "contain" }} />
         ) : (
           <div className="product-card-img-placeholder" aria-hidden="true" />
         )}
       </div>
       <div className="product-detail-info">
         <h1 className="page-title">{product.name}</h1>
-        <p className="page-lead">{product.description}</p>
+        {product.description && <p className="page-lead">{product.description}</p>}
         <p className="product-detail-price">
           {price.primary}
           {price.secondary && <span className="product-card-price-secondary"> · {price.secondary}</span>}
         </p>
-        <AddToCartButton product={product} />
+        <div className="product-detail-cta-desktop">
+          <AddToCartButton product={product} />
+        </div>
         <p className="product-detail-meta">
           Fuente: {product.sourceSystem} · sincronizado {new Date(product.syncedAt).toLocaleDateString("es")}
         </p>
+      </div>
+      {/* En móvil, el precio y el botón quedan siempre a la vista al fondo
+          de la pantalla en vez de requerir bajar hasta el final. */}
+      <div className="product-sticky-bar">
+        <span className="product-sticky-price">
+          {price.primary}
+          {price.secondary && <span className="product-card-price-secondary"> · {price.secondary}</span>}
+        </span>
+        <AddToCartButton product={product} compact />
       </div>
     </div>
   );

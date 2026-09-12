@@ -175,11 +175,25 @@ adaptador de catálogo, SEO técnico y páginas legales.
       de acción fija en móvil, y pantalla de confirmación con el código
       de pedido (WhatsApp se abre en pestaña nueva, ya no navega fuera).
       Detalle completo en `docs/HANDOFF.md` §11.
+- [x] **Bug real corregido: "No se pudo registrar el pedido"
+      (2026-09-12T16:40:00Z)**: causa raíz reproducida en la base real —
+      `store_orders` pedía de vuelta (`RETURNING`) la fila recién creada
+      para confirmar el pedido, y RLS exige poder *leer* esa fila para
+      eso; el cliente (anon) no puede. Corregido generando código/id en
+      el servidor antes de insertar, sin depender de `RETURNING`.
+      Verificado con una prueba SQL directa como rol `anon`.
+- [x] **Rediseño de ficha de producto y carrito (auditoría de diseño del
+      usuario)**: imagen contenida en vez de ocupar la pantalla completa
+      (mismo patrón `fill`+`aspect-ratio` que las tarjetas), barra fija
+      de "Añadir al carrito" en móvil, ícono de papelera en vez de texto
+      "Quitar". Detalle en `docs/HANDOFF.md` §12-13.
+- [ ] **Pendiente de decisión de negocio (no es un bug)**: si el pedido de
+      tienda debe llegar también a "Cuadre" (bandeja operativa que otra
+      sesión conectó para remesas) además de `store_orders`. No
+      implementado a propósito hasta que se confirme.
 - [ ] **Pendiente (prueba manual, no automatizable con las herramientas
-      disponibles)**: agregar al carrito → checkout → WhatsApp depende de
-      `localStorage` del navegador del cliente. Falta que el usuario lo
-      pruebe una vez en su teléfono y confirme que el pedido queda en
-      `store_orders` y que el WhatsApp llega a `5355879222` con marca
-      Cuyana.
+      disponibles)**: repetir el checkout completo en el teléfono tras el
+      próximo merge, para confirmar que el pedido ya se guarda sin error
+      y que el WhatsApp llega a `5355879222` con marca Cuyana.
 
 Detalle completo, con pasos siguientes, en `docs/HANDOFF.md`.

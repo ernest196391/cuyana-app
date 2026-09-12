@@ -111,6 +111,16 @@ archivos o toma la siguiente tarea libre y déjalo escrito aquí.
   confirmación con código de pedido visible (WhatsApp abre en pestaña
   nueva). `build`/`lint`/`tsc`/`vitest` verdes. Auditoría completa y
   siguiente prueba pendiente en `docs/HANDOFF.md` §11.
+- **Actualización (2026-09-12T16:40:00Z):** el usuario probó el checkout
+  real y encontró "No se pudo registrar el pedido" — causa raíz
+  reproducida en la base real (RLS + `RETURNING` sobre una tabla de solo
+  admin-lee) y corregida sin abrir el acceso de lectura a nadie más.
+  También corregido, por auditoría de diseño del usuario: imagen de
+  producto que ocupaba toda la pantalla, sin botón de compra visible
+  (ahora contenida + barra fija en móvil), y "Quitar" como ícono de
+  papelera en vez de texto. Pendiente de decisión (no bug): si el pedido
+  de tienda debe replicarse también en "Cuadre" además de `store_orders`
+  — ver `docs/HANDOFF.md` §12-13.
 
 ## Libres / futuras
 

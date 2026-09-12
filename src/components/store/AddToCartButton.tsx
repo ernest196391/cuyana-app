@@ -5,8 +5,36 @@ import { addToCart } from "@/lib/cart";
 import type { CatalogProduct } from "@/lib/catalog/types";
 import { track, ANALYTICS_EVENTS } from "@/lib/analytics";
 
-export default function AddToCartButton({ product }: { product: CatalogProduct }) {
+/**
+ * `compact` se usa en la barra fija del pie de la ficha de producto en
+ * móvil: sin selector de cantidad propio (queda en 1) para no duplicar ese
+ * control con el de la versión de escritorio en la misma página.
+ */
+export default function AddToCartButton({ product, compact = false }: { product: CatalogProduct; compact?: boolean }) {
   const [quantity, setQuantity] = useState(1);
+
+  function agregar(qty: number) {
+    addToCart(
+      {
+        slug: product.slug,
+        sourceSystem: product.sourceSystem,
+        sourceProductId: product.sourceProductId,
+        name: product.name,
+        priceUsd: product.priceUsd,
+        category: product.category,
+      },
+      qty,
+    );
+    track(ANALYTICS_EVENTS.storeAddToCart, { slug: product.slug, category: product.category, quantity: qty });
+  }
+
+  if (compact) {
+    return (
+      <button type="button" className="cta" disabled={!product.available} onClick={() => agregar(1)}>
+        {product.available ? "Añadir al carrito" : "No disponible"}
+      </button>
+    );
+  }
 
   return (
     <div className="add-to-cart">
@@ -26,18 +54,7 @@ export default function AddToCartButton({ product }: { product: CatalogProduct }
         className="cta"
         disabled={!product.available}
         onClick={() => {
-          addToCart(
-            {
-              slug: product.slug,
-              sourceSystem: product.sourceSystem,
-              sourceProductId: product.sourceProductId,
-              name: product.name,
-              priceUsd: product.priceUsd,
-              category: product.category,
-            },
-            quantity,
-          );
-          track(ANALYTICS_EVENTS.storeAddToCart, { slug: product.slug, category: product.category, quantity });
+          agregar(quantity);
           setQuantity(1);
         }}
       >
