@@ -20,6 +20,7 @@ export default function AddToCartButton({ product }: { product: CatalogProduct }
           sourceProductId: product.sourceProductId,
           name: product.name,
           priceUsd: product.priceUsd,
+          category: product.category,
         });
         track(ANALYTICS_EVENTS.storeAddToCart, { slug: product.slug, category: product.category });
         setAdded(true);

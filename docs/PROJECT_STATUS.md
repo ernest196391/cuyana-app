@@ -111,4 +111,39 @@ adaptador de catálogo, SEO técnico y páginas legales.
    "Leaked Password Protection Disabled" en Auth — recomendado activarlo,
    fuera del alcance de `CUYANA-WEB-001`.
 
+## CUYANA-WEB-002 — Catálogo de energía (NEXO, solo lectura) + checkout Cuyana
+
+- [x] Adaptador `NexoCatalogAdapter` real para "energía": lee
+      `NEXO_CATALOG_URL` (endpoint público de NEXO), filtra por categoría
+      replicando la lógica real de NEXO (no el parámetro `category` de su
+      API, que espera un ID numérico), resuelve imágenes relativas contra
+      el origin de NEXO. "alimentos" sigue `not_configured` a propósito.
+- [x] Tasa comercial GYD/USD propia de la tienda (`commercial_rates`),
+      independiente de la tasa de remesas, con vigencia; sin fila inicial
+      inventada — sin ella, el precio se muestra solo en USD.
+- [x] Checkout server-side (`POST /api/store/order`): revalida precio
+      contra el catálogo en vivo, persiste en `store_orders` (Supabase de
+      Cuyana) y solo entonces habilita el mensaje de WhatsApp con marca
+      Cuyana hacia `5355879222`. Nunca usa el checkout ni las gestoras de
+      NEXO; nunca escribe en WooCommerce.
+- [x] `npm run build`/`lint`/`tsc --noEmit`/`vitest run` verdes (57/57
+      pruebas).
+- [ ] **Verificación en vivo contra NEXO**: bloqueada en este entorno — el
+      proxy de egress rechaza `nexotienda.casavivadecuba.com`
+      (`connect_rejected`), mismo tipo de bloqueo ya documentado para
+      Vercel/`cuyana.casavivadecuba.com` en CUYANA-WEB-001. Ver
+      `docs/HANDOFF.md` §3.
+- [ ] **Puesta en producción y certificación (2026-09-12T03:30:00Z)**:
+      intentada, bloqueada antes de tocar Vercel. `mcp__Vercel__list_teams`
+      devuelve `[]`, `web_fetch_vercel_url` da `403 Forbidden` sobre
+      `cuyana.casavivadecuba.com` — esta sesión no tiene acceso real al
+      proyecto Vercel. `WebFetch` confirma `EGRESS_BLOCKED` para
+      `nexotienda.casavivadecuba.com` y también para
+      `cuyana.casavivadecuba.com` por igual (política de red de este
+      entorno, no un problema del lado de NEXO: su propio audit ya había
+      registrado ese dominio como `200 funcional`). Commit listo para
+      desplegar: `dbeef7144efbb8b3bf31c3afadfaa97b6f747f4f`
+      (`claude/ecstatic-ramanujan-iv70r6`). Pasos exactos para quien tenga
+      acceso al dashboard, en `docs/HANDOFF.md` §6-7.
+
 Detalle completo, con pasos siguientes, en `docs/HANDOFF.md`.
