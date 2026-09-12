@@ -1,0 +1,108 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+/**
+ * Lo que guarda esta prueba es la regla que tuvo la tienda parada: sobre
+ * `store_orders` el cliente puede INSERTAR pero NO LEER —ahí están los nombres
+ * y teléfonos de todos los demás—, así que encadenar un `.select()` al insert
+ * hace que todos los pedidos fallen aunque la fila se haya guardado.
+ */
+
+const producto = {
+  slug: "infinity-solar-moonflyer-pro",
+  sourceSystem: "nexo",
+  sourceProductId: "42",
+  name: "Infinity Solar MoonFlyer Pro",
+  priceUsd: 4215,
+  category: "energia" as const,
+  available: true,
+};
+
+/** Lo que la tabla deja hacer de verdad, según sus políticas en producción. */
+let selectEstaPermitido = false;
+let insertsHechos: Array<Record<string, unknown>> = [];
+
+vi.mock("@/lib/supabase", () => ({
+  supabase: {
+    from: () => ({
+      insert: (fila: Record<string, unknown>) => {
+        insertsHechos.push(fila);
+        const resultadoDelInsert = { data: null, error: null };
+        return {
+          // RLS permite el INSERT…
+          then: (r: (v: typeof resultadoDelInsert) => unknown) => r(resultadoDelInsert),
+          // …pero leer de vuelta lo deniega, como en producción.
+          select: () => ({
+            single: async () =>
+              selectEstaPermitido
+                ? { data: { id: "x", code: fila.code }, error: null }
+                : {
+                    data: null,
+                    error: { code: "42501", message: "new row violates row-level security policy" },
+                  },
+          }),
+        };
+      },
+    }),
+  },
+}));
+
+const proveedor = {
+  sourceSystem: "nexo",
+  configured: true,
+  getProduct: async () => ({ status: "ok" as const, product: producto }),
+  getCommercialRate: async () => ({ gydPerUsd: 300, asOf: "2026-09-12T00:00:00Z", source: "manual" }),
+  listByCategory: async () => ({ status: "ok" as const, products: [producto] }),
+  createOrder: async () => ({ status: "error" as const, message: "no usado" }),
+};
+
+const entrada = {
+  idempotencyKey: "k",
+  items: [{ slug: producto.slug, sourceSystem: "nexo", sourceProductId: "42", quantity: 3 }],
+  customerName: "Ernesto Rondón",
+  customerWhatsapp: "+5354056173",
+};
+
+beforeEach(() => {
+  vi.resetModules();
+  insertsHechos = [];
+  selectEstaPermitido = false;
+  vi.spyOn(console, "error").mockImplementation(() => {});
+});
+afterEach(() => vi.restoreAllMocks());
+
+describe("pedido de tienda", () => {
+  it("se registra aunque leer la fila esté prohibido", async () => {
+    const { createStoreOrder } = await import("./orders");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const r = await createStoreOrder(proveedor as any, entrada);
+    expect(r.status).toBe("ok");
+  });
+
+  it("devuelve el código y el id que él mismo decidió", async () => {
+    const { createStoreOrder } = await import("./orders");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const r = await createStoreOrder(proveedor as any, entrada);
+    if (r.status !== "ok") throw new Error("debería haber ido bien");
+    expect(r.orderCode).toMatch(/^CUY-ENE-[0-9A-F]{8}$/);
+    // El id no se inventa después: es el que se guardó en la fila.
+    expect(insertsHechos[0].id).toBe(r.canonicalOrderId);
+    expect(insertsHechos[0].code).toBe(r.orderCode);
+  });
+
+  it("el total sale del catálogo, no de lo que mande el navegador", async () => {
+    const { createStoreOrder } = await import("./orders");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await createStoreOrder(proveedor as any, entrada);
+    expect(insertsHechos[0].total_usd).toBe(12645); // 3 × 4.215
+  });
+
+  it("no encadena un select al insert: eso es lo que rompía la tienda", async () => {
+    const { createStoreOrder } = await import("./orders");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const r = await createStoreOrder(proveedor as any, entrada);
+    // Si alguien vuelve a poner `.select().single()`, con la lectura denegada
+    // esto deja de ser "ok" y la prueba lo caza antes de llegar a producción.
+    expect(r.status).toBe("ok");
+    expect(insertsHechos).toHaveLength(1);
+  });
+});
