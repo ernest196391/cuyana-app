@@ -12,6 +12,23 @@ import { WHATSAPP_NUMBER } from "@/lib/config/site";
 import { track, ANALYTICS_EVENTS } from "@/lib/analytics";
 import Skeleton from "./Skeleton";
 
+/**
+ * Identidad del pedido, para que reenviarlo a Cuadre no lo duplique allá.
+ *
+ * `randomUUID` está en todo navegador actual bajo HTTPS. El respaldo es para
+ * los que no lo tengan: pierden la garantía criptográfica, no la protección
+ * contra duplicados, que es para lo único que se usa.
+ */
+function nuevaIdentidad() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  const hex = "0123456789abcdef";
+  const n = (largo: number) =>
+    Array.from({ length: largo }, () => hex[(Math.random() * 16) | 0]).join("");
+  return `${n(8)}-${n(4)}-4${n(3)}-a${n(3)}-${n(12)}`;
+}
+
 export default function Calculator() {
   const { methods, status } = useDeliveryMethods();
   const { get } = useAppConfig();
@@ -71,6 +88,10 @@ export default function Calculator() {
 
   async function guardarPedido() {
     if (!supabase || !method) return;
+    // La identidad del pedido se saca aquí y no de la fila guardada: `anon`
+    // tiene permiso para INSERTAR en `orders`, no para LEER. Pedir el id de
+    // vuelta haría fallar el insert entero.
+    const identidad = nuevaIdentidad();
     try {
       const { error } = await supabase.from("orders").insert({
         amount_gyd: gyd,
@@ -83,8 +104,41 @@ export default function Calculator() {
         sent_to_whatsapp: true,
       });
       if (error) throw error;
+      // El pedido ya está a salvo aquí. Avisar a Cuadre viene después y va
+      // aparte a propósito: si aquello falla, esto no.
+      void avisarACuadre(identidad);
     } catch (err) {
       console.error("No se pudo registrar el pedido en Supabase", err);
+    }
+  }
+
+  /**
+   * Le pasa el pedido a Cuadre, que es donde se llevan las entregas.
+   *
+   * Va por una ruta nuestra y no contra Cuadre directamente porque la clave de
+   * Cuadre no puede pisar el navegador. `keepalive` hace que la petición
+   * sobreviva a la marcha del usuario a WhatsApp, que pasa acto seguido. La
+   * identidad viaja con el pedido: reenviar el mismo no lo duplica allá.
+   */
+  async function avisarACuadre(id: string) {
+    if (!method) return;
+    try {
+      await fetch("/api/cuadre", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        keepalive: true,
+        body: JSON.stringify({
+          ref: id,
+          gyd,
+          method_key: method.key,
+          customer_name: customerName.trim(),
+          customer_whatsapp: customerPhone.trim(),
+          ref_code: ref || null,
+        }),
+      });
+    } catch (err) {
+      // Callado a propósito: el cliente ya mandó lo suyo y se va a WhatsApp.
+      console.error("No se pudo avisar a Cuadre", err);
     }
   }
 
