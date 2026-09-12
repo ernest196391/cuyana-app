@@ -145,5 +145,14 @@ adaptador de catálogo, SEO técnico y páginas legales.
       desplegar: `dbeef7144efbb8b3bf31c3afadfaa97b6f747f4f`
       (`claude/ecstatic-ramanujan-iv70r6`). Pasos exactos para quien tenga
       acceso al dashboard, en `docs/HANDOFF.md` §6-7.
+- [x] **Merge a `main`** (2026-09-12T03:58:33Z, por `ernest196391`):
+      PR #1 y PR #2 mergeados. Merge commit `e403f54735f1bdcdceb49d8a49d1bc7e5a3abc82`.
+      Vercel construyó el Preview del PR #2 con éxito (`Ready`).
+- [ ] **Certificación en producción**: sigue bloqueada desde esta sesión,
+      causa exacta identificada: conector Vercel autorizado para un scope
+      distinto a `ernest196391s-projects` (`403`, mensaje pide
+      reautenticar ese scope) + egress de este entorno bloquea dominios
+      externos arbitrarios en general (confirmado también contra
+      `*.vercel.app`). Detalle y siguiente paso en `docs/HANDOFF.md` §8.
 
 Detalle completo, con pasos siguientes, en `docs/HANDOFF.md`.

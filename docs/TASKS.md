@@ -78,12 +78,20 @@ archivos o toma la siguiente tarea libre y déjalo escrito aquí.
   Cuyana). Migración aplicada al Supabase real. `npm run build`/`lint`/
   `tsc --noEmit`/`vitest run` verdes (57/57 pruebas). Commit
   `dbeef7144efbb8b3bf31c3afadfaa97b6f747f4f` pusheado a
-  `claude/ecstatic-ramanujan-iv70r6`. **Bloqueado — certificación en
-  producción (2026-09-12T03:30:00Z):** intento de puesta en producción
-  desde esta sesión sin éxito por falta de acceso, no por un fallo de
-  código. Evidencia exacta en `docs/HANDOFF.md` §6-7. Necesita acción
-  manual: acceso real a Vercel para esta sesión, o que alguien con acceso
-  al dashboard ejecute los pasos y reporte el resultado.
+  `claude/ecstatic-ramanujan-iv70r6`. **Actualización
+  (2026-09-12T04:10:00Z):** el usuario mergeó
+  [PR #1](https://github.com/ernest196391/cuyana-app/pull/1) y
+  [PR #2](https://github.com/ernest196391/cuyana-app/pull/2) a `main`
+  (merge commit `e403f54735f1bdcdceb49d8a49d1bc7e5a3abc82`). Vercel
+  (proyecto real `cuyana-app`, equipo `ernest196391s-projects`) construyó
+  con éxito el Preview del PR #2 (`Ready`, ver comentario del bot en el
+  PR). **Sigue bloqueada la certificación en producción desde esta
+  sesión**, pero ahora con causa exacta: el conector Vercel de esta sesión
+  da `403 — not authorized for scope "ernest196391s-projects"` (necesita
+  reautorizarse con ese equipo), y el egress de este entorno bloquea
+  dominios externos arbitrarios en general (confirmado también contra
+  `*.vercel.app`, no solo `casavivadecuba.com`). Evidencia y siguiente paso
+  exacto en `docs/HANDOFF.md` §8.
 
 ## Libres / futuras
 

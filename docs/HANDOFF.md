@@ -234,6 +234,70 @@ preparación" (sin `NEXO_CATALOG_URL` alcanzable desde aquí), no el
 resultado real con productos de NEXO — no se quiso presentar eso como si
 fuera la prueba pedida.
 
+## 8. Actualización (2026-09-12T04:10:00Z) — avance real y bloqueo exacto identificado
+
+El propio usuario (`ernest196391`) abrió y mergeó a `main` tanto
+[PR #1](https://github.com/ernest196391/cuyana-app/pull/1)
+(CUYANA-WEB-001) como
+[PR #2](https://github.com/ernest196391/cuyana-app/pull/2)
+(CUYANA-WEB-002, commit `a17e09df14bce8e0f00d9b8fc53f3d4928474217`) — merge
+commit en `main`: `e403f54735f1bdcdceb49d8a49d1bc7e5a3abc82`
+(2026-09-12T03:58:33Z). Esto confirma que la integración Git→Vercel es
+real y funciona: el comentario del bot `vercel[bot]` en el PR #2 muestra un
+build de Preview exitoso (`Ready`) para el commit `a17e09d`:
+
+- Proyecto Vercel real: `cuyana-app`, equipo `ernest196391s-projects`
+  (`teamId=team_Foa2Q8C10yFVFHG7eK2bVrk3`,
+  `projectId=prj_vM3S2ajgshx4VZWnP6YKfmCI4ssv`).
+- Preview: `https://cuyana-app-git-claude-ecstatic-ra-717528-ernest196391s-projects.vercel.app`
+  — `Ready` a las 2026-09-12T03:58:08Z.
+- El check `Vercel` en el PR reporta `state: success`, `"Deployment has
+  completed"`.
+
+Con el `projectId`/`teamId` reales, reintenté las herramientas de Vercel
+de esta sesión y ahora dan un error **específico y accionable** (antes
+era solo "sin equipos visibles"):
+
+```
+403 Forbidden — "Not authorized: Trying to access resource under scope
+\"ernest196391s-projects\". You must re-authenticate to this scope or use
+a token with access to this scope."
+```
+
+Es decir: el conector de Vercel de esta sesión sí existe, pero está
+autorizado para un scope/cuenta distinto al que tiene `cuyana-app`
+(`ernest196391s-projects`). **La acción manual exacta que se necesita:**
+reconectar/reautorizar la integración de Vercel de esta sesión
+seleccionando explícitamente el equipo `ernest196391s-projects` durante la
+autorización. Una vez hecho eso, puedo:
+- confirmar si `main` es la rama de producción y si el merge ya generó un
+  deployment a producción (o dispararlo yo mismo),
+- leer/editar `NEXO_CATALOG_URL` y las demás variables sin exponer valores,
+- leer Runtime Logs/Errors reales del deployment.
+
+Además, confirmé que el bloqueo de red de esta sesión (sección 6) **no es
+específico de `casavivadecuba.com`**: probé también el propio dominio de
+preview de Vercel (`*.vercel.app`, sin relación con NEXO) con `WebFetch` y
+con `mcp__Vercel__web_fetch_vercel_url`, y ambos devuelven el mismo
+`EGRESS_BLOCKED` / `403`. Es una política de egress general de este
+entorno (permite `github.com`, bloquea dominios externos arbitrarios por
+defecto), no una señal sobre la salud real de NEXO ni de Vercel. Por eso,
+incluso con el scope de Vercel corregido, **esta sesión seguirá sin poder
+renderizar visualmente la URL pública o tomar una captura real** — para
+eso sí se necesita que el usuario abra el sitio en su propio teléfono/
+navegador y comparta el resultado, o una sesión con egress habilitado
+hacia dominios públicos arbitrarios.
+
+**Siguiente paso concreto:**
+1. (Usuario) Reautorizar el conector de Vercel de esta sesión con el
+   scope/equipo `ernest196391s-projects`.
+2. (Esta sesión, una vez reautorizado) Confirmar rama de producción,
+   configurar `NEXO_CATALOG_URL`, verificar el deployment de producción del
+   commit `e403f54` (o redeployarlo), y leer logs reales.
+3. (Usuario) Abrir `https://cuyana.casavivadecuba.com/tienda/energia` en un
+   teléfono real y confirmar visualmente el flujo — esta sesión no puede
+   sustituir ese paso por bloqueo de red, tenga o no acceso a Vercel.
+
 ---
 
 # HANDOFF — CUYANA-WEB-001
