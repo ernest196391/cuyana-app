@@ -175,11 +175,29 @@ adaptador de catálogo, SEO técnico y páginas legales.
       de acción fija en móvil, y pantalla de confirmación con el código
       de pedido (WhatsApp se abre en pestaña nueva, ya no navega fuera).
       Detalle completo en `docs/HANDOFF.md` §11.
+- [x] **Bug real corregido: "No se pudo registrar el pedido"
+      (2026-09-12T16:40:00Z)**: causa raíz reproducida en la base real —
+      `store_orders` pedía de vuelta (`RETURNING`) la fila recién creada
+      para confirmar el pedido, y RLS exige poder *leer* esa fila para
+      eso; el cliente (anon) no puede. Corregido generando código/id en
+      el servidor antes de insertar, sin depender de `RETURNING`.
+      Verificado con una prueba SQL directa como rol `anon`.
+- [x] **Rediseño de ficha de producto y carrito (auditoría de diseño del
+      usuario)**: imagen contenida en vez de ocupar la pantalla completa
+      (mismo patrón `fill`+`aspect-ratio` que las tarjetas), barra fija
+      de "Añadir al carrito" en móvil, ícono de papelera en vez de texto
+      "Quitar". Detalle en `docs/HANDOFF.md` §12-13.
+- [ ] **Pendiente, requiere info externa (no un bug ni una decisión que se
+      pueda tomar desde el código)**: usuario confirmó que sí quiere el
+      pedido de tienda también en Cuadre. `src/app/api/cuadre/route.ts` es
+      solo para remesas (exige monto en GYD y método de entrega); un
+      pedido de tienda no tiene ninguno de los dos. Hace falta saber si el
+      backend real de Cuadre tiene/puede tener un endpoint para pedidos de
+      producto en USD antes de construir algo — no se inventó un formato a
+      ciegas. Detalle en `docs/HANDOFF.md` §14.
 - [ ] **Pendiente (prueba manual, no automatizable con las herramientas
-      disponibles)**: agregar al carrito → checkout → WhatsApp depende de
-      `localStorage` del navegador del cliente. Falta que el usuario lo
-      pruebe una vez en su teléfono y confirme que el pedido queda en
-      `store_orders` y que el WhatsApp llega a `5355879222` con marca
-      Cuyana.
+      disponibles)**: repetir el checkout completo en el teléfono tras el
+      próximo merge, para confirmar que el pedido ya se guarda sin error
+      y que el WhatsApp llega a `5355879222` con marca Cuyana.
 
 Detalle completo, con pasos siguientes, en `docs/HANDOFF.md`.

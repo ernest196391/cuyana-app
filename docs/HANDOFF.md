@@ -402,6 +402,141 @@ en vivo con productos reales** (agregar al carrito depende de JS/
 `localStorage` del navegador, no de un fetch) — pendiente de que el
 usuario lo prueble en su teléfono tras el próximo despliegue.
 
+**Actualización — mergeado y confirmado en vivo (2026-09-12T16:21:00Z):**
+el usuario mergeó ([PR #3](https://github.com/ernest196391/cuyana-app/pull/3),
+merge commit `fc7b74eec0e945f133ca955015c3da8a5ca190ee`); Vercel desplegó a
+producción automáticamente (`dpl_HqTPGUMHGNC4CcsU5o3a6EnwMpF5`, sin
+necesidad de redeploy manual esta vez). Confirmé con
+`web_fetch_vercel_url` que `cuyana.casavivadecuba.com` ya sirve el ícono
+de carrito real en el header (`<a class="cart-indicator" ...>`) y que
+`/carrito` renderiza sin errores. Cero errores de build o runtime.
+
+## 12. Bug real encontrado por el usuario en su teléfono: "No se pudo registrar el pedido" — causa raíz y corrección (2026-09-12T16:40:00Z)
+
+El usuario probó el flujo completo (agregar 3× "Infinity Solar MoonFlyer
+Pro" al carrito, poner nombre y WhatsApp, confirmar) y el checkout falló
+con "No se pudo registrar el pedido. Intenta de nuevo." — a pesar de que
+el catálogo y el carrito ya funcionaban bien. Diagnostiqué la causa raíz
+**reproduciéndola en vivo contra la base real** (no por inspección de
+código):
+
+```sql
+-- Como el rol anon (el que usa el navegador), con RETURNING:
+insert into public.store_orders (...) values (...) returning id, code;
+-- ERROR 42501: new row violates row-level security policy for table "store_orders"
+
+-- La misma fila, sin pedir RETURNING:
+insert into public.store_orders (...) values (...);
+-- funciona sin error
+```
+
+**La causa real:** `store_orders` permite que cualquiera inserte un
+pedido (correcto, es la política pensada para el checkout público), pero
+solo el admin puede *leer* pedidos (correcto también, por privacidad). El
+código de `createStoreOrder()` (`src/lib/store/orders.ts`) pedía de vuelta
+la fila recién creada (`.select("id, code").single()`) para confirmar el
+pedido al cliente — y Postgres exige que quien inserta con `RETURNING`
+también pueda *leer* esa fila bajo RLS. Como el cliente (anon) no puede,
+el insert completo fallaba con ese error, **aunque en algunos casos la
+fila ya había quedado guardada** — el cliente nunca se enteraba de si su
+pedido existía o no.
+
+**Corrección:** el código y el número de pedido ahora se generan en el
+servidor *antes* de insertar (no se piden de vuelta a la base), así que
+nunca hace falta leer la fila recién creada para confirmar el pedido —
+sortea el problema de raíz en vez de abrir el acceso de lectura a
+cualquiera. Se agregó además un `console.error` con el detalle real del
+error de Supabase para que un fallo futuro se pueda diagnosticar desde los
+logs de Vercel sin tener que reproducirlo a mano.
+
+**Verificado antes de dar la corrección por buena:** repetí la prueba SQL
+anterior sin `RETURNING` como rol `anon` (`begin; set local role anon;
+insert ...; rollback;`) y confirmé que inserta sin error — exactamente el
+comportamiento que el código corregido ahora usa.
+
+## 13. Rediseño de la ficha de producto y del carrito (auditoría de diseño del usuario, 2026-09-12T16:40:00Z)
+
+El usuario señaló, con capturas, tres problemas reales de diseño después
+de que el flujo ya funcionaba:
+
+1. **La imagen del producto ocupaba casi toda la pantalla, tapando el
+   botón de compra.** Causa real: `<Image width={640} height={640} />`
+   con CSS `height:auto` hace que el navegador use el alto *natural* de
+   la foto real (no 640×640) escalado al ancho de pantalla — con fotos
+   verticales/recortadas de NEXO, eso se traduce en una imagen
+   desproporcionadamente alta. Corregido: mismo patrón que ya usan las
+   tarjetas del catálogo (`fill` + contenedor con `aspect-ratio:1` +
+   `object-fit:contain`), así la imagen siempre queda en un cuadro
+   controlado.
+2. **Sin un botón de compra siempre visible.** Se agregó una barra fija
+   al pie de la ficha de producto en móvil (precio + "Añadir al
+   carrito"), igual que ya existe en `/carrito`; en escritorio se ve el
+   botón normal sin duplicarlo.
+3. **"Quitar" en el carrito era un enlace de texto.** Se reemplazó por un
+   botón con ícono de papelera, con su etiqueta accesible
+   (`aria-label`) intacta para lectores de pantalla.
+
+**No implementado en esta vuelta, por ser una decisión de negocio, no un
+bug:** llevar el pedido de tienda también a "Cuadre" (el sistema de
+bandeja operativa que otra sesión conectó para remesas). Hoy el pedido
+queda en `store_orders` (Supabase), consultable por el admin. Duplicarlo
+en Cuadre es totalmente viable (mismo patrón que ya usa
+`src/app/api/cuadre/route.ts` para remesas) pero es una integración nueva
+con un contrato ajeno que conviene confirmar explícitamente antes de
+tocar, no asumir. Ver `docs/TASKS.md` para dejarlo como pendiente
+explícito.
+
+Verificado: `npm run build`/`lint`/`tsc --noEmit`/`vitest run` (57/57)
+verdes. No se pudo repetir el checkout completo desde esta sesión (depende
+de `localStorage`/clics reales) — pendiente de que el usuario lo vuelva a
+probar en su teléfono tras el próximo merge.
+
+## 14. Otra sesión arregló el mismo bug en paralelo (conflicto real de merge) + por qué Cuadre queda pendiente de verdad (2026-09-12T16:50:00Z)
+
+Mientras esto se implementaba, **otra sesión de Claude** (Opus 5,
+`session_01SZgjPcb3UKrAp1PLEwsnUp`) diagnosticó y corrigió el mismo bug de
+RLS/`RETURNING` directamente en `main` (commit `0a420c8`, con su propio
+`orders.test.ts` que fija el comportamiento correcto: 4 pruebas nuevas).
+Al traer `main` a esta rama hubo un conflicto real de Git en
+`src/lib/store/orders.ts` — se resolvió tomando la versión de `main`
+completa (mejor: registra el error real con `console.error` sin filtrar
+nombre/teléfono, y el mensaje al cliente ofrece una salida —"Escríbenos
+por WhatsApp"— en vez de solo "intenta de nuevo"). Nada se perdió de esta
+sesión: los cambios de diseño (imagen contenida, barra fija, ícono de
+papelera) no tocan ese archivo y quedaron intactos.
+
+**Sobre pedir que el pedido de tienda también aparezca en Cuadre:** antes
+de escribir el código, leí `src/app/api/cuadre/route.ts` completo — es el
+único contrato de Cuadre visible desde este repo. Está construido
+específicamente para remesas: exige `ref` (UUID de una fila en `orders`),
+`gyd` (monto en GYD, porque una remesa siempre sale en GYD) y `method_key`
+(una fila de `delivery_methods`, para recalcular la tasa) — y con esos
+datos rearma un pedido en formato "envío de dinero" (`amount_source`,
+`currency_source: GYD`, `method_label`, `rate_used`...) antes de
+mandarlo a `${CUADRE_URL}/api/pedidos`.
+
+Un pedido de tienda no tiene nada de eso: no sale en GYD (sale en USD),
+no tiene método de entrega, y son productos con nombre y cantidad, no un
+monto a convertir. Reusar esa ruta tal cual haría que la llamada devuelva
+`400` siempre (falla su propia validación). Intenté una versión que le
+mandaba un cuerpo distinto (`origin: "tienda"`, `items`, `totalUsd`...) y
+la revertí antes de dejarla a medias: esa ruta ignoraría esos campos
+igual, porque la validación se detiene en `!gyd || !metodoKey` antes de
+llegar a nada más.
+
+**Lo que hace falta para hacerlo bien, y que no puedo adivinar desde
+aquí:** saber si el backend real de Cuadre (`CUADRE_URL/api/pedidos`,
+fuera de este repo) tiene o puede tener un endpoint/formato para pedidos
+de producto en USD (sin método de entrega ni monto en GYD). Si existe,
+solo hay que enseñarle a esta ruta —o crear una hermana, p.ej.
+`/api/cuadre/tienda`— el formato correcto. Si no existe todavía, hay que
+decidir con quien mantiene Cuadre qué campos espera antes de construir
+nada; inventar un formato a ciegas dejaría el aviso a Cuadre fallando en
+silencio (como la propia ruta hace hoy si Cuadre no responde: nunca
+rompe al cliente, pero tampoco avisa que no llegó). Mientras tanto, el
+pedido de tienda sigue quedando completo y correcto en `store_orders`
+(Supabase) — lo único que falta es la copia en Cuadre.
+
 ---
 
 # HANDOFF — CUYANA-WEB-001

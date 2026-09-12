@@ -76,7 +76,9 @@ export async function createStoreOrder(
       customer_whatsapp: input.customerWhatsapp.trim(),
     });
 
-    if (!error) return { status: "ok", orderCode: code, canonicalOrderId: id };
+    if (!error) {
+      return { status: "ok", orderCode: code, canonicalOrderId: id };
+    }
 
     // Colisión del código único: reintenta una vez con otro.
     if (error.code === "23505" && attempt === 0) continue;
