@@ -298,6 +298,58 @@ hacia dominios públicos arbitrarios.
    teléfono real y confirmar visualmente el flujo — esta sesión no puede
    sustituir ese paso por bloqueo de red, tenga o no acceso a Vercel.
 
+## 9. Reconectado Vercel (2026-09-12T15:35:00Z) — verificación real en producción
+
+El usuario reautorizó el conector. Con acceso real confirmado
+(`list_teams` devuelve el equipo `ernest196391s-projects`), pude verificar
+`https://cuyana.casavivadecuba.com` en vivo usando
+`mcp__Vercel__web_fetch_vercel_url` — esta herramienta sí llega al dominio
+real porque pasa por la infraestructura de Vercel, no por el proxy de
+egress bloqueado de esta sesión (ese bloqueo de red sigue intacto y sin
+relación con esto).
+
+**Hallazgo previo, no de esta tarea:** el proyecto ya tiene un deployment
+de producción *más nuevo* que el mío: commit `59c39c3` en `main`
+("Los pedidos de remesa llegan también a la bandeja de Cuadre"), de otra
+sesión de Claude (`session_01SZgjPcb3UKrAp1PLEwsnUp`, Opus 5), pusheado
+directo a `main` sin PR. Revisé su diff completo
+(`.env.example`, `README.md`, `src/app/api/cuadre/route.ts`,
+`src/components/Calculator.tsx`, `vitest.config.ts`): **no toca ningún
+archivo de esta tarea** (`src/lib/catalog/`, `src/lib/store/`,
+`src/app/api/store/`, `src/app/(public)/tienda|carrito|producto/`,
+`next.config.mjs`, `supabase/migrations/`) y el propio mensaje de commit
+dice explícitamente "La tienda no se toca". Sin colisión confirmada.
+
+**Verificación real contra producción (commit `59c39c3`, que incluye mi
+merge `e403f54` debajo):**
+
+| Prueba | Resultado |
+|---|---|
+| Build de producción | `Build Completed in 27s`, sin errores (`get_deployment_build_logs`) |
+| Errores en runtime (24h) | Ninguno (`get_runtime_errors`) |
+| `GET /tienda/energia` | `200`, `x-vercel-cache: MISS` (confirma `force-dynamic`, no HTML congelado del build). Renderiza "Catálogo en preparación" — correcto y honesto, porque `NEXO_CATALOG_URL` **todavía no está configurada** en Vercel (no hay herramienta en este conector para leer/crear env vars; confirmado que no existe ninguna en el toolset de Vercel disponible). Botón de WhatsApp apunta a `wa.me/5355879222` con mensaje coherente. |
+| `GET /carrito` | `200`, "Tu carrito está vacío", `gydPerUsd: null` pasado correctamente al cliente (confirma que sin fila en `commercial_rates` no se rompe nada y el componente recibe `null` tal como se diseñó) |
+| Protección de despliegue | `ssoProtection.enabled=true` pero `deploymentType: "all_except_custom_domains"` — el dominio custom `cuyana.casavivadecuba.com` **no** tiene el muro de autenticación de Vercel; un cliente real nunca lo ve. Sin password protection ni IP allowlist. |
+
+**Lo único que falta y que esta sesión no puede hacer por falta de
+herramienta (no de permiso):** el conector de Vercel de este entorno no
+tiene ningún tool para leer o escribir Environment Variables (verificado
+buscando explícitamente). Falta:
+
+1. (Usuario, dashboard de Vercel → `cuyana-app` → Settings →
+   Environment Variables → Production) agregar:
+   `NEXO_CATALOG_URL=https://nexotienda.casavivadecuba.com/api/marketplace/products`
+2. (Usuario) Redesplegar: en Deployments, abrir el último deployment de
+   producción y usar "Redeploy" (no hace falta ningún cambio de código;
+   Vercel solo aplica variables de entorno nuevas en un deployment nuevo).
+3. Avisar aquí — en cuanto eso pase, esta sesión puede volver a correr
+   exactamente las mismas verificaciones de la tabla de arriba
+   (`web_fetch_vercel_url`, `get_deployment_build_logs`,
+   `get_runtime_errors`) contra el nuevo deployment y confirmar productos
+   reales, imágenes, ficha, y (con una prueba manual desde el propio
+   teléfono del usuario, ya que el checkout depende de `localStorage` del
+   navegador) el checkout completo hasta WhatsApp.
+
 ---
 
 # HANDOFF — CUYANA-WEB-001

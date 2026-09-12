@@ -148,11 +148,21 @@ adaptador de catálogo, SEO técnico y páginas legales.
 - [x] **Merge a `main`** (2026-09-12T03:58:33Z, por `ernest196391`):
       PR #1 y PR #2 mergeados. Merge commit `e403f54735f1bdcdceb49d8a49d1bc7e5a3abc82`.
       Vercel construyó el Preview del PR #2 con éxito (`Ready`).
-- [ ] **Certificación en producción**: sigue bloqueada desde esta sesión,
-      causa exacta identificada: conector Vercel autorizado para un scope
-      distinto a `ernest196391s-projects` (`403`, mensaje pide
-      reautenticar ese scope) + egress de este entorno bloquea dominios
-      externos arbitrarios en general (confirmado también contra
-      `*.vercel.app`). Detalle y siguiente paso en `docs/HANDOFF.md` §8.
+- [x] **Certificación en producción (parcial, 2026-09-12T15:35:00Z)**:
+      usuario reautorizó Vercel. Confirmado en vivo contra
+      `cuyana.casavivadecuba.com`: build de producción sin errores, sin
+      errores de runtime en 24h, `/tienda/energia` y `/carrito` responden
+      `200` con el estado honesto `not_configured` (sin `NEXO_CATALOG_URL`
+      todavía), `gydPerUsd: null` fluye correctamente al carrito sin
+      romper nada, dominio custom sin muro de autenticación de Vercel.
+      Detectado (sin colisión, verificado por diff) un deployment más
+      nuevo de otra sesión de Claude (`59c39c3`, integración con "Cuadre"
+      para remesas) por encima de mi merge — no toca ningún archivo de
+      esta tarea.
+- [ ] **Pendiente, requiere al usuario (sin tool disponible para esto)**:
+      cargar `NEXO_CATALOG_URL` en Vercel (Production) y darle "Redeploy"
+      al último deployment. Sin eso el catálogo real de NEXO no puede
+      probarse en vivo — el resto de la tienda ya está verificado
+      funcionando. Detalle en `docs/HANDOFF.md` §9.
 
 Detalle completo, con pasos siguientes, en `docs/HANDOFF.md`.

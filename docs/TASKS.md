@@ -85,13 +85,18 @@ archivos o toma la siguiente tarea libre y déjalo escrito aquí.
   (merge commit `e403f54735f1bdcdceb49d8a49d1bc7e5a3abc82`). Vercel
   (proyecto real `cuyana-app`, equipo `ernest196391s-projects`) construyó
   con éxito el Preview del PR #2 (`Ready`, ver comentario del bot en el
-  PR). **Sigue bloqueada la certificación en producción desde esta
-  sesión**, pero ahora con causa exacta: el conector Vercel de esta sesión
-  da `403 — not authorized for scope "ernest196391s-projects"` (necesita
-  reautorizarse con ese equipo), y el egress de este entorno bloquea
-  dominios externos arbitrarios en general (confirmado también contra
-  `*.vercel.app`, no solo `casavivadecuba.com`). Evidencia y siguiente paso
-  exacto en `docs/HANDOFF.md` §8.
+  PR). **Actualización (2026-09-12T15:35:00Z):** usuario reautorizó
+  Vercel. Verificado en vivo contra `cuyana.casavivadecuba.com`: build de
+  producción sin errores, sin errores de runtime, `/tienda/energia` y
+  `/carrito` responden `200` con el estado honesto esperado
+  (`not_configured`, `gydPerUsd: null`), dominio custom sin muro de auth
+  de Vercel. Detectado un deployment más nuevo de otra sesión de Claude
+  (commit `59c39c3`, integración de remesas con "Cuadre") por encima del
+  mío — diff revisado, sin colisión con archivos de esta tarea. **Único
+  pendiente real:** este conector de Vercel no tiene ninguna herramienta
+  para leer/crear variables de entorno (verificado); falta que el usuario
+  cargue `NEXO_CATALOG_URL` en Production y le dé "Redeploy" al último
+  deployment. Detalle en `docs/HANDOFF.md` §9.
 
 ## Libres / futuras
 
