@@ -25,14 +25,13 @@ export default async function AlimentosPage() {
   return (
     <main>
       <section className="wrap page-section food-hero">
-        <p className="section-eyebrow">ALIMENTOS CUYANA</p>
         <h1 className="page-title">Compra para tu familia en Cuba</h1>
         <p className="page-lead">Elige un combo o añade productos. Confirmamos disponibilidad y coordinamos la entrega en La Habana.</p>
       </section>
 
       {result.status === "error" || result.status === "not_configured" ? <div className="wrap"><CatalogEmptyState categoria="alimentos" /></div> : <>
         <section className="wrap store-section" aria-labelledby="combos-title">
-          <div className="store-section-heading"><p className="section-eyebrow">COMBOS CUYANA</p><h2 id="combos-title">Combos listos</h2></div>
+          <div className="store-section-heading"><h2 id="combos-title">Combos listos</h2></div>
           <div className="product-grid food-featured-grid">{combos.map((product) => <ProductCard key={product.slug} product={product} gydPerUsd={rate?.gydPerUsd ?? null} />)}</div>
         </section>
 
@@ -43,7 +42,7 @@ export default async function AlimentosPage() {
 
       <section className="wrap store-section food-faq"><h2>Preguntas frecuentes</h2><details><summary>¿Qué pasa si algo no está disponible?</summary><p>Te avisamos y te proponemos una alternativa antes de hacer cualquier cambio.</p></details><details><summary>¿Cuánto tarda la entrega?</summary><p>Cada producto muestra un tiempo estimado. Confirmamos el plazo antes de comprar.</p></details><details><summary>¿Dónde entregan?</summary><p>Este piloto comienza en La Habana. La mensajería depende del municipio.</p></details></section>
 
-      <section className="wrap food-support"><div><h2>¿Necesitas ayuda?</h2><p>Te ayudamos a elegir.</p></div><div className="food-support-actions"><a className="cta" href={supportUrl} target="_blank" rel="noopener">Hablar con CUYANA</a></div></section>
+      <section className="wrap food-support"><div><h2>¿Necesitas ayuda?</h2><p>Te ayudamos a elegir.</p></div><div className="food-support-actions"><a className="cta" href={supportUrl} target="_blank" rel="noopener">Hablar por WhatsApp</a></div></section>
     </main>
   );
 }
