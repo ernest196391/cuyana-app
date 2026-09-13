@@ -10,6 +10,26 @@
   font-family: var(--font-inter), sans-serif;
 }
 
+.supply-warning { margin: 1rem 0; padding: 1rem; border-radius: .75rem; background: #fff4d6; color: #5f4300; }
+.supply-list { display: grid; gap: 1rem; }
+.supply-card { padding: 1rem; border: 1px solid #e5e7eb; border-radius: .9rem; background: white; }
+.supply-card h2 { margin: .15rem 0; font-size: 1.1rem; }
+.supply-card-main > p:last-child { margin: .25rem 0 1rem; color: #6b7280; }
+.supply-card dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin: 0 0 1rem; }
+.supply-card dl div { padding: .65rem; border-radius: .6rem; background: #f8f4ed; }
+.supply-card dt { color: #6b7280; font-size: .72rem; }
+.supply-card dd { margin: .15rem 0 0; font-weight: 750; }
+.supply-valid { color: #166534; }
+.supply-expired { color: #991b1b; }
+.supply-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+.supply-purchase-form { margin: 1rem 0; padding: 1rem; border: 1px solid var(--border); border-radius: 18px; background: #fff; }
+.supply-purchase-form h2 { margin: 0; }
+.supply-purchase-form label { display: grid; gap: .35rem; font-weight: 700; }
+.supply-purchase-form input { min-width: 0; padding: .7rem; border: 1px solid var(--border); border-radius: 10px; }
+.supply-cost-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .7rem; margin-top: .8rem; }
+.supply-success { color: #166534; font-weight: 750; }
+@media (min-width: 850px) { .supply-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
 .admin-shell a {
   color: inherit;
   text-decoration: none;

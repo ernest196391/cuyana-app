@@ -1,0 +1,43 @@
+{
+  "snapshotAt": "2026-09-12T23:59:59-04:00",
+  "currency": "USD",
+  "notice": "Investigación histórica. No representa stock ni precio vigente y no habilita compra.",
+  "suppliers": [
+    { "slug": "alawao", "name": "Alawao", "url": "https://alawao.com/", "priority": 1, "status": "active" },
+    { "slug": "mercazon", "name": "Mercazón", "url": "https://mercazon.com/es", "priority": 2, "status": "watch" },
+    { "slug": "mercocaribe", "name": "MercoCaribe", "url": "https://www.mercocaribe.com/", "priority": 3, "status": "watch" },
+    { "slug": "supermarket23", "name": "Supermarket23", "url": "https://www.supermarket23.com/", "priority": 4, "status": "watch" },
+    { "slug": "combitos", "name": "Combitos", "url": "https://combitos.com/", "priority": 5, "status": "active" }
+  ],
+  "products": [
+    { "slug": "combo-proteina-familiar", "name": "Proteína Familiar", "kind": "bundle", "status": "YELLOW", "presentation": "30 huevos + 11 lb de muslo/contramuslo", "supplier": "alawao", "cost": 21.95, "url": "https://alawao.com/producto/combo-huevos-pollo/", "eta": null },
+    { "slug": "combo-proteina-mixta", "name": "Proteína Mixta", "kind": "bundle", "status": "GREEN", "presentation": "1 kg pollo + 1 kg lomo de cerdo + 7 huevos", "supplier": "alawao", "cost": 27.95, "url": "https://alawao.com/producto/combo-huevos-pollo-lomo-de-cerdo/", "eta": "24 h" },
+    { "slug": "combo-basicos-de-casa", "name": "Básicos de Casa", "kind": "bundle", "status": "GREEN", "presentation": "cartón de huevos + arroz 1 kg + aceite 900 ml", "supplier": "alawao", "cost": 26.95, "url": "https://alawao.com/producto/huevo-arroz-aceite/", "eta": "24 h" },
+    { "slug": "combo-carnes-aceite", "name": "Carnes + Aceite", "kind": "bundle", "status": "GREEN", "presentation": "pollo 3 lb + cerdo 2 lb + aceite 900 ml–1 L", "supplier": "alawao", "cost": 35.95, "url": "https://alawao.com/producto/cerdo-pollo-aceite-2/", "eta": "24 h" },
+    { "slug": "combo-aseo-personal", "name": "Aseo Personal", "kind": "bundle", "status": "GREEN_DRAFT", "presentation": "shampoo, gel, pasta dental, jabón, papel sanitario", "supplier": "alawao", "cost": 15.04, "url": "https://alawao.com/pasillo/servicio-tienda/aseo/aseo-mixto/", "eta": "24 h" },
+    { "slug": "combo-compra-de-mama", "name": "Compra de Mamá", "kind": "bundle", "status": "YELLOW", "presentation": "composición por confirmar", "supplier": "combitos", "cost": 39.36, "url": "https://combitos.com/categoria-producto/combos-para-cuba/", "eta": "mismo/próximo día; revalidar cutoff" },
+    { "slug": "ventilador-recargable-doubledow", "name": "Ventilador recargable Doubledow", "kind": "product", "status": "YELLOW", "presentation": "1 unidad", "supplier": "alawao", "cost": 58.95, "url": "https://alawao.com/pasillo/servicio-tienda/electronicos/", "eta": "24 h", "imageType": "exact_brand" },
+    { "slug": "huevos-30-unidades", "name": "Huevos", "kind": "product", "status": "YELLOW", "presentation": "30 unidades", "supplier": "supermarket23", "cost": 8.97, "url": "https://www.supermarket23.com/es/producto/109345", "eta": "según destino" },
+    { "slug": "muslos-pollo-10-lb", "name": "Pollo / muslos", "kind": "product", "status": "YELLOW", "presentation": "10 lb", "supplier": "alawao", "cost": 16.95, "url": "https://alawao.com/pasillo/recomendados/", "eta": "24 h" },
+    { "slug": "solomillo-cerdo", "name": "Solomillo de cerdo", "kind": "product", "status": "GREEN", "presentation": "1.25–1.50 kg", "supplier": "combitos", "cost": 8.44, "url": "https://combitos.com/producto/solomillo-de-cerdo-my-pork-pieza-1-25kg-1-50kg/", "eta": "mismo/próximo día" },
+    { "slug": "arroz-blanco-dona-kuca-1kg", "name": "Arroz blanco", "kind": "product", "status": "GREEN", "presentation": "1 kg", "supplier": "combitos", "cost": 1.52, "url": "https://combitos.com/producto/arroz-blanco-dona-kuca-1-kg/", "eta": "mismo/próximo día" },
+    { "slug": "arroz-blanco-5kg", "name": "Arroz blanco", "kind": "product", "status": "YELLOW", "presentation": "5 × 1 kg", "supplier": "alawao", "cost": 15.99, "url": "https://alawao.com/pasillo/servicio-mercado/despensa/aceites-y-alinos/aceites/", "eta": "24–48 h" },
+    { "slug": "frijol-negro-1kg", "name": "Frijol negro", "kind": "product", "status": "YELLOW", "presentation": "1 kg", "supplier": "combitos", "cost": 1.67, "url": "https://combitos.com/productos/", "eta": "mismo/próximo día" },
+    { "slug": "aceite-vegetal-1l", "name": "Aceite vegetal", "kind": "product", "status": "YELLOW", "presentation": "1 L", "supplier": "combitos", "cost": 4.93, "url": "https://combitos.com/productos/", "eta": "mismo/próximo día" },
+    { "slug": "azucar-blanca-1kg", "name": "Azúcar blanca", "kind": "product", "status": "YELLOW", "presentation": "1 kg", "supplier": "combitos", "cost": 1.80, "url": "https://combitos.com/productos/", "eta": "mismo/próximo día" },
+    { "slug": "leche-polvo-holland-horizon", "name": "Leche en polvo Holland Horizon", "kind": "product", "status": "YELLOW", "presentation": "900 g", "supplier": "combitos", "cost": 5.71, "url": "https://combitos.com/tienda/", "eta": "mismo/próximo día", "imageType": "exact_brand" },
+    { "slug": "leche-entera-mleko", "name": "Leche entera MLeko", "kind": "product", "status": "YELLOW", "presentation": "1 L", "supplier": "alawao", "cost": 4.95, "url": "https://alawao.com/pasillo/servicio-mercado/despensa/lacteos-y-huevos/", "eta": "24 h", "imageType": "exact_brand" },
+    { "slug": "penne-rigate-500g", "name": "Penne Rigate", "kind": "product", "status": "GREEN", "presentation": "500 g", "supplier": "combitos", "cost": 0.93, "url": "https://combitos.com/producto/penne-rigate-ria-via-500g/", "eta": "mismo/próximo día" },
+    { "slug": "pasta-tomate-400g", "name": "Pasta de tomate", "kind": "product", "status": "YELLOW", "presentation": "400 g", "supplier": "combitos", "cost": 1.33, "url": "https://combitos.com/tienda/", "eta": "mismo/próximo día" },
+    { "slug": "atun-170g", "name": "Atún", "kind": "product", "status": "YELLOW", "presentation": "170 g", "supplier": "combitos", "cost": 1.32, "url": "https://combitos.com/categoria-producto/alimentos/", "eta": "mismo/próximo día" },
+    { "slug": "jamonilla-cerdo-320g", "name": "Jamonilla de cerdo", "kind": "product", "status": "YELLOW", "presentation": "320 g", "supplier": "combitos", "cost": 2.27, "url": "https://combitos.com/tienda/", "eta": "mismo/próximo día" },
+    { "slug": "mantequilla-200g", "name": "Mantequilla", "kind": "product", "status": "YELLOW", "presentation": "200 g", "supplier": "combitos", "cost": 1.40, "url": "https://combitos.com/", "eta": "mismo/próximo día" },
+    { "slug": "cafe-la-llave-284g", "name": "Café La Llave", "kind": "product", "status": "YELLOW", "presentation": "284 g", "supplier": "alawao", "cost": 9.95, "url": "https://alawao.com/pasillo/servicio-mercado/despensa/", "eta": "24 h", "imageType": "exact_brand" },
+    { "slug": "salchichas-340g", "name": "Salchichas", "kind": "product", "status": "YELLOW", "presentation": "340 g", "supplier": "alawao", "cost": 2.95, "url": "https://alawao.com/pasillo/recomendados/", "eta": "24 h" },
+    { "slug": "pan-suave-10x80g", "name": "Pan suave", "kind": "product", "status": "YELLOW", "presentation": "10 × 80 g", "supplier": "alawao", "cost": 4.95, "url": "https://alawao.com/pasillo/servicio-mercado/despensa/desayunos/pan/", "eta": "24 h" },
+    { "slug": "queso-crema-200g", "name": "Queso crema", "kind": "product", "status": "YELLOW", "presentation": "200 g", "supplier": "alawao", "cost": 3.95, "url": "https://alawao.com/pasillo/servicio-mercado/despensa/lacteos-y-huevos/quesos/", "eta": "24 h" },
+    { "slug": "vinagre-vino-blanco-500ml", "name": "Vinagre de vino blanco", "kind": "product", "status": "YELLOW", "presentation": "500 ml", "supplier": "combitos", "cost": 0.94, "url": "https://combitos.com/categoria-producto/alimentos/", "eta": "mismo/próximo día" },
+    { "slug": "cerdo-troceado-1kg", "name": "Carne de cerdo troceada", "kind": "product", "status": "YELLOW", "presentation": "1 kg", "supplier": "alawao", "cost": 12.95, "url": "https://alawao.com/pasillo/servicio-mercado/carnes/carnes-frescas/", "eta": "24 h" },
+    { "slug": "hamburguesas-cerdo-8u", "name": "Hamburguesas de cerdo", "kind": "product", "status": "YELLOW", "presentation": "8 unidades / 1040 g", "supplier": "alawao", "cost": 12.95, "url": "https://alawao.com/producto/mandado-semanal/", "eta": "24 h" }
+  ]
+}

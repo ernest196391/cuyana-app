@@ -1,5 +1,27 @@
 # HANDOFF — CUYANA-WEB-002
 
+## CUYANA-FOOD-001 — Checkpoint 1 (2026-09-13)
+
+Se creó el plan maestro y el cimiento de abastecimiento multi-proveedor sin tocar cuenta, carnet, crédito ni tracking. Incluye ocho tablas `market_*` con RLS/sin acceso anónimo, ofertas múltiples, observaciones, auditorías, configuración, snapshot económico por pedido y cálculo/diff puro probado.
+
+Verificación: 113/113 tests, TypeScript y build verdes; lint conserva tres warnings preexistentes. Supabase real confirmó las ocho tablas y sus políticas. Los avisos existentes de funciones de cuenta/Cuadre no nacieron en este bloque y quedaron fuera de alcance.
+
+Siguiente acción exacta: reconstruir desde la investigación Markdown el seed faltante del corte 2026-09-12, importarlo como investigación no comprable y crear `data/catalog/image-manifest.json` sin generar imágenes.
+
+### Checkpoint 2
+
+El seed reconstruido contiene exactamente 5 proveedores, 6 combos y 23 productos. Supabase conserva 29 ofertas/observaciones privadas. Se añadió `market_public_catalog` para que el cliente solo vea fichas CUYANA. Cinco productos fueron revalidados; la URL de Carnes + Aceite pasó a 404 y no se publicó. La categoría, fichas, placeholders y panel protegido de abastecimiento compilan y pasan 114 pruebas.
+
+Siguiente acción exacta: automatizar la revalidación en servidor, cerrar un cuarto combo vigente, conectar el guardado del snapshot de compra y certificar el preview móvil.
+
+### Checkpoint 3
+
+Se cerraron los pendientes operativos: revalidación servidor segura con historial Antes → Ahora, cuarto combo vigente, componentes normalizados y registro del snapshot de compra desde `/admin/abastecimiento`. El catálogo activo tiene cuatro combos y dos esenciales; la capa privada mantiene todas las alternativas investigadas. Las imágenes siguen deliberadamente en placeholders/manifiesto porque se producen en el chat visual separado.
+
+Verificación local: 123/123 pruebas, TypeScript y build verdes; lint solo conserva tres warnings anteriores y ajenos a FOOD. Pendiente inmediato: certificar el preview responsive, mergear PR #8 y comprobar producción.
+
+Supabase Advisors se ejecutó tras las migraciones finales: se optimizaron las políticas e índices de todas las tablas `market_*`. Los avisos restantes pertenecen a funciones/Auth/Cuadre anteriores a FOOD.
+
 De: Claude Code (sesión `session_011YVe5XSew1neZgVdirhS38`)
 Fecha: 2026-09-12T03:15:00Z (UTC)
 Rama: `claude/ecstatic-ramanujan-iv70r6`

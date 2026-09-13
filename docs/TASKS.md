@@ -1,5 +1,16 @@
 # TASKS — Cuyana
 
+## CUYANA-FOOD-001 — Alimentos multi-proveedor
+
+- [x] A — auditar HEAD y aislar el trabajo.
+- [x] B — contrato de datos, RLS, economía y auditoría.
+- [x] C — importar seed como investigación no comprable.
+- [x] D — manifiesto visual y placeholders, sin generar imágenes.
+- [x] E — adaptador y revalidación servidor con auditoría Antes → Ahora.
+- [x] F — `/tienda/alimentos`, fichas y checkout existente reutilizado.
+- [x] G — panel operativo, alternativas y snapshot de compra desde UI.
+- [ ] H — QA móvil, publicación y certificación.
+
 Registro de tareas reclamadas por agentes (Claude Code, ChatGPT Work u otros).
 Antes de tocar código: revisa si tu alcance ya está tomado. Si lo está, divide por
 archivos o toma la siguiente tarea libre y déjalo escrito aquí.

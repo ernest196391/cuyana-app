@@ -1,5 +1,11 @@
 # DECISIONS — Cuyana
 
+## 2026-09-13 — Alimentos conserva evidencia propia sin crear otra tienda
+
+CUYANA reutiliza su tienda, carrito, checkout, pedidos y Cuadre. La capa `market_*` guarda proveedores, ofertas, observaciones, auditorías y snapshots de compra. No reemplaza Product Studio/NEXO ni expone directamente tablas operativas al cliente.
+
+Los productos investigados nacen con `purchasable=false`; solo un producto `GREEN` puede habilitarse. Una auditoría diaria no sustituye la revalidación inmediatamente anterior a la compra externa. La compra externa seguirá manual durante el MVP.
+
 Decisiones de diseño/arquitectura tomadas durante `CUYANA-WEB-001`, con su
 razón, para que otro agente no las deshaga sin contexto.
 

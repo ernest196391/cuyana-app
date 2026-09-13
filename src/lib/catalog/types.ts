@@ -21,6 +21,12 @@ export interface CatalogProduct {
   /** Precio canónico en USD, tal como lo entrega el sistema canónico. */
   priceUsd: number;
   available: boolean;
+  /** Datos de decisión visibles; nunca incluyen proveedor ni costo fuente. */
+  kind?: "product" | "bundle";
+  presentation?: string | null;
+  composition?: string[] | null;
+  substitutionPolicy?: string | null;
+  eta?: string | null;
 }
 
 /**
