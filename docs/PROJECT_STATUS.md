@@ -30,9 +30,23 @@ comprobaba que hubiera sesión; un `?ref=` inexistente tumbaba el pedido
 entero por clave foránea; y `.page-section` anulaba el margen lateral de
 toda la web.
 
-**No terminado:** el tracking de tienda no existe y el de remesas no se ha
-estrenado (0 saltos en producción). Ver
-`docs/AUDITORIA_2026-09-13_TIENDA_Y_ESTADO.md` §2.
+### Seguimiento, cerrado (2026-09-13)
+
+Dos cadenas distintas, porque son dos cosas distintas. Remesa: pedido
+recibido → recibido en Guyana → listo en Cuba → entregado. Tienda: pedido
+recibido → pago confirmado → comprando → preparado → en camino → entregado.
+Un CHECK en la base impide que un paso de una se cuelgue de la otra.
+
+Incidencias aparte de la cadena —requiere info, sustitución pendiente,
+retrasado, cancelado, reembolsado— con nota pública y nota interna separadas.
+Una incidencia no corta el avance; cancelar y reembolsar sí.
+
+El cliente lo ve en Mi cuenta y en `/envio/<ref>`, que ahora sirve para los
+dos tipos. La referencia de un pedido de tienda es su propio `id`.
+
+**No terminado:** sigue sin estrenarse con datos reales — 0 saltos en
+producción. Y hay que comprobar que `CUADRE_API_KEY` está en Vercel: sin ella
+el pedido de tienda no llega a Cuadre y se queda sin seguimiento.
 
 
 ## CUYANA-UI-CLOSE-004 — Funcionalmente cerrado (2026-09-13)

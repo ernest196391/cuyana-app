@@ -12,9 +12,15 @@
 
 ## Siguiente, por orden (de la auditoría del 2026-09-13)
 
-- [ ] `store_orders.tracking_ref` + primer salto al crear el pedido de tienda.
-- [ ] Estados de tienda de Blueprint §7.3 (no son los de remesa).
-- [ ] Estrenar el tracking de remesas de punta a punta en producción.
+- [x] Seguimiento de tienda: cadena propia, no hace falta `tracking_ref` nuevo
+      —la referencia de un pedido de tienda es su propio `id`, que ya viaja a
+      Cuadre como `external_ref`.
+- [x] Estados de tienda de Blueprint §7.3, con CHECK que impide mezclar flujos.
+- [x] Incidencias con nota pública y nota interna separadas (§7.6).
+- [x] El cliente ve el seguimiento de su pedido de tienda, y su comprobante.
+- [ ] Estrenar el tracking de punta a punta en producción (siguen 0 saltos).
+- [ ] Comprobar que `CUADRE_API_KEY` está puesta en Vercel: sin ella el pedido
+      de tienda no llega a Cuadre y se queda sin seguimiento.
 - [ ] Completar la ficha de `combo-carnes-aceite` — DATO, lo pone una persona.
 - [ ] Completar `market_bundle_items` de los cinco combos.
 - [ ] Continuar publicando los productos restantes de `market_products` solo cuando tengan foto y oferta revalidada.

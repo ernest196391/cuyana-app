@@ -3,15 +3,19 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { formatDateTime, formatMoney, formatNumber } from "@/lib/format";
+import { formatDateTime, formatGyd, formatMoney, formatNumber, formatUsd } from "@/lib/format";
 import { useDeliveryMethods } from "@/lib/useDeliveryMethods";
 import { WHATSAPP_NUMBER } from "@/lib/config/site";
 import SeguimientoCliente from "@/components/SeguimientoCliente";
 
 interface Comprobante {
-  amount_gyd: number;
-  amount_cup: number;
+  /** Una remesa y un pedido de tienda se enseñan distinto. */
+  tipo: "remesa" | "tienda";
+  amount_gyd: number | null;
+  amount_cup: number | null;
   method_key: string | null;
+  total_usd: number | null;
+  categoria: string | null;
   creado: string;
 }
 
@@ -84,28 +88,49 @@ export default function ComprobantePage({ params }: { params: { ref: string } })
 
   const metodo = methods.find((m) => m.key === envio.method_key);
   const moneda = metodo?.target_currency ?? "CUP";
+  const esTienda = envio.tipo === "tienda";
 
   return (
     <div className="wrap page-section cuenta-entrar">
-      <h1 className="page-title">Tu envío por Cuyana</h1>
+      <h1 className="page-title">{esTienda ? "Tu pedido por Cuyana" : "Tu envío por Cuyana"}</h1>
       <p className="page-lead">{formatDateTime(envio.creado)}</p>
 
+      {/* Un pedido de tienda se enseña por lo que costó y de qué es. Un envío
+          de dinero, por lo que sale y lo que llega. Son dos cosas distintas y
+          forzarlas al mismo molde deja una de las dos en blanco. */}
       <div className="comprobante">
-        <p className="comprobante-linea">
-          <span>Enviado</span>
-          <strong>{formatNumber(Number(envio.amount_gyd))} GYD</strong>
-        </p>
-        <p className="comprobante-linea comprobante-destacado">
-          <span>Recibe en Cuba</span>
-          <strong>
-            {formatMoney(Number(envio.amount_cup), moneda)} {moneda}
-          </strong>
-        </p>
-        {metodo && (
-          <p className="comprobante-linea">
-            <span>Cómo</span>
-            <strong>{metodo.label}</strong>
-          </p>
+        {esTienda ? (
+          <>
+            <p className="comprobante-linea">
+              <span>Pedido de</span>
+              <strong>{envio.categoria === "energia" ? "Energía" : "Alimentos"}</strong>
+            </p>
+            <p className="comprobante-linea comprobante-destacado">
+              <span>Total</span>
+              <strong>
+                {envio.amount_gyd ? formatGyd(Number(envio.amount_gyd)) : formatUsd(Number(envio.total_usd))}
+              </strong>
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="comprobante-linea">
+              <span>Enviado</span>
+              <strong>{formatNumber(Number(envio.amount_gyd))} GYD</strong>
+            </p>
+            <p className="comprobante-linea comprobante-destacado">
+              <span>Recibe en Cuba</span>
+              <strong>
+                {formatMoney(Number(envio.amount_cup), moneda)} {moneda}
+              </strong>
+            </p>
+            {metodo && (
+              <p className="comprobante-linea">
+                <span>Cómo</span>
+                <strong>{metodo.label}</strong>
+              </p>
+            )}
+          </>
         )}
       </div>
 

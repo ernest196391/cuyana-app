@@ -58,6 +58,7 @@ export default function MiCuentaPage() {
   const [sacando, setSacando] = useState(false);
   const [copiado, setCopiado] = useState(false);
   const [abierto, setAbierto] = useState<number | null>(null);
+  const [pedidoAbierto, setPedidoAbierto] = useState<string | null>(null);
 
   useEffect(() => {
     if (!cargando && !user) router.replace("/entrar?volver=/cuenta");
@@ -337,6 +338,29 @@ export default function MiCuentaPage() {
                   {formatDateTime(p.created_at)} · {p.code}
                   {p.recipient_name ? ` · para ${p.recipient_name}` : ""}
                 </p>
+                {/* La referencia de un pedido de tienda es su propio id: es el
+                    que viaja a Cuadre y el que lleva su seguimiento. */}
+                <button
+                  type="button"
+                  className="cuenta-envio-ver"
+                  onClick={() => setPedidoAbierto(pedidoAbierto === p.id ? null : p.id)}
+                  aria-expanded={pedidoAbierto === p.id}
+                >
+                  {pedidoAbierto === p.id ? "Ocultar" : "Ver por dónde va"}
+                </button>
+                {pedidoAbierto === p.id && (
+                  <>
+                    <SeguimientoCliente referencia={p.id} />
+                    <a
+                      className="cuenta-envio-ver"
+                      href={`/envio/${p.id}`}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Abrir el comprobante para enseñárselo a tu familia
+                    </a>
+                  </>
+                )}
               </li>
             ))}
           </ul>
