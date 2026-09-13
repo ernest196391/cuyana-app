@@ -5,9 +5,17 @@ import Link from "next/link";
 import Logo from "./Logo";
 import CartIndicator from "./CartIndicator";
 import { NAV_LINKS } from "@/lib/config/site";
+import { useCuenta } from "@/lib/cuenta";
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const { user, cargando } = useCuenta();
+  // Mientras no se sepa si hay sesión no se enseña ninguna de las dos: poner
+  // «Entrar» y cambiarlo a «Mi cuenta» medio segundo después es un parpadeo
+  // que hace dudar de si se cerró la sesión sola. Va en la navegación y no
+  // junto al carrito: en un móvil de 375px esa fila ya va justa, y la acción
+  // principal sigue siendo enviar dinero, no registrarse.
+  const cuenta = cargando ? null : user ? { href: "/cuenta", texto: "Mi cuenta" } : { href: "/entrar", texto: "Entrar" };
 
   return (
     <header className="site-header">
@@ -22,6 +30,11 @@ export default function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          {cuenta && (
+            <Link href={cuenta.href} className="site-cuenta">
+              {cuenta.texto}
+            </Link>
+          )}
         </nav>
 
         <div className="site-header-actions">
@@ -51,6 +64,11 @@ export default function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          {cuenta && (
+            <Link href={cuenta.href} onClick={() => setOpen(false)}>
+              {cuenta.texto}
+            </Link>
+          )}
           <Link href="/enviar-dinero" className="site-cta-header site-cta-header-movil" onClick={() => setOpen(false)}>
             Empezar
           </Link>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { useAdminAuth } from "@/lib/useAdminAuth";
+import { useAdminAuth, esAdministrador } from "@/lib/useAdminAuth";
 import Logo from "@/components/Logo";
 
 export default function AdminLoginPage() {
@@ -24,11 +24,22 @@ export default function AdminLoginPage() {
     setSubmitting(true);
     setError(null);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setSubmitting(false);
     if (error) {
+      setSubmitting(false);
       setError("Email o contraseña incorrectos.");
       return;
     }
+    // La contraseña era buena, pero esta puerta no es la suya: con cuentas de
+    // cliente en la misma web, un cliente puede entrar aquí sin querer. Se le
+    // dice adónde ir en vez de dejarlo mirando un formulario que se limpia
+    // solo, y se cierra la sesión para no dejarlo a medias entre las dos.
+    if (!(await esAdministrador())) {
+      await supabase.auth.signOut();
+      setSubmitting(false);
+      setError("Esa cuenta no administra el sitio. Tu cuenta de cliente está en cuyana.casavivadecuba.com/cuenta.");
+      return;
+    }
+    setSubmitting(false);
     router.replace("/admin");
   }
 

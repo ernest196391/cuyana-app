@@ -76,6 +76,7 @@ export async function createStoreOrder(
       total_gyd: totalGyd,
       customer_name: input.customerName.trim(),
       customer_whatsapp: input.customerWhatsapp.trim(),
+      customer_id: input.customerId ?? null,
       ...destinoParaGuardar(input.destino),
     });
 

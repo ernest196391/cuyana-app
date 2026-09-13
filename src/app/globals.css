@@ -1396,3 +1396,343 @@ select.campo {
 .product-detail-badge {
   margin: 0;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   La cuenta del cliente: entrar, y «Mi cuenta».
+   Se apoya en los mismos tokens que el resto del sitio; aquí solo está lo
+   que no existía todavía.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.cuenta-entrar {
+  max-width: 460px;
+}
+.cuenta-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0 22px;
+}
+.cuenta-tab {
+  flex: 1;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--linea);
+  background: transparent;
+  color: var(--texto-suave);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cuenta-tab-activa {
+  border-color: var(--vino);
+  background: rgba(122, 14, 46, 0.06);
+  color: var(--vino);
+}
+/* Los campos de estas pantallas usan <span> y no <label> anidado, así que la
+   regla de `.field label` no les llega. */
+.cuenta-form .field > span {
+  display: block;
+  font-size: 13px;
+  color: var(--texto-suave);
+  margin-bottom: 8px;
+}
+.cuenta-ayuda {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+.cuenta-error,
+.cuenta-aviso {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+.cuenta-error {
+  background: rgba(239, 68, 68, 0.08);
+  color: #b3261e;
+}
+.cuenta-aviso {
+  background: rgba(59, 130, 246, 0.08);
+  color: #1d4ed8;
+}
+.cuenta-pie {
+  margin-top: 22px;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+.cuenta-pie a {
+  color: var(--vino);
+  font-weight: 600;
+}
+
+.cuenta-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.cuenta-correo {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+.cuenta-salir {
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--linea);
+  background: transparent;
+  color: var(--texto-suave);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* El nivel de la cuenta. En gris mientras no esté verificada; en verde en
+   cuanto lo esté, porque esa diferencia es el premio. */
+.cuenta-nivel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 22px 0;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1.5px solid var(--linea);
+  background: var(--papel-card);
+  flex-wrap: wrap;
+}
+.cuenta-nivel-ok {
+  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(16, 185, 129, 0.07);
+}
+.cuenta-nivel-icono {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 50%;
+  background: var(--texto-suave);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+}
+.cuenta-nivel-ok .cuenta-nivel-icono {
+  background: var(--cuyana-success);
+}
+.cuenta-nivel-titulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+.cuenta-nivel-texto,
+.cuenta-nivel-motivo {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+.cuenta-nivel-motivo {
+  color: #b3261e;
+}
+.cuenta-nivel-cta {
+  margin-left: auto;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: var(--vino);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.cuenta-adelanto {
+  margin-bottom: 22px;
+}
+
+.cuenta-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 30px;
+}
+.cuenta-dato {
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--papel-card);
+  border: 1px solid var(--linea);
+}
+.cuenta-dato-num {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.cuenta-dato-etq {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.cuenta-h2 {
+  margin: 30px 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.cuenta-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cuenta-envio {
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--papel-card);
+  border: 1px solid var(--linea);
+}
+.cuenta-envio-monto {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.cuenta-envio-fecha {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+.cuenta-envio-ver {
+  margin-top: 10px;
+  min-height: 44px;
+  padding: 8px 0;
+  border: none;
+  background: none;
+  color: var(--vino);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cuenta-envio-sin {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+.cuenta-vacio {
+  padding: 26px 18px;
+  border-radius: 14px;
+  border: 1.5px dashed var(--linea);
+  text-align: center;
+  color: var(--texto-suave);
+}
+.cuenta-vacio-cta {
+  max-width: 260px;
+  margin: 16px auto 0;
+}
+
+/* La línea de tiempo del envío. */
+.seg {
+  margin-top: 12px;
+}
+.seg-cargando {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+.seg-ahora {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: var(--texto);
+}
+.seg-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.seg-paso {
+  position: relative;
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  align-items: baseline;
+  gap: 4px 10px;
+  padding-bottom: 14px;
+}
+.seg-paso:last-child {
+  padding-bottom: 0;
+}
+.seg-punto {
+  grid-column: 1;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--linea);
+  transform: translateY(2px);
+}
+.seg-paso-hecho .seg-punto {
+  background: var(--vino);
+}
+.seg-hilo {
+  position: absolute;
+  left: 5px;
+  top: 15px;
+  bottom: 0;
+  width: 1px;
+  background: var(--linea);
+}
+.seg-paso-hecho .seg-hilo {
+  background: var(--vino);
+}
+.seg-nombre {
+  grid-column: 2;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+.seg-paso-hecho .seg-nombre {
+  color: var(--texto);
+  font-weight: 600;
+}
+.seg-cuando {
+  grid-column: 3;
+  font-size: 12px;
+  color: var(--texto-suave);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.seg-cancelado {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: #b3261e;
+}
+
+/* El acceso a la cuenta desde la cabecera. Discreto: la acción principal
+   sigue siendo enviar dinero, no registrarse. */
+.site-cuenta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 6px 10px;
+  color: var(--texto-suave);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.site-cuenta:hover {
+  color: var(--vino);
+}
+
+/* El selector de archivo del sistema no acepta la altura del campo sin esto. */
+.cuenta-archivo {
+  padding: 10px 12px;
+  line-height: 1.4;
+}

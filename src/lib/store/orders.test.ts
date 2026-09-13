@@ -96,6 +96,25 @@ describe("pedido de tienda", () => {
     expect(insertsHechos[0].total_usd).toBe(12645); // 3 × 4.215
   });
 
+  it("entra sin dueño cuando el pedido no lleva cuenta", async () => {
+    const { createStoreOrder } = await import("./orders");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await createStoreOrder(proveedor as any, entrada);
+    // Nulo y escrito, no ausente: así se ve que este lo hizo alguien sin
+    // registrarse, que tiene que seguir siendo posible.
+    expect(insertsHechos[0].customer_id).toBeNull();
+  });
+
+  it("guarda de quién es cuando el pedido viene con cuenta", async () => {
+    const { createStoreOrder } = await import("./orders");
+    const quien = "8f14e45f-ceea-4e7c-9c2f-8c3a12345678";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await createStoreOrder(proveedor as any, { ...entrada, customerId: quien });
+    // Sin esto, quien acaba de comprar con su cuenta abre «Mi cuenta» y no ve
+    // su pedido: está en la base, pero sin dueño, y no hay cómo dárselo.
+    expect(insertsHechos[0].customer_id).toBe(quien);
+  });
+
   it("no encadena un select al insert: eso es lo que rompía la tienda", async () => {
     const { createStoreOrder } = await import("./orders");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -10,6 +10,7 @@ import { validarFormularioRemesa, construirMensajeRemesa } from "@/lib/remesaMes
 import { RATE_FRESHNESS_LABEL } from "@/lib/rateFreshness";
 import { WHATSAPP_NUMBER } from "@/lib/config/site";
 import { track, ANALYTICS_EVENTS } from "@/lib/analytics";
+import { useCuenta } from "@/lib/cuenta";
 import Skeleton from "./Skeleton";
 
 /**
@@ -33,11 +34,22 @@ export default function Calculator() {
   const { methods, status } = useDeliveryMethods();
   const { get } = useAppConfig();
   const freshness = useRateFreshness();
+  const { user, perfil } = useCuenta();
 
   const [sendValue, setSendValue] = useState(() => formatNumber(10000));
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  // Si trae cuenta, no tiene por qué volver a escribir su nombre y su
+  // teléfono. Solo se rellena lo que esté VACÍO: si ya empezó a escribir,
+  // machacarle el campo mientras lo hace sería peor que no ayudarle.
+  const [tocoNombre, setTocoNombre] = useState(false);
+  const [tocoTelefono, setTocoTelefono] = useState(false);
+  useEffect(() => {
+    if (!perfil) return;
+    if (!tocoNombre && perfil.full_name) setCustomerName((v) => (v ? v : perfil.full_name!));
+    if (!tocoTelefono && perfil.phone) setCustomerPhone((v) => (v ? v : perfil.phone!));
+  }, [perfil, tocoNombre, tocoTelefono]);
   const [ref, setRef] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [confirmStaleRate, setConfirmStaleRate] = useState(false);
@@ -98,6 +110,9 @@ export default function Calculator() {
         // no hay forma de volver del seguimiento al pedido ni al cliente que lo
         // hizo: la cadena se rompía en el primer eslabón.
         tracking_ref: identidad,
+        // De quién es, si lo pide con su cuenta. Sin esto el pedido entra como
+        // anónimo y «Mi cuenta» le sale vacía a quien acaba de pedir.
+        customer_id: user?.id ?? null,
         amount_gyd: gyd,
         amount_cup: montoDestino,
         customer_name: customerName.trim(),
@@ -237,7 +252,7 @@ export default function Calculator() {
           type="text"
           autoComplete="name"
           value={customerName}
-          onChange={(e) => setCustomerName(e.target.value)}
+          onChange={(e) => { setTocoNombre(true); setCustomerName(e.target.value); }}
         />
       </div>
 
@@ -250,7 +265,7 @@ export default function Calculator() {
           inputMode="tel"
           autoComplete="tel"
           value={customerPhone}
-          onChange={(e) => setCustomerPhone(e.target.value)}
+          onChange={(e) => { setTocoTelefono(true); setCustomerPhone(e.target.value); }}
         />
       </div>
 

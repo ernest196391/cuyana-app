@@ -1,11 +1,36 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getCatalogProvider } from "@/lib/catalog";
+import { supabase } from "@/lib/supabase";
 import { validarPedidoTienda, type DestinoEnCuba } from "@/lib/store/orderMessage";
 
 export const dynamic = "force-dynamic";
 
 type OrderItemBody = { slug?: unknown; sourceSystem?: unknown; sourceProductId?: unknown; quantity?: unknown };
+
+/**
+ * De quién es el pedido, comprobándolo de verdad.
+ *
+ * El navegador manda su token y aquí se le pregunta a Supabase de quién es.
+ * Creerse un `customerId` puesto en el cuerpo sería dejar que cualquiera
+ * escriba pedidos en la cuenta de otro con solo cambiar un número.
+ *
+ * Si no hay token o no vale, el pedido entra sin dueño, que es lo mismo que
+ * pasa cuando alguien compra sin registrarse. Nunca falla por esto: una sesión
+ * caducada no puede costarle la compra a nadie.
+ */
+async function duenoDelPedido(request: Request): Promise<string | null> {
+  const cabecera = request.headers.get("authorization") ?? "";
+  const token = cabecera.toLowerCase().startsWith("bearer ") ? cabecera.slice(7).trim() : "";
+  if (!token || !supabase) return null;
+  try {
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error) return null;
+    return data.user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Saca el destino del cuerpo sin creerse nada de lo que venga.
@@ -85,6 +110,7 @@ export async function POST(request: Request) {
     customerName,
     customerWhatsapp,
     destino,
+    customerId: await duenoDelPedido(request),
   });
 
   if (result.status === "ok") return NextResponse.json(result);

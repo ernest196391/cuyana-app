@@ -9,6 +9,8 @@ import { validarPedidoTienda, construirMensajePedidoTienda } from "@/lib/store/o
 import { catalogoDeEntrega, cotizar, zonasDe } from "@/lib/store/mensajeria";
 import { formatNumber } from "@/lib/format";
 import { track, ANALYTICS_EVENTS } from "@/lib/analytics";
+import { supabase } from "@/lib/supabase";
+import { useCuenta } from "@/lib/cuenta";
 
 /** Lo que se elige en los desplegables. Solo La Habana, por ahora. */
 const ENTREGA = catalogoDeEntrega();
@@ -16,9 +18,19 @@ const ENTREGA = catalogoDeEntrega();
 const OTRA_ZONA = "__otra";
 
 export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null }) {
+  const { perfil } = useCuenta();
   const [items, setItems] = useState<CartItem[]>([]);
   const [customerName, setCustomerName] = useState("");
   const [customerWhatsapp, setCustomerWhatsapp] = useState("");
+  // Si trae cuenta, sus datos ya los tenemos. Solo se rellena lo vacío: pisar
+  // un campo mientras alguien escribe en él es peor que no ayudar.
+  const [tocoNombre, setTocoNombre] = useState(false);
+  const [tocoWhatsapp, setTocoWhatsapp] = useState(false);
+  useEffect(() => {
+    if (!perfil) return;
+    if (!tocoNombre && perfil.full_name) setCustomerName((v) => (v ? v : perfil.full_name!));
+    if (!tocoWhatsapp && perfil.phone) setCustomerWhatsapp((v) => (v ? v : perfil.phone!));
+  }, [perfil, tocoNombre, tocoWhatsapp]);
   // Quien recibe en Cuba. Es otra persona que quien paga, y sin esto el pedido
   // no se puede llevar a ninguna puerta.
   const [destNombre, setDestNombre] = useState("");
@@ -68,9 +80,15 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
     track(ANALYTICS_EVENTS.storeCheckoutRequested, { itemCount: items.length });
 
     try {
+      // El token va en la cabecera y NO el id del usuario en el cuerpo: el
+      // servidor pregunta de quién es ese token en vez de creerse un número.
+      const { data: sesion } = (await supabase?.auth.getSession()) ?? { data: { session: null } };
       const response = await fetch("/api/store/order", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(sesion.session ? { Authorization: `Bearer ${sesion.session.access_token}` } : {}),
+        },
         body: JSON.stringify({
           items: items.map((item) => ({
             slug: item.slug,
@@ -312,7 +330,7 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
               type="text"
               autoComplete="name"
               value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
+              onChange={(e) => { setTocoNombre(true); setCustomerName(e.target.value); }}
             />
           </div>
           <div className="field">
@@ -324,7 +342,7 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
               inputMode="tel"
               autoComplete="tel"
               value={customerWhatsapp}
-              onChange={(e) => setCustomerWhatsapp(e.target.value)}
+              onChange={(e) => { setTocoWhatsapp(true); setCustomerWhatsapp(e.target.value); }}
             />
           </div>
 

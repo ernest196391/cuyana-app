@@ -56,6 +56,12 @@ export interface CreateOrderInput {
   customerWhatsapp: string;
   /** Quien lo recibe, en Cuba. Opcional mientras convivan carritos viejos. */
   destino?: import("../store/orderMessage").DestinoEnCuba;
+  /**
+   * De quién es el pedido, si lo hizo con su cuenta. Lo pone el servidor
+   * después de comprobar el token — NUNCA se lee del cuerpo de la petición,
+   * que es texto que manda el navegador y cualquiera puede cambiar.
+   */
+  customerId?: string | null;
 }
 
 export type CreateOrderResult =
