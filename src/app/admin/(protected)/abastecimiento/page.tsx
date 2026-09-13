@@ -18,6 +18,8 @@ type Offer = {
   market_suppliers: { name: string } | null;
 };
 
+type CommercialRate = { gyd_per_usd: number; source: string; as_of: string; expires_at: string | null };
+
 export default function AbastecimientoPage() {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,18 +29,18 @@ export default function AbastecimientoPage() {
   const [orderId, setOrderId] = useState("");
   const [costs, setCosts] = useState({ shipping: "0", fee: "0", logistics: "0", rate: "" });
   const [notice, setNotice] = useState("");
+  const [rate, setRate] = useState<CommercialRate | null>(null);
+  const [rateValue, setRateValue] = useState("245");
+  const [savingRate, setSavingRate] = useState(false);
 
   useEffect(() => {
     let active = true;
     (async () => {
-      const { data, error: queryError } = await supabase!
-        .from("market_supplier_offers")
-        .select("id,source_url,source_price,supplier_shipping,availability,eta_text,last_checked_at,valid_until,status,is_primary,market_products(name,presentation),market_suppliers(name)")
-        .order("is_primary", { ascending: false })
-        .order("updated_at", { ascending: false });
+      const [{ data, error: queryError }, { data: rateData }] = await Promise.all([supabase!.from("market_supplier_offers").select("id,source_url,source_price,supplier_shipping,availability,eta_text,last_checked_at,valid_until,status,is_primary,market_products(name,presentation),market_suppliers(name)").order("is_primary", { ascending: false }).order("updated_at", { ascending: false }), supabase!.from("commercial_rates").select("gyd_per_usd,source,as_of,expires_at").eq("id", "gyd_usd").maybeSingle()]);
       if (!active) return;
       if (queryError) setError("No se pudo cargar el abastecimiento.");
       else setOffers((data ?? []) as unknown as Offer[]);
+      if (rateData) { const current = rateData as CommercialRate; setRate(current); setRateValue(String(current.gyd_per_usd)); }
       setLoading(false);
     })();
     return () => { active = false; };
@@ -55,6 +57,18 @@ export default function AbastecimientoPage() {
     else window.location.reload();
   }
 
+  async function saveRate() {
+    if (!supabase) return;
+    const value = Number(rateValue);
+    if (!Number.isFinite(value) || value <= 0) { setError("La tasa debe ser mayor que cero."); return; }
+    setSavingRate(true); setError(""); setNotice("");
+    const now = new Date(); const expires = new Date(now.getTime() + 7 * 86400000);
+    const { error: updateError } = await supabase.from("commercial_rates").upsert({ id: "gyd_usd", gyd_per_usd: value, source: "Referencia comercial operativa CUYANA", as_of: now.toISOString(), expires_at: expires.toISOString(), updated_by: "panel_admin", updated_at: now.toISOString() });
+    setSavingRate(false);
+    if (updateError) setError("No se pudo actualizar la tasa comercial.");
+    else { setRate({ gyd_per_usd: value, source: "Referencia comercial operativa CUYANA", as_of: now.toISOString(), expires_at: expires.toISOString() }); setNotice("Tasa comercial actualizada por 7 días."); }
+  }
+
   async function registerPurchase(offer: Offer) {
     if (!supabase) return;
     setBuying(offer.id); setError(""); setNotice("");
@@ -67,12 +81,15 @@ export default function AbastecimientoPage() {
   }
 
   if (loading) return <main className="admin-page"><p>Cargando abastecimiento…</p></main>;
+  const rateExpiresAt = rate?.expires_at ? new Date(rate.expires_at).getTime() : 0;
+  const rateState = !rate || rateExpiresAt <= Date.now() ? "vencida" : rateExpiresAt - Date.now() <= 86400000 ? "por vencer" : "vigente";
   return (
     <main className="admin-page">
       <header className="admin-page-header"><div><p className="admin-eyebrow">CUYANA Market</p><h1>Abastecimiento</h1><p>Compra externa manual. Abre la fuente y confirma precio, existencia, presentación, destino, entrega y shipping antes de pagar.</p></div></header>
       <div className="supply-warning"><strong>Nunca compres solo por el dato guardado.</strong> La última revisión puede haber vencido.</div>
       {error && <p className="admin-error" role="alert">{error}</p>}
       {notice && <p className="supply-success" role="status">{notice}</p>}
+      <section className="supply-rate" aria-labelledby="rate-title"><div><p className="admin-eyebrow">PRECIO EN GUYANA</p><h2 id="rate-title">Tasa comercial GYD/USD</h2><p className={`supply-rate-${rateState.replace(" ", "-")}`}><strong>{rateState.toUpperCase()}.</strong> {rate ? `Actualizada ${new Date(rate.as_of).toLocaleString("es")}. Vence ${rate.expires_at ? new Date(rate.expires_at).toLocaleString("es") : "sin fecha"}.` : "No hay una tasa activa."}</p></div><label>GYD por 1 USD<input type="number" min="0.01" step="0.01" value={rateValue} onChange={(event) => setRateValue(event.target.value)} /></label><button className="btn btn-primary" type="button" disabled={savingRate} onClick={saveRate}>{savingRate ? "Guardando…" : "Actualizar 7 días"}</button></section>
       <section className="supply-purchase-form" aria-labelledby="purchase-title"><h2 id="purchase-title">Registrar compra ejecutada</h2><p>Introduce el UUID del pedido y los costes reales. Cada tarjeta permite guardar un snapshot financiero inmutable.</p><label>UUID del pedido<input value={orderId} onChange={(event) => setOrderId(event.target.value.trim())} placeholder="00000000-0000-0000-0000-000000000000" /></label><div className="supply-cost-grid"><label>Shipping USD<input type="number" min="0" step="0.01" value={costs.shipping} onChange={(event) => setCosts({ ...costs, shipping: event.target.value })} /></label><label>Comisión FX USD<input type="number" min="0" step="0.01" value={costs.fee} onChange={(event) => setCosts({ ...costs, fee: event.target.value })} /></label><label>Logística USD<input type="number" min="0" step="0.01" value={costs.logistics} onChange={(event) => setCosts({ ...costs, logistics: event.target.value })} /></label><label>Tasa GYD/USD<input type="number" min="0" step="0.01" value={costs.rate} onChange={(event) => setCosts({ ...costs, rate: event.target.value })} /></label></div></section>
       <div className="supply-list">
         {offers.map((offer) => {

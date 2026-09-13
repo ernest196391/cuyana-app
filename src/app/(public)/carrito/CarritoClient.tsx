@@ -102,6 +102,10 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
   const mensajeriaCup = envio?.estado === "zona" ? envio.cup : null;
 
   async function confirmarPedido() {
+    if (!gydPerUsd) {
+      setFormError("El precio en GYD se está actualizando. Podrás confirmar en cuanto la tasa comercial esté vigente.");
+      return;
+    }
     const error = validarPedidoTienda({ items, customerName, customerWhatsapp, destino });
     if (error) {
       setFormError(error);
@@ -217,7 +221,7 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
                     <span>{item.name}</span>
                     <span className="mono cart-item-unit-price">
                       {precio.primary}
-                      {precio.secondary && ` · ${precio.secondary}`}
+                      {precio.secondary && <small>{precio.secondary}</small>}
                     </span>
                   </div>
                   <div className="qty-stepper" role="group" aria-label={`Cantidad de ${item.name}`}>
@@ -415,10 +419,10 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
           <div className="cart-sticky-bar">
             <span className="cart-sticky-total">
               {totalPrecio.primary}
-              {totalPrecio.secondary && <span className="product-card-price-secondary"> · {totalPrecio.secondary}</span>}
+              {totalPrecio.secondary && <span className="product-card-price-secondary">{totalPrecio.secondary}</span>}
             </span>
-            <button type="button" className="cta" disabled={enviando} onClick={() => void confirmarPedido()}>
-              {enviando ? "Registrando…" : "Confirmar pedido"}
+            <button type="button" className="cta" disabled={enviando || !gydPerUsd} onClick={() => void confirmarPedido()}>
+              {!gydPerUsd ? "Precio en actualización" : enviando ? "Registrando…" : "Confirmar pedido"}
             </button>
           </div>
         </>

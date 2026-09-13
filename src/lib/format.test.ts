@@ -51,14 +51,14 @@ describe("formatRateNatural", () => {
 });
 
 describe("formatProductPrice — GYD primario, USD secundario, sin inventar tasa", () => {
-  it("sin tasa comercial vigente, solo muestra USD", () => {
+  it("sin tasa comercial vigente, avisa sin degradar a USD", () => {
     const price = formatProductPrice(45, null);
-    expect(price.primary).toBe("45,00 USD");
+    expect(price.primary).toBe("Precio en actualización");
     expect(price.secondary).toBeNull();
   });
   it("con tasa comercial, GYD es primario y USD secundario", () => {
     const price = formatProductPrice(40, 275);
-    expect(price.primary).toBe("11.000 GYD");
-    expect(price.secondary).toBe("40,00 USD");
+    expect(price.primary).toBe("G$ 11.000");
+    expect(price.secondary).toBe("US$ 40,00");
   });
 });

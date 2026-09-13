@@ -34,10 +34,8 @@ export default function ProductCard({
         </div>
         <span className="product-card-name">{product.name}</span>
         {product.presentation && <span className="product-card-presentation">{product.presentation}</span>}
-        <span className="product-card-price">
-          {price.primary}
-          {price.secondary && <span className="product-card-price-secondary"> · {price.secondary}</span>}
-        </span>
+        <span className="product-card-price">{price.primary}</span>
+        {price.secondary && <span className="product-card-price-secondary">{price.secondary}</span>}
         {!product.available && <span className="badge badge-warning">No disponible</span>}
         {product.available && product.eta && <span className="product-card-eta">Entrega: {product.eta}</span>}
       </Link>
@@ -45,7 +43,7 @@ export default function ProductCard({
       {/* Poder añadir sin entrar al producto es media tienda: quien ya sabe lo
           que quiere no tiene por qué dar dos pasos más para pedirlo. */}
       <div className="product-card-add">
-        <AddToCartButton product={product} compact />
+        <AddToCartButton product={product} compact rateAvailable={Boolean(gydPerUsd)} />
       </div>
     </article>
   );

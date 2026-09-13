@@ -1,5 +1,15 @@
 # TASKS — Cuyana
 
+## CUYANA-FOOD-002 — Refinamiento premium + imágenes + GYD
+
+- [x] Auditar `main` y producción sin reconstruir FOOD-001.
+- [x] Unificar Alimentos con el lenguaje visual de Energía.
+- [x] Curar los cuatro combos y retirar Kiosko del escaparate.
+- [x] Publicar únicamente los assets aprobados del manifiesto.
+- [x] Activar 245 GYD/USD y añadir control operativo en admin.
+- [x] Bloquear compra cuando la tasa comercial no esté vigente.
+- [ ] QA visual en preview, PR, merge y certificación de producción.
+
 ## CUYANA-FOOD-001 — Alimentos multi-proveedor
 
 - [x] A — auditar HEAD y aislar el trabajo.

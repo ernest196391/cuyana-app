@@ -1,5 +1,15 @@
 # HANDOFF — CUYANA-WEB-002
 
+## CUYANA-FOOD-002 — Refinamiento premium + imágenes + GYD
+
+Se trabajó desde `main` `8e7916829a0ae8c326483433156049425d99099a`. Alimentos ya reutiliza el sistema visual de Energía, tiene curación editorial explícita, copys definitivos, soporte real y GYD primario. Se publicaron solo los 17 activos FOOD autorizados en `ASSET_MANIFEST.json`; `draft-reference` quedó fuera.
+
+La base real tiene activa la tasa comercial 245 GYD/USD hasta el 20 de septiembre de 2026. Esta tasa sigue separada de remesas y ahora puede renovarse desde `/admin/abastecimiento`. El checkout queda bloqueado de forma explícita si la tasa vence.
+
+Carnes + Aceite fue revalidado contra el listado vivo de combos de Alawao (USD 35.95, en stock, entrega 24 h) porque su antigua ficha directa devuelve 404. Se guardó una observación nueva con el URL resuelto del listado; no se ocultó ese cambio operativo.
+
+QA local: 123/123 pruebas, TypeScript y build verdes; tres warnings preexistentes en el panel general. Siguiente acción: desplegar preview, capturar Energía/Alimentos en 360/390/412/desktop, mergear y certificar producción.
+
 ## CUYANA-FOOD-001 — Checkpoint 1 (2026-09-13)
 
 Se creó el plan maestro y el cimiento de abastecimiento multi-proveedor sin tocar cuenta, carnet, crédito ni tracking. Incluye ocho tablas `market_*` con RLS/sin acceso anónimo, ofertas múltiples, observaciones, auditorías, configuración, snapshot económico por pedido y cálculo/diff puro probado.

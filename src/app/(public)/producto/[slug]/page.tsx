@@ -54,7 +54,7 @@ export default async function ProductoPage({ params }: { params: { slug: string 
         {product.description && <p className="page-lead">{product.description}</p>}
         <p className="product-detail-price">
           {price.primary}
-          {price.secondary && <span className="product-card-price-secondary"> · {price.secondary}</span>}
+          {price.secondary && <span className="product-card-price-secondary">{price.secondary}</span>}
         </p>
         {product.presentation && <p className="product-detail-meta"><strong>Presentación:</strong> {product.presentation}</p>}
         {product.composition && product.composition.length > 0 && (
@@ -67,7 +67,7 @@ export default async function ProductoPage({ params }: { params: { slug: string 
         )}
 
         <div className="product-detail-cta-desktop">
-          <AddToCartButton product={product} />
+          <AddToCartButton product={product} rateAvailable={Boolean(rate?.gydPerUsd)} />
         </div>
 
         {/* La cobertura, justo donde se decide comprar. Enterarse al final de
@@ -82,9 +82,9 @@ export default async function ProductoPage({ params }: { params: { slug: string 
       <div className="product-sticky-bar">
         <span className="product-sticky-price">
           {price.primary}
-          {price.secondary && <span className="product-card-price-secondary"> · {price.secondary}</span>}
+          {price.secondary && <span className="product-card-price-secondary">{price.secondary}</span>}
         </span>
-        <AddToCartButton product={product} compact />
+        <AddToCartButton product={product} compact rateAvailable={Boolean(rate?.gydPerUsd)} />
       </div>
     </div>
   );

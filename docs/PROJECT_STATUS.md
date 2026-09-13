@@ -1,5 +1,15 @@
 # PROJECT_STATUS — Cuyana
 
+## CUYANA-FOOD-002 — En ejecución (2026-09-13)
+
+- Baseline confirmado: `8e7916829a0ae8c326483433156049425d99099a`.
+- Alimentos refactorizado para compartir jerarquía, tokens y `ProductCard` con Energía.
+- Orden curado: Básicos, Proteína Familiar, Proteína Mixta y Carnes + Aceite. Kiosko queda operativo fuera del escaparate; Compra de Mamá continúa inactiva.
+- 17 imágenes FOOD aprobadas, 1200×1200 WebP, publicadas en rutas propias. Los cinco borradores del ZIP no se usaron.
+- Tasa comercial independiente activa: 245 GYD/USD, vigente hasta 2026-09-20; panel administrativo con estado y renovación por siete días.
+- Sin tasa vigente, tarjetas, fichas y carrito muestran “Precio en actualización” y no permiten confirmar.
+- Verificación provisional: 123/123 tests, TypeScript y build verdes; lint conserva tres warnings antiguos ajenos a FOOD.
+
 ## CUYANA-FOOD-001 — Checkpoint 1 (2026-09-13)
 
 - Baseline auditado: `5af2514afa28f3b928b568481c2a3d6e836254e5`; no se tocaron cuenta/verificación/tracking.
