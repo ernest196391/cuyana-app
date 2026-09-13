@@ -1,5 +1,13 @@
 # PROJECT_STATUS — Cuyana
 
+## CUYANA-UI-CLOSE-004 — Funcionalmente cerrado (2026-09-13)
+
+- CTA global “Empezar” eliminado; el header queda como navegación contextual.
+- Header: símbolo + “Cuyana” a 30 px, sin “Cerca de los tuyos”. Footer: solo símbolo.
+- Alimentos abre directamente con el H1; sin eyebrows redundantes. CTA final: “Hablar por WhatsApp” con el número real configurado.
+- Producción comprobada: 0 imágenes rotas, 0 placeholders activos, precios Guyana correctos, carrito mixto y enlaces funcionales.
+- Limitación de QA: el navegador remoto no expone DevTools al pulsar F12/Ctrl+Shift+M; quedan pendientes únicamente las capturas exactas 360/390/412.
+
 ## CUYANA-MOBILE-POLISH-003 — En ejecución (2026-09-13)
 
 - Formato monetario de tienda aislado: `G$7,593` y `US$30.99`; CUP, remesas y fechas conservan sus reglas.

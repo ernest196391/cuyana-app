@@ -1,5 +1,14 @@
 # TASKS — Cuyana
 
+## CUYANA-UI-CLOSE-004 — Cierre de header, marca y copy
+
+- [x] Eliminar “Empezar” del header desktop, móvil y menú.
+- [x] Mostrar símbolo + “Cuyana” legibles en header, sin tagline.
+- [x] Dejar únicamente el símbolo gráfico en el footer.
+- [x] Quitar eyebrows redundantes y usar “Hablar por WhatsApp”.
+- [x] Certificar producción, navegación, precios, imágenes y carrito.
+- [ ] Adjuntar capturas exactas 360/390/412 cuando haya emulación de dispositivo disponible.
+
 ## CUYANA-MOBILE-POLISH-003 — Cierre móvil
 
 - [x] Corregir GYD/USD al formato comercial Guyana-facing sin alterar CUP ni remesas.
