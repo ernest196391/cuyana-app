@@ -1,5 +1,15 @@
 # HANDOFF — CUYANA-WEB-002
 
+## CUYANA-FOOD-004 — cierre 2026-09-13
+
+- Objetivo: ampliar el catálogo sin recrear productos, proveedores ni imágenes.
+- Resultado: 8 productos nuevos activos; 3 candidatos bloqueados por revalidación; Compra de Mamá y Doubledow permanecen ocultos.
+- Datos: margen 15 % y tasa comercial 245 GYD/USD no cambiaron. Las 8 ofertas vencen a las 24 h y deben revalidarse otra vez antes de la compra externa.
+- Migración: `supabase/migrations/20260913072407_cuyana_food_004_catalog_expansion.sql`, aplicada al proyecto canónico.
+- QA de datos: 8/8 `purchasable=true`, `GREEN`, oferta primaria aprobada, imagen publicada y fila pública vigente; 0 productos comprables con `image_status=needed`.
+- Bloqueos: Huevos no verificable en la ficha dinámica de Supermarket23; Aceite cambió de precio y está agotado; Aseo Personal no coincide con la composición/costo investigados.
+- Siguiente acción exacta: revalidar los 8 activos antes del vencimiento y retomar los 3 bloqueados únicamente cuando el proveedor muestre una coincidencia completa.
+
 ## CUYANA-UI-CLOSE-004 — Header y marca
 
 Se eliminó “Empezar” de todas las variantes del header. La cabecera muestra el símbolo oficial junto a “Cuyana” sin tagline; el footer usa solo el símbolo. Alimentos ya no muestra los eyebrows redundantes y el bloque final enlaza el WhatsApp real con el texto “Hablar por WhatsApp”. Producción confirmó precios Guyana, imágenes, carrito mixto y enlaces. F12/Ctrl+Shift+M no abre DevTools en el navegador remoto, por lo que las capturas exactas 360/390/412 quedan como única certificación visual pendiente; no implica un cambio de código pendiente.

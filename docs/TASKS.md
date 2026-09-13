@@ -1,5 +1,14 @@
 # TASKS — Cuyana
 
+## CUYANA-FOOD-004 — Expansión de catálogo (completado 2026-09-13)
+
+- [x] Revalidar 11 candidatos con imagen contra proveedor actual.
+- [x] Activar únicamente 8 coincidencias completas y registrar observaciones de 24 h.
+- [x] Mantener ocultos Huevos, Aceite y Aseo Personal por fallos verificables.
+- [x] Mantener Compra de Mamá y Doubledow bloqueados.
+- [x] Conservar margen 15 %, tasa comercial 245 GYD/USD e independencia de remesas.
+- [ ] Próxima revalidación: antes de `2026-09-14 07:25:55 UTC` o antes de ejecutar una compra, lo que ocurra primero.
+
 ## Siguiente, por orden (de la auditoría del 2026-09-13)
 
 - [ ] `store_orders.tracking_ref` + primer salto al crear el pedido de tienda.
@@ -7,7 +16,7 @@
 - [ ] Estrenar el tracking de remesas de punta a punta en producción.
 - [ ] Completar la ficha de `combo-carnes-aceite` — DATO, lo pone una persona.
 - [ ] Completar `market_bundle_items` de los cinco combos.
-- [ ] Publicar los ~20 productos que ya están en `market_products`.
+- [ ] Continuar publicando los productos restantes de `market_products` solo cuando tengan foto y oferta revalidada.
 - [ ] Unificar los textos de ETA.
 - [ ] Sustituir el publicado a mano por una función que exija ficha completa.
 - [ ] Contexto de destino en `/tienda/alimentos` (§8.5 punto 1).
@@ -31,12 +40,12 @@
 - [x] Retirar del escaparate los bloques todavía no comprables.
 - [ ] Certificar recorrido móvil 360/390/412 y producción.
 
-## CUYANA-FOOD-004 — Expansión de catálogo (pendiente)
+## CUYANA-FOOD-004 — Expansión de catálogo (primer lote completado)
 
-- [ ] Incorporar de forma gradual los productos investigados que aún no están en el catálogo público.
-- [ ] Revalidar fuente, precio, stock, presentación, ETA y proveedor antes de activar cada producto.
-- [ ] Reutilizar el seed, manifiesto, imágenes y URLs conservados por FOOD-001/002; no reconstruir la investigación.
-- [ ] Publicar únicamente productos con imagen propia, datos completos y prueba de compra.
+- [x] Incorporar de forma gradual los productos investigados que pasaron la revalidación del primer lote.
+- [x] Revalidar fuente, precio, stock, presentación, ETA y proveedor antes de activar cada producto.
+- [x] Reutilizar el seed, manifiesto, imágenes y URLs conservados por FOOD-001/002; no reconstruir la investigación.
+- [x] Publicar únicamente productos con imagen propia y datos completos.
 
 ## CUYANA-FOOD-002 — Refinamiento premium + imágenes + GYD
 
