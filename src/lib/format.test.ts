@@ -13,7 +13,8 @@ describe("parseAmount / formatNumber (formato latinoamericano)", () => {
     expect(parseAmount("10.000")).toBe(10000);
   });
   it("formatea miles con punto", () => {
-    expect(formatNumber(10000)).toBe("10.000");\n    expect(formatNumber(7593)).toBe("7.593");
+    expect(formatNumber(10000)).toBe("10.000");
+    expect(formatNumber(7593)).toBe("7.593");
   });
   it("trata una entrada vacía o inválida como 0", () => {
     expect(parseAmount("")).toBe(0);
@@ -60,5 +61,8 @@ describe("formatProductPrice — GYD primario, USD secundario, sin inventar tasa
     const price = formatProductPrice(40, 275);
     expect(price.primary).toBe("G$ 11.000");
     expect(price.secondary).toBe("US$ 40,00");
+  });
+  it("agrupa también montos de cuatro cifras", () => {
+    expect(formatProductPrice(30.99, 245).primary).toBe("G$ 7.593");
   });
 });
