@@ -130,7 +130,35 @@ a ejecutarse nunca. El Blueprint pide auditoría programada diaria.
 - **Alimentos**: infraestructura completa, catálogo al 23 % de lo que pide el Blueprint (7 de ~30) y con los defectos de §1.
 - **Versionado del esquema**: corregido durante esta sesión —seis migraciones llevaban solo el comentario y no el SQL—, pero conviene un `supabase db dump` de contraste.
 
-### 🔴 El tracking: la mitad
+### ✅ El tracking, cerrado el mismo día
+
+Lo que decía la primera versión de esta auditoría —«la mitad»— ya no es
+cierto. Queda aquí porque explica qué se arregló y por qué.
+
+Dos cadenas, porque son dos cosas distintas:
+
+| | Pasos |
+|---|---|
+| Remesa | pedido recibido → recibido en Guyana → listo en Cuba → entregado |
+| Tienda | pedido recibido → pago confirmado → comprando → preparado → en camino → entregado |
+
+Un CHECK en la base impide que un paso de una se cuelgue de la otra: un
+«recibido en Guyana» colgado de un pedido de comida no tiene arreglo
+posterior, y la app no es el único sitio desde el que se escribe ahí.
+
+Las incidencias —requiere info, sustitución pendiente, retrasado, cancelado,
+reembolsado— van aparte de la cadena, con nota pública y nota interna
+separadas (§7.6). Una incidencia no corta el avance; cancelar y reembolsar sí.
+
+El cliente lo ve en Mi cuenta y en `/envio/<ref>`, que ahora sirve para los
+dos tipos. No hizo falta `store_orders.tracking_ref`: la referencia de un
+pedido de tienda es su propio `id`, que ya viaja a Cuadre como `external_ref`.
+
+**Lo único que queda:** estrenarlo con datos reales. Siguen 0 saltos en
+producción, y hay que comprobar que `CUADRE_API_KEY` está puesta en Vercel —
+sin ella el pedido de tienda no llega a Cuadre y se queda sin seguimiento.
+
+### 🔴 El tracking: la mitad — ESTADO ANTERIOR, YA CORREGIDO
 
 Esta es la respuesta a «creo que tracking todavía no está, no sé».
 
@@ -164,15 +192,15 @@ pide desde la misma experiencia, y hoy no lo están.
 
 ## 3. Qué construir después, y por qué en este orden
 
-### Primero — cerrar el tracking, que está a medio camino
+### Primero — estrenar el tracking con datos reales
 
-Es lo único del MVP de §17 que está empezado y sin terminar, y lo que hace que
-todo lo demás valga: un cliente que ve dónde va lo suyo vuelve.
+El modelo y las pantallas están cerrados. Lo que falta es usarlo una vez:
 
-1. `store_orders.tracking_ref` + su primer salto al crear el pedido.
-2. Los estados de tienda de §7.3, que no son los de remesa.
-3. Una remesa real de punta a punta: pedir → mover los cuatro pasos → verlo en
-   Mi cuenta y en el comprobante. Hoy hay **cero** saltos en producción.
+1. Comprobar que `CUADRE_API_KEY` está en Vercel. Sin ella el pedido de tienda
+   no llega a Cuadre y se queda sin seguimiento.
+2. Una remesa real de punta a punta: pedir → mover los pasos en Cuadre →
+   verlo en Mi cuenta y en el comprobante.
+3. Un pedido de tienda igual, por su cadena.
 
 ### Segundo — completar el catálogo, que es lo que hace falta para vender
 
