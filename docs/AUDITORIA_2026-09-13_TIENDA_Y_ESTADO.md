@@ -158,6 +158,37 @@ pedido de tienda es su propio `id`, que ya viaja a Cuadre como `external_ref`.
 producción, y hay que comprobar que `CUADRE_API_KEY` está puesta en Vercel —
 sin ella el pedido de tienda no llega a Cuadre y se queda sin seguimiento.
 
+### 🔒 Repaso de seguridad después de tocar la base
+
+El linter de Supabase, pasado al terminar el seguimiento. Tres cosas, y
+conviene separar lo que era un agujero de lo que era ruido:
+
+**No era un agujero, aunque lo pareciera.** `void_delivery`,
+`void_purchase`, `settle_commission_payout` y `request_commission_payout`
+mueven dinero y salen marcadas como llamables por cualquiera con sesión —
+y como las dos webs comparten proyecto de Supabase, un cliente de la tienda
+es `authenticated` igual que Adonys. Leídas por dentro, las cuatro
+comprueban `cuadre.profiles` antes de hacer nada. `cliente_de_la_web`
+también: es la que devuelve el familiar y el crédito, y sin esa guarda
+cualquiera con un enlace de seguimiento —que se comparten por WhatsApp—
+habría leído la dirección de quien recibe. La guarda está puesta.
+
+**Sí había que arreglarlo.** Siete funciones de disparador concedidas a
+`anon` y `authenticated`, y la que guarda las tasas sin `search_path` fijo.
+Hoy no se podía hacer daño con ninguna de las dos —llamar a mano algo que
+devuelve `trigger` da error, y la de las tasas no lee tablas—, pero el
+permiso sobra: Postgres lo comprueba al crear el disparador, no cada vez
+que salta. Corregido en `0021_los_disparadores_no_se_llaman_a_mano`, con
+prueba de que el alta de clientes, la limpieza de códigos de referido y el
+primer salto de un pedido de tienda siguen funcionando sin él. El aviso de
+`search_path` desapareció; de los otros dos quedan solo los intencionados
+(`seguimiento` y `comprobante` son públicos a propósito, que para eso es un
+enlace que se comparte).
+
+**Queda encendido lo que decides tú.** La protección contra contraseñas
+filtradas (HaveIBeenPwned) está apagada. Es un interruptor del panel de
+Supabase, en la misma pantalla donde está lo de la confirmación por correo.
+
 ### 🔴 El tracking: la mitad — ESTADO ANTERIOR, YA CORREGIDO
 
 Esta es la respuesta a «creo que tracking todavía no está, no sé».
@@ -220,7 +251,8 @@ El modelo y las pantallas están cerrados. Lo que falta es usarlo una vez:
 ### Pendiente de decisión tuya
 
 - **Confirmación por correo del alta**: hoy encendida y sin servidor de correo.
-  Ver README.
+  Ver README. En esa misma pantalla del panel de Supabase está el interruptor
+  de **contraseñas filtradas**, que también conviene encender.
 - **Cuánto se le da por referido** y **cuánto se adelanta**: los dos en 0,
   esperando número.
 - Los cuatro combos del Blueprint (§10) se llaman *Resuelve*, *Compra de Mamá*,
