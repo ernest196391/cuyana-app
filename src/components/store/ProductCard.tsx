@@ -37,7 +37,9 @@ export default function ProductCard({
         {product.presentation && <span className="product-card-presentation">{product.presentation}</span>}
         <span className="product-card-price">{price.primary}</span>
         {price.secondary && <span className="product-card-price-secondary">{price.secondary}</span>}
-        {!product.available && <span className="badge badge-warning">No disponible</span>}
+        {!product.available && (
+          <span className="badge badge-warning">{motivo(product.unavailableReason)}</span>
+        )}
         {product.available && eta && <span className="product-card-eta">{eta}</span>}
       </Link>
 
@@ -48,6 +50,20 @@ export default function ProductCard({
       </div>
     </article>
   );
+}
+
+/**
+ * Por qué no se puede comprar, dicho para quien lo lee.
+ *
+ * «No disponible» a secas hace pensar que se acabó. Si lo que pasa es que se
+ * nos venció el precio o que la ficha está a medias, el problema es nuestro y
+ * conviene decirlo así: la persona vuelve, en vez de irse pensando que no
+ * tenemos nada.
+ */
+function motivo(razon: CatalogProduct["unavailableReason"]) {
+  if (razon === "precio_vencido") return "Confirmando precio";
+  if (razon === "ficha_incompleta") return "Preparando la ficha";
+  return "No disponible";
 }
 
 function shortEta(eta: string) {

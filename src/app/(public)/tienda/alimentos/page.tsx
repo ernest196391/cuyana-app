@@ -18,7 +18,18 @@ export default async function AlimentosPage() {
   const provider = getCatalogProvider();
   const [result, rate] = await Promise.all([provider.listByCategory("alimentos"), provider.getCommercialRate()]);
   const bySlug = new Map(result.products.map((product) => [product.slug, product]));
-  const combos = FEATURED_COMBOS.flatMap((slug) => bySlug.get(slug) ? [bySlug.get(slug)!] : []);
+  // Los cuatro destacados primero, y DETRÁS todos los demás combos.
+  //
+  // Antes esta lista era la única puerta a los combos y los que no estaban en
+  // ella desaparecían: no salían aquí por no estar destacados, y tampoco en
+  // «Completa la compra», que filtra los que no son combo. `combo-kiosko`
+  // llevaba publicado desde ayer, a 194 USD, y no había forma de llegar a él
+  // salvo escribiendo la dirección a mano.
+  const destacados = FEATURED_COMBOS.flatMap((slug) => (bySlug.get(slug) ? [bySlug.get(slug)!] : []));
+  const restoDeCombos = result.products.filter(
+    (product) => product.kind === "bundle" && !FEATURED_COMBOS.includes(product.slug),
+  );
+  const combos = [...destacados, ...restoDeCombos];
   const essentials = result.products.filter((product) => product.kind !== "bundle");
   const supportUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola CUYANA, necesito ayuda para elegir una compra para mi familia.")}`;
 

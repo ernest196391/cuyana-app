@@ -7,7 +7,7 @@ describe("catálogo público CUYANA", () => {
       product_id: "p1", slug: "basicos", name: "Básicos", kind: "bundle", category: "alimentos",
       description: "Compra esencial", presentation: "3 productos", composition: ["arroz", "huevos", "aceite"],
       substitution_policy: "Confirmar equivalentes", price_usd: "30.99", available: true, eta_text: "24 h",
-      image_url: null, source_checked_at: "2026-09-13T00:00:00Z",
+      image_url: null, source_checked_at: "2026-09-13T00:00:00Z", valid_until: "2026-09-14T00:00:00Z",
     });
     expect(product.priceUsd).toBe(30.99);
     expect(product.sourceSystem).toBe("cuyana-market");

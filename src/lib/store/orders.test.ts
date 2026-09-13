@@ -115,6 +115,31 @@ describe("pedido de tienda", () => {
     expect(insertsHechos[0].customer_id).toBe(quien);
   });
 
+  it("un precio vencido no se puede vender, aunque esté en el carrito", async () => {
+    const { createStoreOrder } = await import("./orders");
+    const { aplicarVigencia } = await import("@/lib/catalog/vigencia");
+    // El proveedor devuelve lo mismo que devolvería el catálogo real tras
+    // pasar por la vigencia: el precio de ayer, ya caducado.
+    const vencido = {
+      ...proveedor,
+      getProduct: async () => ({
+        status: "ok" as const,
+        product: aplicarVigencia(
+          { ...producto, kind: "product" as const, syncedAt: "2026-09-12T00:00:00Z",
+            description: "Panel solar", imageUrl: null },
+          "2020-01-01T00:00:00Z",
+        ),
+      }),
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const r = await createStoreOrder(vencido as any, entrada);
+    // Esto es lo que cierra el agujero: la ruta de compra del operador ya se
+    // negaba a comprar con una oferta vencida. Si la tienda hubiera seguido
+    // vendiendo, la diferencia la pagaba CUYANA.
+    expect(r.status).toBe("error");
+    expect(insertsHechos).toHaveLength(0);
+  });
+
   it("no encadena un select al insert: eso es lo que rompía la tienda", async () => {
     const { createStoreOrder } = await import("./orders");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

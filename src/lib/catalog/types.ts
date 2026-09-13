@@ -21,6 +21,16 @@ export interface CatalogProduct {
   /** Precio canónico en USD, tal como lo entrega el sistema canónico. */
   priceUsd: number;
   available: boolean;
+  /**
+   * Por qué no se puede comprar, cuando `available` es falso.
+   *
+   * «No disponible» a secas mezcla tres cosas distintas que se arreglan de
+   * formas distintas: se acabó en el proveedor, se venció el precio que
+   * teníamos, o la ficha está a medias y no podemos decir qué lleva dentro.
+   * Al cliente hay que decírselo con palabras distintas, y a quien opera le
+   * dice qué tiene que ir a arreglar.
+   */
+  unavailableReason?: "agotado" | "precio_vencido" | "ficha_incompleta";
   /** Datos de decisión visibles; nunca incluyen proveedor ni costo fuente. */
   kind?: "product" | "bundle";
   presentation?: string | null;

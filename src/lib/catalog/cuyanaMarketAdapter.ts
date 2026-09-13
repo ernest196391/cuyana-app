@@ -1,5 +1,6 @@
 import type { CatalogListResult, CatalogProduct, CatalogProductResult } from "./types";
 import { marketSupabase } from "./marketSupabase";
+import { aplicarVigencia } from "./vigencia";
 
 type PublicCatalogRow = {
   product_id: string;
@@ -16,6 +17,8 @@ type PublicCatalogRow = {
   eta_text: string | null;
   image_url: string | null;
   source_checked_at: string;
+  /** Hasta cuándo vale el precio que trae esta fila. */
+  valid_until: string | null;
 };
 
 export function mapPublicFoodRow(row: PublicCatalogRow): CatalogProduct {
@@ -41,12 +44,19 @@ export function mapPublicFoodRow(row: PublicCatalogRow): CatalogProduct {
 export async function listCuyanaFoodProducts(): Promise<CatalogListResult> {
   const { data, error } = await marketSupabase.from("market_public_catalog").select("*").eq("category", "alimentos").order("kind", { ascending: true }).order("name");
   if (error) return { status: "error", products: [], message: "No pudimos actualizar el catálogo de alimentos." };
-  const products = (data as PublicCatalogRow[]).map(mapPublicFoodRow);
+  // La vigencia y la ficha se comprueban aquí, en el único sitio por el que
+  // pasan TODOS los lectores del catálogo —la rejilla, la ficha y el servidor
+  // que vuelve a resolver el precio al guardar el pedido—. Si se comprobara
+  // en la pantalla, el checkout se lo saltaría.
+  const products = (data as PublicCatalogRow[]).map((row) =>
+    aplicarVigencia(mapPublicFoodRow(row), row.valid_until));
   return { status: products.length ? "ok" : "empty", products };
 }
 
 export async function getCuyanaFoodProduct(slug: string): Promise<CatalogProductResult> {
   const { data, error } = await marketSupabase.from("market_public_catalog").select("*").eq("slug", slug).maybeSingle();
   if (error) return { status: "error", product: null, message: "No pudimos actualizar este producto." };
-  return data ? { status: "ok", product: mapPublicFoodRow(data as PublicCatalogRow) } : { status: "empty", product: null };
+  if (!data) return { status: "empty", product: null };
+  const row = data as PublicCatalogRow;
+  return { status: "ok", product: aplicarVigencia(mapPublicFoodRow(row), row.valid_until) };
 }
