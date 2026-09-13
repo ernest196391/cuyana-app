@@ -8,7 +8,7 @@ export default function Logo({
   variant = "horizontal",
   height = 32,
 }: {
-  variant?: "horizontal" | "symbol";
+  variant?: "horizontal" | "symbol" | "header";
   height?: number;
 }) {
   if (variant === "symbol") {
@@ -16,6 +16,16 @@ export default function Logo({
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img src="/brand/cuyana/cuyana-symbol.svg" alt="Cuyana" width={width} height={height} />
+    );
+  }
+  if (variant === "header") {
+    const width = Math.round((height * 256) / 192);
+    return (
+      <span className="cuyana-header-logo" aria-label="Cuyana">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/cuyana/cuyana-symbol.svg" alt="" width={width} height={height} aria-hidden="true" />
+        <span>Cuyana</span>
+      </span>
     );
   }
   const width = Math.round((height * 720) / 220);
