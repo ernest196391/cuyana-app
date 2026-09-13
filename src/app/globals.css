@@ -31,37 +31,46 @@
   --texto-suave: var(--cuyana-text-secondary);
 }
 
-/* CUYANA Market: alimentos. Mobile-first y sin depender de las imágenes. */
-.food-market { background: #fffdf9; }
-.food-hero { padding-top: 2.5rem; padding-bottom: 2rem; }
-.food-eyebrow { color: var(--cuyana-burgundy, #7a0e2e); font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-.food-destination-note { display: inline-flex; margin-top: 1rem; padding: .7rem .9rem; border-radius: 999px; background: #f8f0df; color: #520b24; font-weight: 700; font-size: .9rem; }
-.food-section { padding-top: 1.75rem; padding-bottom: 2.5rem; }
-.food-section-heading { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1rem; }
-.food-section-heading h2, .food-how h2, .food-faq h2 { margin: .2rem 0; font-family: var(--font-playfair), serif; color: #520b24; }
-.food-section-heading > p { max-width: 30rem; color: #675b60; }
-.food-guided-grid { display: grid; gap: 1rem; padding-top: .5rem; padding-bottom: 2rem; }
-.food-guided-grid article { display: flex; gap: 1rem; padding: 1.25rem; border: 1px solid #eadfd4; border-radius: 1rem; background: white; box-shadow: 0 8px 24px rgb(82 11 36 / 6%); }
-.food-guided-grid article > span { font-size: 1.7rem; }
-.food-guided-grid h2 { margin: 0 0 .3rem; font-size: 1.05rem; color: #520b24; }
-.food-guided-grid p { margin: 0 0 .65rem; color: #675b60; }
-.food-how { padding: 2.75rem 0; background: #f8f0df; }
-.food-how-grid { display: grid; gap: 1rem; margin-top: 1rem; }
-.food-how-grid p { margin: 0; padding: 1rem; border-radius: .8rem; background: rgb(255 255 255 / 70%); }
-.food-smallprint { margin: 1rem 0 0; color: #675b60; font-size: .9rem; }
-.food-faq details { padding: 1rem 0; border-bottom: 1px solid #eadfd4; }
-.food-faq summary { cursor: pointer; color: #520b24; font-weight: 750; }
-.food-faq .btn { margin-top: 1.25rem; }
+/* Alimentos usa el mismo lenguaje editorial y las mismas tarjetas de Energía. */
+.section-eyebrow { margin: 0 0 8px; color: var(--vino); font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.food-hero { padding-bottom: 32px; }
+.food-hero .page-title { max-width: 780px; font-size: clamp(34px, 6vw, 54px); line-height: 1.08; }
+.food-hero .page-lead { max-width: 720px; font-size: 16px; }
+.food-delivery-line { margin: 0; color: var(--texto-suave); font-size: 13px; }
+.store-section { padding-block: 36px; }
+.store-section-heading { margin-bottom: 20px; max-width: 720px; }
+.store-section-heading h2, .food-faq h2, .food-support h2 { margin: 0 0 8px; color: var(--vino-deep); font-family: var(--font-playfair), serif; font-size: clamp(24px, 4vw, 32px); font-weight: 400; line-height: 1.2; }
+.store-section-heading > p:last-child { margin: 0; color: var(--texto-suave); line-height: 1.55; }
+.food-secondary-entry { display: grid; grid-template-columns: 112px 1fr; align-items: center; gap: 20px; margin-block: 20px 34px; padding-block: 18px; border-block: 1px solid var(--linea); }
+.food-secondary-image { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: var(--papel-card); }
+.food-secondary-image img, .product-card-img img { object-fit: contain; padding: 6px; }
+.food-secondary-entry h2, .food-guided h2 { margin: 0 0 6px; color: var(--vino-deep); font-family: var(--font-playfair), serif; font-size: 21px; font-weight: 400; }
+.food-secondary-entry p:last-child, .food-guided p:last-child { margin: 0; color: var(--texto-suave); font-size: 14px; line-height: 1.5; }
+.food-guided { display: grid; gap: 24px; padding-block: 20px 48px; }
+.food-guided article { padding-top: 18px; border-top: 1px solid var(--linea); }
+.food-process { padding-block: 48px; background: rgba(212, 160, 23, .08); }
+.food-process ol { display: grid; gap: 0; margin: 26px 0 0; padding: 0; list-style: none; counter-reset: food-step; }
+.food-process li { display: grid; grid-template-columns: 42px 1fr; gap: 4px 14px; padding: 18px 0; border-top: 1px solid rgba(122, 14, 46, .15); counter-increment: food-step; }
+.food-process li::before { grid-row: span 2; content: counter(food-step, decimal-leading-zero); color: var(--dorado); font-family: var(--font-jetbrains-mono), monospace; }
+.food-process li strong { font-size: 12px; letter-spacing: .08em; }
+.food-process li span, .food-process-note { color: var(--texto-suave); line-height: 1.55; }
+.food-process-note { max-width: 650px; margin: 18px 0 0; }
+.food-faq details { padding: 17px 0; border-bottom: 1px solid var(--linea); }
+.food-faq summary { cursor: pointer; color: var(--texto); font-weight: 600; }
+.food-faq details p { max-width: 680px; color: var(--texto-suave); line-height: 1.55; }
+.food-support { display: flex; flex-direction: column; gap: 20px; margin-block: 24px 64px; padding: 28px; border-radius: 16px; background: var(--vino-deep); color: white; }
+.food-support h2 { color: white; }
+.food-support p { max-width: 620px; margin: 0; color: rgba(255,255,255,.78); line-height: 1.55; }
+.food-support-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.food-support .btn-secondary { color: white; border-color: rgba(255,255,255,.4); text-decoration: none; }
 .product-card-presentation { display: -webkit-box; overflow: hidden; color: #675b60; font-size: .82rem; line-height: 1.35; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .product-card-eta { color: #396247; font-size: .78rem; font-weight: 700; }
 .product-composition, .product-policy { margin-top: 1rem; padding: 1rem; border-radius: .8rem; background: #f8f4ed; }
 .product-composition h2, .product-policy h2 { margin: 0 0 .5rem; font-size: 1rem; color: #520b24; }
 .product-composition ul { margin: 0; padding-left: 1.2rem; }
 .product-policy p { margin: 0; }
-@media (min-width: 720px) {
-  .food-guided-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .food-how-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
+@media (min-width: 720px) { .food-guided { grid-template-columns: repeat(2, minmax(0, 1fr)); } .food-process ol { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; } .food-process li { display: flex; flex-direction: column; } .food-support { flex-direction: row; align-items: center; justify-content: space-between; } }
+@media (min-width: 980px) { .food-featured-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
 * {
   box-sizing: border-box;
@@ -979,7 +988,7 @@ input:focus-visible,
    entran dos a 412px, que es como se mira un catálogo. */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
 }
 @media (min-width: 720px) {
@@ -993,10 +1002,10 @@ input:focus-visible,
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   border: 1px solid var(--linea);
-  border-radius: 14px;
-  padding: 12px;
+  border-radius: 16px;
+  padding: 14px;
   background: var(--papel-card);
   transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
 }
@@ -1051,16 +1060,23 @@ input:focus-visible,
 }
 .product-card-name {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
+  line-height: 1.3;
 }
 .product-card-price {
   font-family: var(--font-jetbrains-mono), monospace;
-  font-size: 13px;
+  font-size: clamp(16px, 4.6vw, 20px);
+  font-weight: 600;
+  line-height: 1.2;
   color: var(--vino-deep);
 }
 .product-card-price-secondary {
+  display: block;
   color: var(--texto-suave);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
   font-weight: 400;
+  line-height: 1.35;
 }
 
 .badge {
@@ -1098,6 +1114,9 @@ input:focus-visible,
   color: var(--vino-deep);
   margin: 12px 0 20px;
 }
+.product-detail-price .product-card-price-secondary,
+.product-sticky-price .product-card-price-secondary,
+.cart-sticky-total .product-card-price-secondary { margin-top: 4px; }
 /* La barra fija del pie solo existe para que el precio y "Añadir al
    carrito" nunca dependan de hacer scroll en móvil; en escritorio ya se ve
    completo el CTA normal, así que se ocultan mutuamente. */
@@ -1170,6 +1189,8 @@ input:focus-visible,
   font-size: 12px;
   color: var(--texto-suave);
 }
+.cart-item-unit-price small { display: block; font-size: 11px; }
+
 .cart-item-remove {
   display: inline-flex;
   align-items: center;

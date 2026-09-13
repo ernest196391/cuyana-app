@@ -28,6 +28,15 @@
 .supply-purchase-form input { min-width: 0; padding: .7rem; border: 1px solid var(--border); border-radius: 10px; }
 .supply-cost-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .7rem; margin-top: .8rem; }
 .supply-success { color: #166534; font-weight: 750; }
+.supply-rate { display: grid; gap: .8rem; align-items: end; margin: 1rem 0; padding: 1rem; border: 1px solid var(--border); border-radius: 18px; background: #fff; }
+.supply-rate h2 { margin: 0; }
+.supply-rate p { margin: .35rem 0 0; color: #675b60; }
+.supply-rate-vigente { color: #166534 !important; }
+.supply-rate-por-vencer { color: #92640a !important; }
+.supply-rate-vencida { color: #991b1b !important; }
+.supply-rate label { display: grid; gap: .35rem; font-weight: 700; }
+.supply-rate input { width: 100%; padding: .7rem; border: 1px solid var(--border); border-radius: 10px; }
+@media (min-width: 850px) { .supply-rate { grid-template-columns: 1fr minmax(160px, .35fr) auto; } }
 @media (min-width: 850px) { .supply-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 .admin-shell a {

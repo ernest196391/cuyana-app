@@ -104,12 +104,13 @@ export function formatRate(rate: number) {
 /**
  * Precio de producto: GYD primario derivado de la tasa comercial vigente
  * (nunca la de remesas) y USD secundario, el precio canónico. Si no hay
- * tasa comercial vigente, no se inventa una: se muestra solo USD.
+ * tasa comercial vigente, no se inventa una ni se degrada silenciosamente
+ * a USD: el precio queda explícitamente en actualización.
  */
 export function formatProductPrice(priceUsd: number, gydPerUsd: number | null) {
-  const usd = `${priceUsd.toLocaleString("es", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`;
-  if (!gydPerUsd || gydPerUsd <= 0) return { primary: usd, secondary: null as string | null };
-  const gyd = `${Math.round(priceUsd * gydPerUsd).toLocaleString("es")} GYD`;
+  const usd = `US$ ${priceUsd.toLocaleString("es", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  if (!gydPerUsd || gydPerUsd <= 0) return { primary: "Precio en actualización", secondary: null as string | null };
+  const gyd = `G$ ${Math.round(priceUsd * gydPerUsd).toLocaleString("es")}`;
   return { primary: gyd, secondary: usd };
 }
 
