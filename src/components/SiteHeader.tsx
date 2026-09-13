@@ -21,7 +21,7 @@ export default function SiteHeader() {
     <header className="site-header">
       <div className="wrap site-header-row">
         <Link href="/" className="site-logo" aria-label="Cuyana — inicio" onClick={() => setOpen(false)}>
-          <Logo variant="horizontal" height={30} />
+          <Logo variant="header" height={30} />
         </Link>
 
         <nav className="site-nav-desktop" aria-label="Principal">
@@ -39,9 +39,6 @@ export default function SiteHeader() {
 
         <div className="site-header-actions">
           <CartIndicator />
-          <Link href="/enviar-dinero" className="site-cta-header">
-            Empezar
-          </Link>
           <button
             type="button"
             className="site-menu-btn"
@@ -69,9 +66,6 @@ export default function SiteHeader() {
               {cuenta.texto}
             </Link>
           )}
-          <Link href="/enviar-dinero" className="site-cta-header site-cta-header-movil" onClick={() => setOpen(false)}>
-            Empezar
-          </Link>
         </nav>
       )}
     </header>

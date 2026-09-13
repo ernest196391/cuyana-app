@@ -113,6 +113,17 @@ body {
   flex-shrink: 0;
   line-height: 0;
 }
+.cuyana-header-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--vino-deep);
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1;
+}
+.cuyana-header-logo img { flex: 0 0 auto; }
 .site-nav-desktop {
   display: none;
   align-items: center;
