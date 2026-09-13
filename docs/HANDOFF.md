@@ -14,6 +14,12 @@ El seed reconstruido contiene exactamente 5 proveedores, 6 combos y 23 productos
 
 Siguiente acción exacta: automatizar la revalidación en servidor, cerrar un cuarto combo vigente, conectar el guardado del snapshot de compra y certificar el preview móvil.
 
+### Checkpoint 3
+
+Se cerraron los pendientes operativos: revalidación servidor segura con historial Antes → Ahora, cuarto combo vigente, componentes normalizados y registro del snapshot de compra desde `/admin/abastecimiento`. El catálogo activo tiene cuatro combos y dos esenciales; la capa privada mantiene todas las alternativas investigadas. Las imágenes siguen deliberadamente en placeholders/manifiesto porque se producen en el chat visual separado.
+
+Verificación local: 123/123 pruebas, TypeScript y build verdes; lint solo conserva tres warnings anteriores y ajenos a FOOD. Pendiente inmediato: certificar el preview responsive, mergear PR #8 y comprobar producción.
+
 De: Claude Code (sesión `session_011YVe5XSew1neZgVdirhS38`)
 Fecha: 2026-09-12T03:15:00Z (UTC)
 Rama: `claude/ecstatic-ramanujan-iv70r6`

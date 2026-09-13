@@ -6,9 +6,9 @@
 - [x] B — contrato de datos, RLS, economía y auditoría.
 - [x] C — importar seed como investigación no comprable.
 - [x] D — manifiesto visual y placeholders, sin generar imágenes.
-- [ ] E — adaptador listo; falta automatizar revalidación servidor.
+- [x] E — adaptador y revalidación servidor con auditoría Antes → Ahora.
 - [x] F — `/tienda/alimentos`, fichas y checkout existente reutilizado.
-- [ ] G — vista operativa lista; falta persistir compra/snapshot desde UI.
+- [x] G — panel operativo, alternativas y snapshot de compra desde UI.
 - [ ] H — QA móvil, publicación y certificación.
 
 Registro de tareas reclamadas por agentes (Claude Code, ChatGPT Work u otros).

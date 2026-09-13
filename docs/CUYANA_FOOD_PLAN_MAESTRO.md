@@ -80,18 +80,18 @@ Si difieren, el código real gana en arquitectura; el Blueprint V5 gana en decis
 ### G. Operación — P0
 
 - [x] Vista protegida para elegir proveedor y abrir URL exacta.
-- [ ] Revalidación obligatoria antes de comprar.
-- [ ] Alternativas ordenadas.
-- [ ] Guardar snapshot de costo, tasa, reparto y URL comprada.
-- [ ] Compra final manual.
+- [x] Revalidación obligatoria antes de comprar.
+- [x] Alternativas ordenadas.
+- [x] Guardar snapshot de costo, tasa, reparto y URL comprada.
+- [x] Compra final manual.
 
 ### H. QA, entrega y publicación — P0
 
-- [ ] Build, lint, typecheck y tests.
+- [x] Build, lint, typecheck y tests.
 - [ ] 360, 412, tablet y desktop.
 - [ ] Carrito, checkout, mensajería y pedido.
-- [ ] Sin imágenes rotas.
-- [ ] Documentos de estado y handoff.
+- [x] Sin imágenes rotas.
+- [x] Documentos de estado y handoff.
 - [ ] Commit, push, PR/merge y verificación de producción si el acceso lo permite.
 
 ## Reglas comerciales congeladas para el MVP
@@ -108,4 +108,4 @@ El bloque termina cuando existe un catálogo operativo de 4–6 combos y aproxim
 
 ## Siguiente acción exacta
 
-Automatizar la revalidación en servidor, cerrar el cuarto combo vigente y ejecutar QA móvil sobre el preview publicado.
+Publicar el preview, certificar 360/412/tablet/desktop y mergear el PR cuando Vercel esté verde.

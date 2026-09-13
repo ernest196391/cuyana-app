@@ -21,6 +21,13 @@
 .supply-card dd { margin: .15rem 0 0; font-weight: 750; }
 .supply-valid { color: #166534; }
 .supply-expired { color: #991b1b; }
+.supply-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+.supply-purchase-form { margin: 1rem 0; padding: 1rem; border: 1px solid var(--border); border-radius: 18px; background: #fff; }
+.supply-purchase-form h2 { margin: 0; }
+.supply-purchase-form label { display: grid; gap: .35rem; font-weight: 700; }
+.supply-purchase-form input { min-width: 0; padding: .7rem; border: 1px solid var(--border); border-radius: 10px; }
+.supply-cost-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .7rem; margin-top: .8rem; }
+.supply-success { color: #166534; font-weight: 750; }
 @media (min-width: 850px) { .supply-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 .admin-shell a {

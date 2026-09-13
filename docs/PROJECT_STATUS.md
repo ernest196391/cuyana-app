@@ -19,6 +19,14 @@
 - Manifiesto de 12 imágenes creado; no se generaron imágenes.
 - 114/114 tests y build verde.
 
+### Checkpoint 3
+
+- Revalidación administrativa automática: extracción JSON-LD, comparación contra la observación anterior, auditoría, caducidad de 24 h y bloqueo de compra ante cambios críticos o stock dudoso.
+- Protección de fuentes contra protocolos, hosts privados y redirecciones inseguras.
+- Cuarto combo vigente: Combo Kiosko; el catálogo público activo queda en 4 combos + 2 esenciales. Los agotados/404 permanecen fuera de venta.
+- Panel operativo capaz de registrar la compra ejecutada contra un pedido real, con costo aterrizado, tasa, margen y reparto 5%/5%/5% en snapshot.
+- 123/123 tests, TypeScript y build verdes. Lint conserva únicamente tres warnings preexistentes del panel general.
+
 Última actualización: 2026-09-11T18:00:00Z por Claude Code (CUYANA-WEB-001).
 
 ## Resumen
