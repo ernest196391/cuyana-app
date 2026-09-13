@@ -10,7 +10,7 @@ export function parseAmount(str: string) {
 
 /** Formatea un monto entero: 10000 -> "10.000". */
 export function formatNumber(n: number) {
-  return Math.round(n).toLocaleString("es");
+  return Math.round(n).toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ".");
 }
 
 /** Parsea un número con decimales (ej. tasa "21,40") en formato latinoamericano. */
@@ -110,7 +110,7 @@ export function formatRate(rate: number) {
 export function formatProductPrice(priceUsd: number, gydPerUsd: number | null) {
   const usd = `US$ ${priceUsd.toLocaleString("es", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   if (!gydPerUsd || gydPerUsd <= 0) return { primary: "Precio en actualización", secondary: null as string | null };
-  const gyd = `G$ ${Math.round(priceUsd * gydPerUsd).toLocaleString("es")}`;
+  const gyd = `G$ ${formatNumber(priceUsd * gydPerUsd)}`;
   return { primary: gyd, secondary: usd };
 }
 
