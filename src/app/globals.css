@@ -1814,3 +1814,23 @@ a.cuenta-envio-ver {
 .cuenta-quitar {
   color: #b3261e;
 }
+
+.cuenta-referidos {
+  margin: 22px 0;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1.5px solid var(--linea);
+  background: var(--papel-card);
+}
+.cuenta-referidos .cta {
+  margin-top: 12px;
+}
+/* El código se dicta por teléfono tanto como se copia: grande y espaciado. */
+.cuenta-codigo {
+  margin: 10px 0 4px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--vino);
+}

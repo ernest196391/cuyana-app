@@ -48,6 +48,13 @@ export default function MiCuentaPage() {
   const [remesas, setRemesas] = useState<Remesa[]>([]);
   const [pedidos, setPedidos] = useState<PedidoTienda[]>([]);
   const [cargandoHistorial, setCargandoHistorial] = useState(true);
+  // El código de referido y cuántos han pedido con él. Solo para verificados:
+  // un código que pueda sacarse cualquiera que escriba un correo es una
+  // invitación a fabricarse cuentas para cobrarse a sí mismo.
+  const [codigo, setCodigo] = useState<string | null>(null);
+  const [referidos, setReferidos] = useState<number | null>(null);
+  const [sacando, setSacando] = useState(false);
+  const [copiado, setCopiado] = useState(false);
   const [abierto, setAbierto] = useState<number | null>(null);
 
   useEffect(() => {
@@ -79,6 +86,43 @@ export default function MiCuentaPage() {
   useEffect(() => {
     if (user) cargarHistorial(user.id);
   }, [user, cargarHistorial]);
+
+  // Si ya tiene código se lee; no se crea nada al abrir la pantalla.
+  useEffect(() => {
+    if (!user || !supabase) return;
+    let vivo = true;
+    (async () => {
+      const [{ data: fila }, { data: cuantos }] = await Promise.all([
+        supabase!.from("referrals").select("code").eq("customer_id", user.id).maybeSingle(),
+        supabase!.rpc("mis_referidos"),
+      ]);
+      if (!vivo) return;
+      setCodigo((fila?.code as string) ?? null);
+      setReferidos(typeof cuantos === "number" ? cuantos : 0);
+    })();
+    return () => { vivo = false; };
+  }, [user]);
+
+  async function sacarCodigo() {
+    if (!supabase) return;
+    setSacando(true);
+    const { data, error } = await supabase.rpc("mi_codigo_de_referido");
+    setSacando(false);
+    if (error || typeof data !== "string") return;
+    setCodigo(data);
+  }
+
+  async function copiarEnlace() {
+    if (!codigo) return;
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/enviar-dinero?ref=${codigo}`);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2500);
+    } catch {
+      // Sin portapapeles no se finge que se copió: el código está a la vista.
+      setCopiado(false);
+    }
+  }
 
   async function salir() {
     await supabase?.auth.signOut();
@@ -172,6 +216,41 @@ export default function MiCuentaPage() {
           </div>
         )}
       </div>
+
+      {/* Referidos. Cuánto se le da por cada amigo que traiga lo decide Adonys
+          en el panel; aquí no se promete ningún número. */}
+      {tienePalomita(nivel) && (
+        <div className="cuenta-referidos">
+          <p className="cuenta-nivel-titulo">Trae a alguien</p>
+          {codigo ? (
+            <>
+              <p className="cuenta-nivel-texto">
+                Este es tu código. Quien pida con tu enlace queda anotado a tu nombre.
+              </p>
+              <p className="cuenta-codigo">{codigo}</p>
+              {referidos !== null && (
+                <p className="cuenta-nivel-texto">
+                  {referidos === 0
+                    ? "Todavía no ha pedido nadie con él."
+                    : `${referidos} ${referidos === 1 ? "pedido" : "pedidos"} han entrado con tu código.`}
+                </p>
+              )}
+              <button type="button" className="cta cta-secondary" onClick={copiarEnlace}>
+                {copiado ? "Enlace copiado" : "Copiar tu enlace"}
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="cuenta-nivel-texto">
+                Saca tu código y compártelo. Quien pida con él queda anotado a tu nombre.
+              </p>
+              <button type="button" className="cta cta-secondary" onClick={sacarCodigo} disabled={sacando}>
+                {sacando ? "Un momento…" : "Sacar mi código"}
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       <p className="cuenta-atajos">
         <Link href="/cuenta/familiares">Tus familiares en Cuba</Link>
