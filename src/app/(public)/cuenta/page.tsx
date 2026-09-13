@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useCuenta, ETIQUETA_NIVEL, EXPLICACION_NIVEL, tienePalomita } from "@/lib/cuenta";
-// El GYD va con `formatNumber` y no con `formatMoney`: en Guyana los montos
-// son enteros y en toda la web se escriben así. `formatMoney` le pondría dos
-// decimales y el historial diría «45.000,00» donde la calculadora dice
-// «45.000» — el mismo dinero escrito de dos maneras da que pensar.
-import { formatMoney, formatNumber, formatDateTime } from "@/lib/format";
+// Dos convenciones para el GYD conviven en la web, y esta pantalla enseña las
+// dos cosas, así que hay que elegir bien cuál va en cada línea:
+//   · las remesas se escriben como en la calculadora — `formatNumber`, «45.000»
+//   · la tienda se escribe como en la tienda — `formatGyd`, «G$45,000»
+// Nunca `formatMoney` para GYD: le pondría dos decimales y saldría
+// «45.000,00», que no se escribe así en ningún sitio de la web.
+import { formatMoney, formatNumber, formatDateTime, formatGyd, formatUsd } from "@/lib/format";
 import { WHATSAPP_NUMBER } from "@/lib/config/site";
 import { useDeliveryMethods } from "@/lib/useDeliveryMethods";
 import SeguimientoCliente from "@/components/SeguimientoCliente";
@@ -205,7 +207,7 @@ export default function MiCuentaPage() {
         </div>
         {pedidos.length > 0 && (
           <div className="cuenta-dato">
-            <span className="cuenta-dato-num">{formatNumber(totalTienda)}</span>
+            <span className="cuenta-dato-num">{formatGyd(totalTienda)}</span>
             <span className="cuenta-dato-etq">en la tienda</span>
           </div>
         )}
@@ -326,7 +328,10 @@ export default function MiCuentaPage() {
               <li key={p.id} className="cuenta-envio">
                 <p className="cuenta-envio-monto">
                   {p.category === "energia" ? "Energía" : "Alimentos"} ·{" "}
-                  {p.total_gyd ? `${formatNumber(Number(p.total_gyd))} GYD` : `${formatMoney(Number(p.total_usd), "USD")} USD`}
+                  {/* Un pedido de tienda se escribe como en la tienda —G$45,000—
+                      y no como una remesa. El mismo pedido leído de dos maneras
+                      en dos pantallas hace dudar de si son el mismo. */}
+                  {p.total_gyd ? formatGyd(Number(p.total_gyd)) : formatUsd(Number(p.total_usd))}
                 </p>
                 <p className="cuenta-envio-fecha">
                   {formatDateTime(p.created_at)} · {p.code}
