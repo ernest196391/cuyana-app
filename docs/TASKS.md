@@ -8,7 +8,7 @@
 - [x] Publicar únicamente los assets aprobados del manifiesto.
 - [x] Activar 245 GYD/USD y añadir control operativo en admin.
 - [x] Bloquear compra cuando la tasa comercial no esté vigente.
-- [ ] QA visual en preview, PR, merge y certificación de producción.
+- [x] QA visual, PR, merge y certificación de producción; caché comercial corregida y precios GYD verificados.
 
 ## CUYANA-FOOD-001 — Alimentos multi-proveedor
 

@@ -8,7 +8,7 @@ La base real tiene activa la tasa comercial 245 GYD/USD hasta el 20 de septiembr
 
 Carnes + Aceite fue revalidado contra el listado vivo de combos de Alawao (USD 35.95, en stock, entrega 24 h) porque su antigua ficha directa devuelve 404. Se guardó una observación nueva con el URL resuelto del listado; no se ocultó ese cambio operativo.
 
-QA local: 123/123 pruebas, TypeScript y build verdes; tres warnings preexistentes en el panel general. Siguiente acción: desplegar preview, capturar Energía/Alimentos en 360/390/412/desktop, mergear y certificar producción.
+QA final: 123/123 pruebas, TypeScript, lint y build verdes; tres warnings preexistentes en el panel general. Producción certificada con los cuatro combos curados, dos esenciales, imágenes sin roturas, precios GYD/USD y compra habilitada. Los PR #9, #10, #11 y #12 quedaron fusionados; #11 eliminó la caché obsoleta de las lecturas comerciales y #12 normalizó el punto de miles en montos GYD de cuatro cifras.
 
 ## CUYANA-FOOD-001 — Checkpoint 1 (2026-09-13)
 
