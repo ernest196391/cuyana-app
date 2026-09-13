@@ -27,6 +27,39 @@ Tres cosas que conviene saber de esa ruta:
 - **Reenviar no duplica.** Cada pedido lleva una identidad que Cuadre usa como
   tal; el segundo intento devuelve el primero.
 
+## Decisiones tomadas, para no volver a discutirlas
+
+Cosas que alguien podría mirar y pensar que faltan. No faltan: se
+decidieron así.
+
+**No se le avisa al cliente cuando su envío cambia de estado.** Lo ve
+entrando en su cuenta, y el comprobante que le pasó a su familia se
+actualiza solo — es un enlace, no una captura. Avisar de verdad pide un
+canal: correo (hay que dar de alta un servidor de correo en Supabase) o
+la WhatsApp Business API (se paga por conversación y Meta tiene que
+verificar el negocio). Mientras tanto, Adonys escribe por WhatsApp cuando
+hace falta, que es lo que ya hacía. Todo lo demás está montado para que
+añadir el aviso sea solo enganchar el canal: los saltos de estado ya se
+guardan uno a uno con su hora en `cuadre.envio_estados`.
+
+**Cuánto se le da a un cliente por traer a un amigo no está en el
+código.** Cada cliente verificado saca su código de referido desde su
+cuenta, pero nace con `commission_pct = 0`. Ese número lo pone Adonys en
+el panel de referidos. Es dinero real y no es algo que deba inventar la
+app; la pantalla del cliente no le promete ningún porcentaje.
+
+**Cuánto se le puede adelantar en Cuba tampoco.** Sale de
+`customer_profiles.credito_usd`, que empieza en 0 y solo mueve un
+administrador desde el panel de clientes, sobre alguien ya verificado. La
+base lo hace cumplir: un cliente que intente subirse el nivel o ponerse
+crédito recibe un 42501.
+
+**La cuenta de dueño de Cuadre sigue siendo la de Ernesto**
+(`rondonernesto316@gmail.com`). Adonys entra con ella por ahora. Cuando
+haya que separarlas, dar de alta a otro administrador es una fila en
+`app_admins` — no una migración ni un despliegue, que es justamente para
+lo que se creó esa tabla.
+
 ## Getting Started
 
 First, run the development server:
