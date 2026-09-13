@@ -165,9 +165,11 @@ export default function VerificarPage() {
   return (
     <div className="wrap page-section cuenta-entrar">
       <h1 className="page-title">Verifica tu cuenta</h1>
+      {/* Corto, pero sin quitar la promesa: a alguien se le está pidiendo el
+          carnet y tiene derecho a saber dónde acaba antes de mandarlo. */}
       <p className="page-lead">
-        Dos fotos de tu carnet y los datos de quien recibe en Cuba. Tus documentos no se publican en
-        ningún sitio: se guardan cerrados y solo los abre quien administra, que queda registrado.
+        Dos fotos de tu carnet y quién recibe en Cuba. Tus documentos no se publican en ningún
+        sitio: solo los abre quien administra, y queda registrado.
       </p>
 
       <form className="cuenta-form" onSubmit={enviar}>

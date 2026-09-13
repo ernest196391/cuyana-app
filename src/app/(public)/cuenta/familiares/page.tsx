@@ -107,9 +107,7 @@ export default function FamiliaresPage() {
         ‹ Mi cuenta
       </Link>
       <h1 className="page-title">Tus familiares en Cuba</h1>
-      <p className="page-lead">
-        Los que guardes aquí te salen para elegir al hacer un pedido, con su dirección puesta.
-      </p>
+      <p className="page-lead">Te salen para elegir al hacer un pedido, con su dirección puesta.</p>
 
       {error && <p className="cuenta-error" role="alert">{error}</p>}
 

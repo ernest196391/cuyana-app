@@ -73,15 +73,31 @@ function Entrar() {
       );
       return;
     }
-    // Según cómo esté configurado el correo, el alta puede dejar la sesión
-    // abierta o pedir que confirmen primero. Se contemplan las dos: dar por
-    // hecha una sola dejaría a la mitad de la gente mirando una pantalla que
-    // no avanza.
+
+    // Un correo que YA tiene cuenta no da error: Supabase devuelve éxito sin
+    // sesión para no chivarse de qué correos están registrados. La única señal
+    // es que el usuario viene sin `identities`. Sin mirar esto, la pantalla
+    // decía «te mandamos un correo» a alguien que ya tenía cuenta y al que no
+    // se le creó ninguna — que es exactamente lo que pasó en producción.
+    // `identities` vacío y PRESENTE, no simplemente ausente: si algún día la
+    // respuesta viniera sin ese campo, tratarla como «ya existe» le diría a
+    // alguien que no tiene cuenta que sí la tiene, y lo dejaría fuera.
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      setModo("entrar");
+      setClave("");
+      setError("Ya hay una cuenta con ese correo. Entra con tu contraseña.");
+      return;
+    }
+
+    // Con sesión, dentro. Sin sesión, el proyecto exige confirmar por correo.
     if (data.session) {
       router.replace(volverA);
       return;
     }
-    setAviso("Te mandamos un correo para confirmar tu cuenta. Ábrelo y vuelve aquí.");
+    setAviso(
+      "Tu cuenta está creada, pero hace falta confirmarla desde el correo que te mandamos. " +
+        "Si no te llega en unos minutos, escríbenos por WhatsApp y la activamos nosotros."
+    );
   }
 
   if (cargando || user) {
@@ -95,10 +111,9 @@ function Entrar() {
   return (
     <div className="wrap page-section cuenta-entrar">
       <h1 className="page-title">{modo === "entrar" ? "Entra en tu cuenta" : "Crea tu cuenta"}</h1>
-      <p className="page-lead">
-        Con tu cuenta ves tus envíos, por dónde va cada uno y cuánto has enviado. Pedir por WhatsApp
-        sigue funcionando igual.
-      </p>
+      {/* Una línea, no un párrafo. Quien llega aquí ya decidió entrar; leerle
+          las ventajas otra vez solo le separa del formulario. */}
+      <p className="page-lead">Para ver tus envíos y por dónde va cada uno.</p>
 
       {/* Botones normales con `aria-pressed`, y no un tablist: un tablist de
           verdad necesita paneles y navegación con las flechas, y anunciarse
@@ -127,7 +142,7 @@ function Entrar() {
         {modo === "crear" && (
           <>
             <label className="field" htmlFor="nombre">
-              <span>Tu nombre y apellidos</span>
+              <span>Nombre y apellidos</span>
               <input
                 id="nombre"
                 className="campo"
@@ -138,7 +153,7 @@ function Entrar() {
               />
             </label>
             <label className="field" htmlFor="telefono">
-              <span>Tu WhatsApp</span>
+              <span>WhatsApp</span>
               <input
                 id="telefono"
                 className="campo"
@@ -191,7 +206,7 @@ function Entrar() {
       </form>
 
       <p className="cuenta-pie">
-        ¿Prefieres no registrarte? <Link href="/enviar-dinero">Pide por WhatsApp</Link>.
+        ¿Sin cuenta? <Link href="/enviar-dinero">Pide por WhatsApp</Link>.
       </p>
     </div>
   );
