@@ -4,8 +4,9 @@
 
 - Objetivo: ampliar el catálogo sin recrear productos, proveedores ni imágenes.
 - Resultado: 8 productos nuevos activos; 3 candidatos bloqueados por revalidación; Compra de Mamá y Doubledow permanecen ocultos.
+- Control de escaparate: Combo Kiosko quedó oculto porque aún tiene `image_status=needed`.
 - Datos: margen 15 % y tasa comercial 245 GYD/USD no cambiaron. Las 8 ofertas vencen a las 24 h y deben revalidarse otra vez antes de la compra externa.
-- Migración: `supabase/migrations/20260913072407_cuyana_food_004_catalog_expansion.sql`, aplicada al proyecto canónico.
+- Migraciones: `20260913072407_cuyana_food_004_catalog_expansion.sql`, `20260913073146_cuyana_food_004_hide_missing_images.sql` y `20260913073307_cuyana_food_004_enforce_kiosko_hidden.sql`, aplicadas al proyecto canónico.
 - QA de datos: 8/8 `purchasable=true`, `GREEN`, oferta primaria aprobada, imagen publicada y fila pública vigente; 0 productos comprables con `image_status=needed`.
 - Bloqueos: Huevos no verificable en la ficha dinámica de Supermarket23; Aceite cambió de precio y está agotado; Aseo Personal no coincide con la composición/costo investigados.
 - Siguiente acción exacta: revalidar los 8 activos antes del vencimiento y retomar los 3 bloqueados únicamente cuando el proveedor muestre una coincidencia completa.

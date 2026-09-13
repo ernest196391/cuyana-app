@@ -6,6 +6,7 @@
 - [x] Activar únicamente 8 coincidencias completas y registrar observaciones de 24 h.
 - [x] Mantener ocultos Huevos, Aceite y Aseo Personal por fallos verificables.
 - [x] Mantener Compra de Mamá y Doubledow bloqueados.
+- [x] Ocultar Combo Kiosko mientras conserve `image_status=needed`.
 - [x] Conservar margen 15 %, tasa comercial 245 GYD/USD e independencia de remesas.
 - [ ] Próxima revalidación: antes de `2026-09-14 07:25:55 UTC` o antes de ejecutar una compra, lo que ocurra primero.
 
