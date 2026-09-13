@@ -1,5 +1,9 @@
 # HANDOFF — CUYANA-WEB-002
 
+## CUYANA-UI-CLOSE-004 — Header y marca
+
+Se eliminó “Empezar” de todas las variantes del header. La cabecera muestra el símbolo oficial junto a “Cuyana” sin tagline; el footer usa solo el símbolo. Alimentos ya no muestra los eyebrows redundantes y el bloque final enlaza el WhatsApp real con el texto “Hablar por WhatsApp”. Producción confirmó precios Guyana, imágenes, carrito mixto y enlaces. F12/Ctrl+Shift+M no abre DevTools en el navegador remoto, por lo que las capturas exactas 360/390/412 quedan como única certificación visual pendiente; no implica un cambio de código pendiente.
+
 ## CUYANA-MOBILE-POLISH-003 — Cierre móvil
 
 La tienda Guyana-facing usa formateadores exclusivos de moneda (`G$7,593`, `US$30.99`) sin modificar el formato global de CUP, remesas o fechas. Alimentos reduce hero, encabezados, proceso, FAQ y ayuda; elimina del escaparate las funciones todavía inactivas. `ProductCard` comparte en Alimentos y Energía una variante móvil con imagen, nombre limitado, GYD, ETA corta y botón “Añadir”; USD y presentación continúan disponibles fuera de la cuadrícula móvil.
