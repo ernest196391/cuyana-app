@@ -216,16 +216,27 @@ export default function MetodosPage() {
     <div className="admin-view">
       <div className="admin-view-header">
         <h1 className="admin-title">Métodos y tasas</h1>
-        <button
+      </div>
+
+      {/* Las tasas se cambian en UN solo sitio. Antes vivían aquí y en Cuadre a
+          la vez, coincidiendo por costumbre: el día que se separaran, el cliente
+          pediría a un precio y Cuadre registraría otro. Ahora esta pantalla es
+          el reflejo, y la propia base rechaza cualquier cambio que no venga de
+          Cuadre — así que dejar los botones puestos solo serviría para que
+          alguien se llevara un error. */}
+      <div className="admin-card admin-solo-lectura">
+        <p>
+          <strong>Las tasas se cambian en Cuadre.</strong> Esta pantalla enseña lo que hay puesto
+          ahora mismo en la web, y se actualiza sola en cuanto cambias algo allá.
+        </p>
+        <a
           className="admin-btn-primary"
-          type="button"
-          onClick={() => {
-            setShowForm((v) => !v);
-            setFormError(null);
-          }}
+          href="https://cuadre.casavivadecuba.com/metodos"
+          target="_blank"
+          rel="noopener"
         >
-          {showForm ? "Cancelar" : "+ Nuevo"}
-        </button>
+          Abrir Tasas en Cuadre
+        </a>
       </div>
 
       {showForm && (
@@ -299,15 +310,11 @@ export default function MetodosPage() {
                   <span className="admin-method-label">{m.label}</span>
                   <span className="admin-mono admin-method-key">{m.key}</span>
                 </div>
-                <button
-                  className={`admin-toggle${m.active ? " on" : ""}`}
-                  type="button"
-                  aria-pressed={m.active}
-                  disabled={togglingKey === m.key}
-                  onClick={() => onToggle(m)}
-                >
+                {/* Se ve, pero no se toca: activar o desactivar un método
+                    también es escribir en el reflejo. Se hace en Cuadre. */}
+                <span className={`admin-toggle${m.active ? " on" : ""}`} aria-hidden="false">
                   {m.active ? "Activo" : "Inactivo"}
-                </button>
+                </span>
               </div>
 
               <div className="admin-method-rate">{formatRateNatural(tasa, m.target_currency)}</div>
@@ -317,35 +324,7 @@ export default function MetodosPage() {
                 {m.updated_by ? ` · ${m.updated_by}` : ""}
               </span>
 
-              {abierto ? (
-                <div className="admin-method-edit">
-                  <RateInput
-                    id={`rate-${m.key}`}
-                    currency={m.target_currency}
-                    valor={rateText}
-                    onValor={setRateText}
-                    direccion={direccion}
-                    onDireccion={setDireccion}
-                  />
-                  <div className="admin-method-actions">
-                    <button className="admin-btn-secondary" type="button" onClick={() => setEditingKey(null)}>
-                      Cancelar
-                    </button>
-                    <button
-                      className="admin-btn-primary"
-                      type="button"
-                      disabled={!(nuevaTasa > 0) || saving}
-                      onClick={() => setConfirmarTasa(true)}
-                    >
-                      Guardar tasa
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button className="admin-btn-secondary admin-btn-full" type="button" onClick={() => abrirEdicion(m)}>
-                  Cambiar tasa
-                </button>
-              )}
+
             </div>
           );
         })
