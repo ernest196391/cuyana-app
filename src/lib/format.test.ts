@@ -6,6 +6,8 @@ import {
   roundMoney,
   formatRateNatural,
   formatProductPrice,
+  formatGyd,
+  formatUsd,
 } from "./format";
 
 describe("parseAmount / formatNumber (formato latinoamericano)", () => {
@@ -14,7 +16,6 @@ describe("parseAmount / formatNumber (formato latinoamericano)", () => {
   });
   it("formatea miles con punto", () => {
     expect(formatNumber(10000)).toBe("10.000");
-    expect(formatNumber(7593)).toBe("7.593");
   });
   it("trata una entrada vacía o inválida como 0", () => {
     expect(parseAmount("")).toBe(0);
@@ -59,10 +60,17 @@ describe("formatProductPrice — GYD primario, USD secundario, sin inventar tasa
   });
   it("con tasa comercial, GYD es primario y USD secundario", () => {
     const price = formatProductPrice(40, 275);
-    expect(price.primary).toBe("G$ 11.000");
-    expect(price.secondary).toBe("US$ 40,00");
+    expect(price.primary).toBe("G$11,000");
+    expect(price.secondary).toBe("US$40.00");
   });
   it("agrupa también montos de cuatro cifras", () => {
-    expect(formatProductPrice(30.99, 245).primary).toBe("G$ 7.593");
+    expect(formatProductPrice(30.99, 245).primary).toBe("G$7,593");
+  });
+  it("usa el formato comercial de Guyana sin espacios", () => {
+    expect([7593, 10128, 62475, 1032675].map(formatGyd)).toEqual([
+      "G$7,593", "G$10,128", "G$62,475", "G$1,032,675",
+    ]);
+    expect(formatUsd(30.99)).toBe("US$30.99");
+    expect(formatUsd(25.24)).toBe("US$25.24");
   });
 });
