@@ -1,5 +1,5 @@
-import { supabase } from "@/lib/supabase";
 import type { CommercialRate } from "./types";
+import { marketSupabase } from "./marketSupabase";
 
 /**
  * Tasa comercial GYD/USD de la tienda: vive en `public.commercial_rates`
@@ -10,8 +10,7 @@ import type { CommercialRate } from "./types";
  * valor o mostrar uno vencido como si fuera vigente.
  */
 export async function getStoreCommercialRate(): Promise<CommercialRate | null> {
-  if (!supabase) return null;
-  const { data, error } = await supabase
+  const { data, error } = await marketSupabase
     .from("commercial_rates")
     .select("gyd_per_usd, source, as_of, expires_at")
     .eq("id", "gyd_usd")
