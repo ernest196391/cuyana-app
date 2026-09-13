@@ -651,3 +651,95 @@
   font-size: 14px;
   line-height: 1.5;
 }
+
+/* ─── Clientes: en qué punto está cada uno ─────────────────────────────────
+   El color dice lo mismo que la palabra, para que la lista se lea de un
+   vistazo y no haya que ir leyendo etiqueta por etiqueta. */
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.admin-badge-en_revision {
+  background: rgba(245, 158, 11, 0.14);
+  color: #8a5a00;
+}
+.admin-badge-verificado {
+  background: rgba(16, 185, 129, 0.14);
+  color: #056c4d;
+}
+.admin-badge-confianza {
+  background: rgba(122, 14, 46, 0.1);
+  color: #7a0e2e;
+}
+.admin-badge-sin_verificar {
+  background: rgba(107, 114, 128, 0.14);
+  color: #4b5563;
+}
+.admin-badge-rechazado {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b3261e;
+}
+
+/* Clases propias y no prestadas. `admin-dir`, `admin-dir-toggle` y
+   `admin-history-list li` ya significan otra cosa en esta hoja —filas de una
+   línea, botones en pareja, todos con display:flex— y tomarlas por el nombre
+   ponía la ficha del cliente en una columna de 131px que se salía de la
+   pantalla. Una clase no es un nombre bonito: es un contrato de maquetación. */
+.admin-clientes-lista {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+.admin-cliente {
+  display: block;
+}
+.admin-cliente-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+.admin-cliente-detalle {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--linea);
+}
+/* Los botones de la ficha caben o bajan de línea; nunca empujan la pantalla. */
+.admin-cliente-detalle .admin-method-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.admin-cliente-detalle .admin-btn-primary,
+.admin-cliente-detalle .admin-btn-secondary {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* Nombre, teléfono y dirección de quien recibe: texto largo que se parte, no
+   que se sale. */
+.admin-cliente-detalle .admin-meta {
+  overflow-wrap: anywhere;
+}
+/* Los rótulos de cada bloque necesitan aire por arriba: pegados al párrafo
+   anterior, «Decidir» parecía parte de la dirección del familiar. */
+.admin-cliente-detalle .admin-cell-label {
+  margin-top: 18px;
+  margin-bottom: 6px;
+}
+.admin-cliente-detalle > .admin-cell-label:first-child {
+  margin-top: 0;
+}

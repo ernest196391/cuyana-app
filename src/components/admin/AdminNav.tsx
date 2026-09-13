@@ -25,6 +25,16 @@ const TABS = [
     ),
   },
   {
+    href: "/admin/clientes",
+    label: "Clientes",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="8" r="3.2" />
+        <path d="M5 20a7 7 0 0 1 14 0" />
+      </svg>
+    ),
+  },
+  {
     href: "/admin/referidos",
     label: "Referidos",
     icon: (
