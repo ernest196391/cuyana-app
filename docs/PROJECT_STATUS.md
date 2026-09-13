@@ -1,5 +1,31 @@
 # PROJECT_STATUS — Cuyana
 
+## CUYANA-ACCOUNT-TRACK-001 — Cuenta + Confianza + Seguimiento (2026-09-13)
+
+Bloque del Blueprint §5. Lo confirmado en `main` y producción:
+
+- Registro/login de cliente en `/entrar`, separado de `/admin`.
+- `Mi cuenta`: historial de remesas y tienda, cuánto ha enviado, palomita.
+- Familiares guardados; rellenan el destino del checkout sin volver a teclear.
+- Verificación: carnet por las dos caras a bucket privado + familiar en Cuba.
+- `/admin/clientes`: revisión, verificar/rechazar, fijar adelanto. Abrir un
+  carnet queda escrito ANTES de firmar el enlace; si no se puede escribir, no
+  hay enlace.
+- Referidos del cliente verificado. `commission_pct` nace en 0 a propósito.
+- Comprobante público `/envio/<ref>` sin cuenta y sin datos de quien envía.
+- Cuadre ve si quien pidió está verificado y a quién hay que entregarle.
+
+Seguridad corregida en el camino: `orders` solo dejaba INSERT al rol `anon`
+—el primer cliente con sesión no habría podido pedir—; `/admin` solo
+comprobaba que hubiera sesión; un `?ref=` inexistente tumbaba el pedido
+entero por clave foránea; y `.page-section` anulaba el margen lateral de
+toda la web.
+
+**No terminado:** el tracking de tienda no existe y el de remesas no se ha
+estrenado (0 saltos en producción). Ver
+`docs/AUDITORIA_2026-09-13_TIENDA_Y_ESTADO.md` §2.
+
+
 ## CUYANA-UI-CLOSE-004 — Funcionalmente cerrado (2026-09-13)
 
 - CTA global “Empezar” eliminado; el header queda como navegación contextual.

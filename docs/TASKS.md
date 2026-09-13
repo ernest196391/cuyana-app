@@ -1,5 +1,19 @@
 # TASKS — Cuyana
 
+## Siguiente, por orden (de la auditoría del 2026-09-13)
+
+- [ ] `store_orders.tracking_ref` + primer salto al crear el pedido de tienda.
+- [ ] Estados de tienda de Blueprint §7.3 (no son los de remesa).
+- [ ] Estrenar el tracking de remesas de punta a punta en producción.
+- [ ] Completar la ficha de `combo-carnes-aceite` — DATO, lo pone una persona.
+- [ ] Completar `market_bundle_items` de los cinco combos.
+- [ ] Publicar los ~20 productos que ya están en `market_products`.
+- [ ] Unificar los textos de ETA.
+- [ ] Sustituir el publicado a mano por una función que exija ficha completa.
+- [ ] Contexto de destino en `/tienda/alimentos` (§8.5 punto 1).
+- [ ] Programar la auditoría diaria de proveedores.
+
+
 ## CUYANA-UI-CLOSE-004 — Cierre de header, marca y copy
 
 - [x] Eliminar “Empezar” del header desktop, móvil y menú.
