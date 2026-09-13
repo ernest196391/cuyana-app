@@ -1,5 +1,11 @@
 # HANDOFF — CUYANA-WEB-002
 
+## CUYANA-MOBILE-POLISH-003 — Cierre móvil
+
+La tienda Guyana-facing usa formateadores exclusivos de moneda (`G$7,593`, `US$30.99`) sin modificar el formato global de CUP, remesas o fechas. Alimentos reduce hero, encabezados, proceso, FAQ y ayuda; elimina del escaparate las funciones todavía inactivas. `ProductCard` comparte en Alimentos y Energía una variante móvil con imagen, nombre limitado, GYD, ETA corta y botón “Añadir”; USD y presentación continúan disponibles fuera de la cuadrícula móvil.
+
+Siguiente bloque: `CUYANA-FOOD-004 — Expansión de catálogo`. Debe partir del seed, fuentes, imágenes, URLs y proveedores conservados por FOOD-001/002, revalidar cada oferta y publicar gradualmente; no rehacer la investigación ni cargar productos incompletos con prisa.
+
 ## CUYANA-FOOD-002 — Refinamiento premium + imágenes + GYD
 
 Se trabajó desde `main` `8e7916829a0ae8c326483433156049425d99099a`. Alimentos ya reutiliza el sistema visual de Energía, tiene curación editorial explícita, copys definitivos, soporte real y GYD primario. Se publicaron solo los 17 activos FOOD autorizados en `ASSET_MANIFEST.json`; `draft-reference` quedó fuera.

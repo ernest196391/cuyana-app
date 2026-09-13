@@ -1,5 +1,14 @@
 # PROJECT_STATUS — Cuyana
 
+## CUYANA-MOBILE-POLISH-003 — En ejecución (2026-09-13)
+
+- Formato monetario de tienda aislado: `G$7,593` y `US$30.99`; CUP, remesas y fechas conservan sus reglas.
+- Portada de Alimentos reducida a información que ayuda a elegir y comprar.
+- Tarjetas móviles compartidas con Energía: imagen, nombre limitado, GYD, ETA breve y botón “Añadir”.
+- USD y presentación quedan ocultos solo en la cuadrícula móvil; permanecen en ficha y escritorio.
+- Los bloques inactivos Aseo, Arma tu combo y Compra según presupuesto salieron del escaparate, sin borrar assets ni datos.
+- `CUYANA-FOOD-004` queda pendiente para ampliar el catálogo usando el seed, fuentes, imágenes, URLs y proveedores ya conservados.
+
 ## CUYANA-FOOD-002 — Cerrado (2026-09-13)
 
 - Baseline confirmado: `8e7916829a0ae8c326483433156049425d99099a`.

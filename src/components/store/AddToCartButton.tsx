@@ -31,7 +31,7 @@ export default function AddToCartButton({ product, compact = false, rateAvailabl
   if (compact) {
     return (
       <button type="button" className="cta" disabled={!product.available || !rateAvailable} onClick={() => agregar(1)}>
-        {!rateAvailable ? "Precio en actualización" : product.available ? "Añadir al carrito" : "No disponible"}
+        {!rateAvailable ? "Precio en actualización" : product.available ? <><span className="add-label-mobile">Añadir</span><span className="add-label-desktop">Añadir al carrito</span></> : "No disponible"}
       </button>
     );
   }

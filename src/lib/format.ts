@@ -10,7 +10,7 @@ export function parseAmount(str: string) {
 
 /** Formatea un monto entero: 10000 -> "10.000". */
 export function formatNumber(n: number) {
-  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return Math.round(n).toLocaleString("es");
 }
 
 /** Parsea un número con decimales (ej. tasa "21,40") en formato latinoamericano. */
@@ -108,10 +108,19 @@ export function formatRate(rate: number) {
  * a USD: el precio queda explícitamente en actualización.
  */
 export function formatProductPrice(priceUsd: number, gydPerUsd: number | null) {
-  const usd = `US$ ${priceUsd.toLocaleString("es", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const usd = formatUsd(priceUsd);
   if (!gydPerUsd || gydPerUsd <= 0) return { primary: "Precio en actualización", secondary: null as string | null };
-  const gyd = `G$ ${formatNumber(priceUsd * gydPerUsd)}`;
+  const gyd = formatGyd(priceUsd * gydPerUsd);
   return { primary: gyd, secondary: usd };
+}
+
+/** Formatos exclusivos de la tienda orientada a compradores en Guyana. */
+export function formatGyd(amount: number) {
+  return `G$${Math.round(amount).toLocaleString("en-GY", { maximumFractionDigits: 0 })}`;
+}
+
+export function formatUsd(amount: number) {
+  return `US$${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 export function formatRateNatural(rate: number, currency: string) {
