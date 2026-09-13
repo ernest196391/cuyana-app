@@ -94,6 +94,10 @@ export default function Calculator() {
     const identidad = nuevaIdentidad();
     try {
       const { error } = await supabase.from("orders").insert({
+        // La referencia que se manda a Cuadre se guarda TAMBIÉN aquí. Sin esto
+        // no hay forma de volver del seguimiento al pedido ni al cliente que lo
+        // hizo: la cadena se rompía en el primer eslabón.
+        tracking_ref: identidad,
         amount_gyd: gyd,
         amount_cup: montoDestino,
         customer_name: customerName.trim(),
