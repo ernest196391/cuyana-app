@@ -1,5 +1,20 @@
 # TASKS — Cuyana
 
+## CUYANA-MOBILE-POLISH-003 — Cierre móvil
+
+- [x] Corregir GYD/USD al formato comercial Guyana-facing sin alterar CUP ni remesas.
+- [x] Reducir hero, encabezados, proceso, FAQ y ayuda de Alimentos.
+- [x] Simplificar `ProductCard` móvil en Alimentos y Energía.
+- [x] Retirar del escaparate los bloques todavía no comprables.
+- [ ] Certificar recorrido móvil 360/390/412 y producción.
+
+## CUYANA-FOOD-004 — Expansión de catálogo (pendiente)
+
+- [ ] Incorporar de forma gradual los productos investigados que aún no están en el catálogo público.
+- [ ] Revalidar fuente, precio, stock, presentación, ETA y proveedor antes de activar cada producto.
+- [ ] Reutilizar el seed, manifiesto, imágenes y URLs conservados por FOOD-001/002; no reconstruir la investigación.
+- [ ] Publicar únicamente productos con imagen propia, datos completos y prueba de compra.
+
 ## CUYANA-FOOD-002 — Refinamiento premium + imágenes + GYD
 
 - [x] Auditar `main` y producción sin reconstruir FOOD-001.
