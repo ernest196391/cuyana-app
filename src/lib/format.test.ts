@@ -13,7 +13,7 @@ describe("parseAmount / formatNumber (formato latinoamericano)", () => {
     expect(parseAmount("10.000")).toBe(10000);
   });
   it("formatea miles con punto", () => {
-    expect(formatNumber(10000)).toBe("10.000");
+    expect(formatNumber(10000)).toBe("10.000");\n    expect(formatNumber(7593)).toBe("7.593");
   });
   it("trata una entrada vacía o inválida como 0", () => {
     expect(parseAmount("")).toBe(0);
