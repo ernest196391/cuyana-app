@@ -32,6 +32,23 @@ Tres cosas que conviene saber de esa ruta:
 Cosas que alguien podría mirar y pensar que faltan. No faltan: se
 decidieron así.
 
+**El alta de cuenta exige confirmar por correo, y el proyecto no tiene
+servidor de correo.** El remitente que trae Supabase de fábrica es para
+probar —unos pocos correos por hora y no llega a Gmail con fiabilidad—, así
+que hoy quien se registra se queda esperando un enlace que no llega. La web
+ya lo dice sin mentir y ofrece salida por WhatsApp, pero eso es un parche.
+Para cerrarlo, una de las dos:
+
+  1. Apagar la confirmación: Supabase → Authentication → Sign In / Providers
+     → Email → **Confirm email** a OFF. El alta abre la sesión en el momento
+     y el aviso deja de salir. Es lo coherente con cómo funciona esto: aquí
+     a nadie lo verifica su correo, lo verifica su carnet.
+  2. O poner un servidor de correo (Resend tiene capa gratuita) en
+     Authentication → Emails → SMTP Settings, si se prefiere conservar la
+     confirmación.
+
+El código aguanta las dos sin tocar nada.
+
 **No se le avisa al cliente cuando su envío cambia de estado.** Lo ve
 entrando en su cuenta, y el comprobante que le pasó a su familia se
 actualiza solo — es un enlace, no una captura. Avisar de verdad pide un
