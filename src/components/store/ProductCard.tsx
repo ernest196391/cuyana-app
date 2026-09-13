@@ -22,6 +22,7 @@ export default function ProductCard({
   gydPerUsd: number | null;
 }) {
   const price = formatProductPrice(product.priceUsd, gydPerUsd);
+  const eta = product.eta ? shortEta(product.eta) : null;
   return (
     <article className="product-card">
       <Link href={`/producto/${product.slug}`} className="product-card-link">
@@ -37,7 +38,7 @@ export default function ProductCard({
         <span className="product-card-price">{price.primary}</span>
         {price.secondary && <span className="product-card-price-secondary">{price.secondary}</span>}
         {!product.available && <span className="badge badge-warning">No disponible</span>}
-        {product.available && product.eta && <span className="product-card-eta">Entrega: {product.eta}</span>}
+        {product.available && eta && <span className="product-card-eta">{eta}</span>}
       </Link>
 
       {/* Poder añadir sin entrar al producto es media tienda: quien ya sabe lo
@@ -47,4 +48,12 @@ export default function ProductCard({
       </div>
     </article>
   );
+}
+
+function shortEta(eta: string) {
+  const value = eta.toLowerCase();
+  if (value.includes("mismo día")) return "Mismo día";
+  if (value.includes("24–48") || value.includes("24-48")) return "24–48 h";
+  if (value.includes("24")) return "24 h";
+  return "Por confirmar";
 }
