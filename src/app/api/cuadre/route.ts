@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { roundMoney } from "@/lib/format";
+import { avisarACuadre } from "@/lib/cuadre";
 
 export const runtime = "nodejs";
 
@@ -46,9 +47,6 @@ export async function POST(request: Request) {
     return new NextResponse(null, { status: 403 });
   }
 
-  const clave = process.env.CUADRE_API_KEY;
-  const destino = process.env.CUADRE_URL || "https://cuadre.casavivadecuba.com";
-
   const cuerpo = await request.json().catch(() => null);
   if (!cuerpo || typeof cuerpo !== "object") {
     return new NextResponse(null, { status: 400 });
@@ -79,48 +77,24 @@ export async function POST(request: Request) {
 
   const montoDestino = roundMoney(gyd * Number(metodo.rate_per_gyd), metodo.target_currency);
 
-  // Sin clave configurada no se avisa, pero tampoco se rompe nada: el pedido
-  // vive en `orders` y se pasa a mano. Queda en el log para que se note.
-  if (!clave) {
-    console.warn("CUADRE_API_KEY no está configurada: el pedido no se avisó a Cuadre.", { ref });
-    return new NextResponse(null, { status: 204 });
-  }
-
-  try {
-    const respuesta = await fetch(`${destino}/api/pedidos`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${clave}`,
-      },
-      body: JSON.stringify({
-        external_ref: ref,
-        customer_name: nombre,
-        customer_phone: telefono,
-        amount_source: gyd,
-        currency_source: "GYD",
-        method_key: metodo.key,
-        method_label: metodo.label,
-        amount_destination: montoDestino,
-        currency_destination: metodo.target_currency,
-        rate_used: Number(metodo.rate_per_gyd),
-        referred_by: referido,
-        source: "cuyana-web",
-      }),
-      // Que un Cuadre lento no deje colgada la función.
-      signal: AbortSignal.timeout(8000),
-    });
-
-    if (!respuesta.ok) {
-      console.error("Cuadre rechazó el pedido", {
-        ref,
-        status: respuesta.status,
-        cuerpo: await respuesta.text().catch(() => ""),
-      });
-    }
-  } catch (err) {
-    console.error("No se pudo avisar a Cuadre", { ref, err });
-  }
+  await avisarACuadre(
+    {
+      external_ref: ref,
+      tipo: "remesa",
+      customer_name: nombre,
+      customer_phone: telefono,
+      amount_source: gyd,
+      currency_source: "GYD",
+      method_key: metodo.key,
+      method_label: metodo.label,
+      amount_destination: montoDestino,
+      currency_destination: metodo.target_currency,
+      rate_used: Number(metodo.rate_per_gyd),
+      referred_by: referido,
+      source: "cuyana-web",
+    },
+    ref
+  );
 
   // Siempre 204: el navegador no tiene nada que hacer con el resultado.
   return new NextResponse(null, { status: 204 });

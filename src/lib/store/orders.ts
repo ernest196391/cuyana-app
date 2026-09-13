@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { supabase } from "@/lib/supabase";
 import type { CatalogProduct, CatalogProvider, CreateOrderInput, CreateOrderResult } from "@/lib/catalog/types";
 import { cotizar } from "./mensajeria";
+import { avisarACuadre } from "@/lib/cuadre";
 
 /**
  * Persiste el pedido de tienda en el Supabase de Cuyana ANTES de que exista
@@ -79,6 +80,24 @@ export async function createStoreOrder(
     });
 
     if (!error) {
+      // Avisar a Cuadre viene DESPUÉS de guardar y va aparte: el pedido ya está
+      // a salvo aquí, y que Cuadre falle no puede tumbarle la compra a nadie.
+      await avisarACuadre(
+        {
+          external_ref: id,
+          tipo: "tienda",
+          categoria: category,
+          order_code: code,
+          items: items.map((l) => ({ nombre: l.name, cantidad: l.quantity, precio_usd: l.priceUsd })),
+          amount_total_usd: Number(totalUsd.toFixed(2)),
+          amount_total_gyd: totalGyd,
+          customer_name: input.customerName.trim(),
+          customer_phone: input.customerWhatsapp.trim(),
+          ...destinoParaCuadre(input.destino),
+          source: "cuyana-web",
+        },
+        code
+      );
       return { status: "ok", orderCode: code, canonicalOrderId: id };
     }
 
@@ -105,15 +124,19 @@ export async function createStoreOrder(
 }
 
 /**
- * Los datos de quien recibe, listos para la fila.
+ * Los datos de quien recibe, más lo que cuesta llevarlo.
  *
  * La mensajería se vuelve a calcular AQUÍ contra la tabla de tarifas, igual que
  * los precios de los productos: lo que llegue del navegador sobre cuánto cuesta
- * llevarlo no se guarda. Y cuando no se reconoce el barrio, `shipping_cup`
- * queda en NULL — un cero ahí se leería como «envío gratis».
+ * llevarlo no se guarda. Y cuando no se reconoce el barrio, el importe queda en
+ * NULL — un cero ahí se leería como «envío gratis».
+ *
+ * Sale de una sola función porque la fila de la base y el aviso a Cuadre tienen
+ * que decir exactamente lo mismo; con dos copias, la primera corrección se
+ * aplicaría a una sola.
  */
-function destinoParaGuardar(destino: CreateOrderInput["destino"]) {
-  if (!destino) return {};
+function destinoResuelto(destino: CreateOrderInput["destino"]) {
+  if (!destino) return null;
   const envio = cotizar(destino.municipio, destino.zona);
   return {
     recipient_name: destino.nombre.trim(),
@@ -126,6 +149,19 @@ function destinoParaGuardar(destino: CreateOrderInput["destino"]) {
     shipping_status: envio.estado,
     shipping_rate_version: envio.version,
   };
+}
+
+/** Para la fila de `store_orders`. */
+function destinoParaGuardar(destino: CreateOrderInput["destino"]) {
+  return destinoResuelto(destino) ?? {};
+}
+
+/** Para el aviso a Cuadre: lo mismo, más la provincia, que allá se lee sola. */
+function destinoParaCuadre(destino: CreateOrderInput["destino"]) {
+  const d = destinoResuelto(destino);
+  if (!d) return {};
+  const { shipping_rate_version: _, ...resto } = d;
+  return { ...resto, recipient_province: "La Habana" };
 }
 
 function generateOrderCode(category: string): string {
