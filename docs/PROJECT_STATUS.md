@@ -1,6 +1,6 @@
 # PROJECT_STATUS — Cuyana
 
-## CUYANA-FOOD-002 — En ejecución (2026-09-13)
+## CUYANA-FOOD-002 — Cerrado (2026-09-13)
 
 - Baseline confirmado: `8e7916829a0ae8c326483433156049425d99099a`.
 - Alimentos refactorizado para compartir jerarquía, tokens y `ProductCard` con Energía.
@@ -8,7 +8,9 @@
 - 17 imágenes FOOD aprobadas, 1200×1200 WebP, publicadas en rutas propias. Los cinco borradores del ZIP no se usaron.
 - Tasa comercial independiente activa: 245 GYD/USD, vigente hasta 2026-09-20; panel administrativo con estado y renovación por siete días.
 - Sin tasa vigente, tarjetas, fichas y carrito muestran “Precio en actualización” y no permiten confirmar.
-- Verificación provisional: 123/123 tests, TypeScript y build verdes; lint conserva tres warnings antiguos ajenos a FOOD.
+- Verificación final: 123/123 tests, TypeScript, lint y build verdes; lint conserva tres warnings antiguos ajenos a FOOD.
+- Producción certificada en `https://cuyana-app.vercel.app/tienda/alimentos`: cuatro combos, dos esenciales, 0 imágenes rotas, precios GYD/USD y compra habilitada.
+- PR principal #9 y correcciones de runtime #10, #11 y #12 fusionados. El lector comercial usa el proyecto canónico y `no-store` para impedir snapshots obsoletos.
 
 ## CUYANA-FOOD-001 — Checkpoint 1 (2026-09-13)
 
