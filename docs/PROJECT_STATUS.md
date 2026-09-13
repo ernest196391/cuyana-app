@@ -1,5 +1,24 @@
 # PROJECT_STATUS — Cuyana
 
+## CUYANA-FOOD-001 — Checkpoint 1 (2026-09-13)
+
+- Baseline auditado: `5af2514afa28f3b928b568481c2a3d6e836254e5`; no se tocaron cuenta/verificación/tracking.
+- Plan ejecutable: `docs/CUYANA_FOOD_PLAN_MAESTRO.md`.
+- Cimiento multi-proveedor aplicado al Supabase real: proveedores, productos/combos, ofertas, observaciones, auditorías, configuración y snapshots económicos.
+- Ocho tablas nuevas con RLS, acceso administrativo y sin permisos `anon`.
+- Motor de costo aterrizado, margen 15% y auditoría Antes → Ahora probado.
+- Verificación: 113/113 tests, TypeScript, lint y build verdes. Persisten tres warnings antiguos del panel admin.
+- Siguiente paso: seed investigado no comprable + manifiesto de imágenes/placeholders.
+
+### Checkpoint 2
+
+- Seed cargado: 5 proveedores, 6 combos, 23 productos, 29 ofertas y 29 observaciones; inicialmente 0 comprables.
+- Cinco productos revalidados. La URL de Carnes + Aceite ahora responde 404 y queda bloqueada.
+- Catálogo público sanitizado: la tienda no recibe proveedor, URL ni costo fuente.
+- `/tienda/alimentos`, fichas y `/admin/abastecimiento` implementados.
+- Manifiesto de 12 imágenes creado; no se generaron imágenes.
+- 114/114 tests y build verde.
+
 Última actualización: 2026-09-11T18:00:00Z por Claude Code (CUYANA-WEB-001).
 
 ## Resumen

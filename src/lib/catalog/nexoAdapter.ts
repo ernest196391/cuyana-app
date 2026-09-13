@@ -10,6 +10,7 @@ import type {
 import { fetchNexoEnergiaProducts, mapWooProductToCatalogProduct } from "./nexoProducts";
 import { getStoreCommercialRate } from "./commercialRate";
 import { createStoreOrder } from "@/lib/store/orders";
+import { getCuyanaFoodProduct, listCuyanaFoodProducts } from "./cuyanaMarketAdapter";
 
 /**
  * Adaptador server-to-server hacia el sistema canónico (Product Studio One /
@@ -35,6 +36,7 @@ export class NexoCatalogAdapter implements CatalogProvider {
   }
 
   async listByCategory(category: CatalogCategory): Promise<CatalogListResult> {
+    if (category === "alimentos") return listCuyanaFoodProducts();
     if (!this.configured) {
       return {
         status: "not_configured",
@@ -42,14 +44,6 @@ export class NexoCatalogAdapter implements CatalogProvider {
         message: "El catálogo de Product Studio One / NEXO todavía no tiene credenciales configuradas.",
       };
     }
-    if (category !== "energia") {
-      return {
-        status: "not_configured",
-        products: [],
-        message: "Esta categoría todavía no tiene un mapeo confirmado con el catálogo de NEXO.",
-      };
-    }
-
     const result = await fetchNexoEnergiaProducts(this.baseUrl, this.apiKey);
     if (!result.ok) {
       return { status: "error", products: [], message: result.message };
@@ -59,6 +53,8 @@ export class NexoCatalogAdapter implements CatalogProvider {
   }
 
   async getProduct(slug: string): Promise<CatalogProductResult> {
+    const food = await getCuyanaFoodProduct(slug);
+    if (food.status === "ok") return food;
     if (!this.configured) {
       return { status: "not_configured", product: null, message: "Catálogo no configurado." };
     }
@@ -76,12 +72,6 @@ export class NexoCatalogAdapter implements CatalogProvider {
   }
 
   async createOrder(input: CreateOrderInput): Promise<CreateOrderResult> {
-    if (!this.configured) {
-      return {
-        status: "not_configured",
-        message: "No se pueden crear pedidos de tienda todavía: falta la integración con el sistema canónico.",
-      };
-    }
     return createStoreOrder(this, input);
   }
 }

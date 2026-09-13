@@ -46,6 +46,15 @@ const TABS = [
       </svg>
     ),
   },
+  {
+    href: "/admin/abastecimiento",
+    label: "Abastecer",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 7h18M5 7l1 13h12l1-13M9 11v5M15 11v5M8 7l1-3h6l1 3" />
+      </svg>
+    ),
+  },
 ];
 
 export default function AdminNav({ email }: { email: string }) {

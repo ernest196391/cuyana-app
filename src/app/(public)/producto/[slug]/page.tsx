@@ -56,6 +56,12 @@ export default async function ProductoPage({ params }: { params: { slug: string 
           {price.primary}
           {price.secondary && <span className="product-card-price-secondary"> · {price.secondary}</span>}
         </p>
+        {product.presentation && <p className="product-detail-meta"><strong>Presentación:</strong> {product.presentation}</p>}
+        {product.composition && product.composition.length > 0 && (
+          <section className="product-composition"><h2>Qué incluye</h2><ul>{product.composition.map((item) => <li key={item}>{item}</li>)}</ul></section>
+        )}
+        {product.substitutionPolicy && <section className="product-policy"><h2>Sustituciones</h2><p>{product.substitutionPolicy}</p></section>}
+        {product.eta && <p className="product-detail-meta"><strong>Entrega estimada:</strong> {product.eta}</p>}
         {!product.available && (
           <p className="badge badge-warning product-detail-badge">Ahora mismo no disponible</p>
         )}
