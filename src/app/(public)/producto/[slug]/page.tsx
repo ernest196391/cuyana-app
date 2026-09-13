@@ -56,11 +56,19 @@ export default async function ProductoPage({ params }: { params: { slug: string 
           {price.primary}
           {price.secondary && <span className="product-card-price-secondary"> · {price.secondary}</span>}
         </p>
+        {!product.available && (
+          <p className="badge badge-warning product-detail-badge">Ahora mismo no disponible</p>
+        )}
+
         <div className="product-detail-cta-desktop">
           <AddToCartButton product={product} />
         </div>
+
+        {/* La cobertura, justo donde se decide comprar. Enterarse al final de
+            que no llega a tu provincia es la peor forma de enterarse. */}
         <p className="product-detail-meta">
-          Fuente: {product.sourceSystem} · sincronizado {new Date(product.syncedAt).toLocaleDateString("es")}
+          Se entrega en La Habana, en casa de tu familiar. La mensajería se calcula al
+          finalizar el pedido, según el municipio.
         </p>
       </div>
       {/* En móvil, el precio y el botón quedan siempre a la vista al fondo

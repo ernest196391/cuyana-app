@@ -936,25 +936,61 @@ input:focus-visible,
   margin: 0 0 18px;
 }
 
+/* 150px y no 200px: con 200 solo cabía UNA columna en un teléfono, y el
+   producto se comía la pantalla entera sin poder compararlo con nada. Con 150
+   entran dos a 412px, que es como se mira un catálogo. */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+}
+@media (min-width: 720px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+  }
 }
 .product-card {
+  /* `relative` para que el enlace estirado de dentro se ciña a la tarjeta. */
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  text-decoration: none;
-  color: var(--texto);
+  gap: 8px;
   border: 1px solid var(--linea);
   border-radius: 14px;
   padding: 12px;
   background: var(--papel-card);
   transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
 }
+/* El enlace cubre la tarjeta entera para que se pueda pulsar en cualquier
+   parte, pero sin envolver al botón: anidarlos rompe el teclado. */
+.product-card-link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--texto);
+}
+.product-card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+}
+/* El botón, por delante del enlace estirado. */
+.product-card-add {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+}
+.product-card-add .cta {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
 .product-card:hover,
-.product-card:focus-visible {
+.product-card:focus-within {
   border-color: var(--dorado-soft);
   box-shadow: 0 8px 24px rgba(31, 27, 29, 0.1);
   transform: translateY(-2px);
@@ -1354,4 +1390,9 @@ select.campo {
   background-position: right 12px center;
   background-size: 18px;
   padding-right: 40px;
+}
+
+/* Disponibilidad en la ficha: se ve antes de pulsar, no después. */
+.product-detail-badge {
+  margin: 0;
 }
