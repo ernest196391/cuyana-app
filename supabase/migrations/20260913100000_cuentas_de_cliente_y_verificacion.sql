@@ -1,0 +1,27 @@
+-- CUENTAS DE CLIENTE Y VERIFICACIÓN
+--
+-- Para qué sirve esto, que es lo que manda en el diseño: un cliente verificado
+-- puede llegar a que le entreguemos el dinero a su familiar en Cuba ANTES de
+-- que él pague en Guyana. Eso es crédito. Por eso se le pide el carnet, y por
+-- eso el salto a «de confianza» y su límite los decide una persona, no la app.
+--
+-- Aplicada al proyecto real (dkiiknsfbefpkrnmbzid) vía MCP. Registro versionado.
+--
+-- Piezas:
+--   · app_admins            quién es administrador, en una tabla y no escrito
+--                           dentro de cada política: dar de alta a otro admin
+--                           tiene que ser una fila, no una migración.
+--   · customer_profiles     el cliente, su nivel y su crédito.
+--   · customer_beneficiaries su familiar en Cuba.
+--   · customer_documents    la FICHA del carnet; el archivo va aparte.
+--   · document_views        quién abrió el carnet de quién y cuándo.
+--   · bucket privado        el archivo, sin URL pública jamás.
+--
+-- Comprobado haciéndose pasar por un cliente: no ve el perfil ni el carnet de
+-- otro, no puede ascenderse de nivel ni ponerse crédito, y sí puede cambiar su
+-- propio nombre.
+--
+-- El SQL completo está aplicado en el proyecto; este archivo lo recoge en dos
+-- migraciones consecutivas (ver también el bucket, más abajo en el historial
+-- de Supabase). Para reconstruirlo desde cero, exportar con
+-- `supabase db dump --schema public,storage`.
