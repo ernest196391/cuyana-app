@@ -1,14 +1,13 @@
 import Link from "next/link";
 import Logo from "./Logo";
-import { FOOTER_LEGAL_LINKS, SITE_TAGLINE, WHATSAPP_NUMBER } from "@/lib/config/site";
+import { FOOTER_LEGAL_LINKS, WHATSAPP_NUMBER } from "@/lib/config/site";
 
 export default function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="wrap site-footer-grid">
         <div className="site-footer-brand">
-          <Logo variant="horizontal" height={26} />
-          <p className="site-footer-tagline">{SITE_TAGLINE}</p>
+          <Logo variant="symbol" height={30} />
         </div>
 
         <nav className="site-footer-nav" aria-label="Legal y ayuda">
