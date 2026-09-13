@@ -1,5 +1,13 @@
 # PROJECT_STATUS — Cuyana
 
+## CUYANA-FOOD-004 — Expansión conservadora (2026-09-13)
+
+- Revalidados y activados 8 productos con fotografía existente: Pollo 10 lb, Frijol negro 1 kg, Azúcar 1 kg, Atún 170 g, Jamonilla 320 g, Mantequilla 200 g, Pasta de tomate 400 g y Penne Rigate 500 g.
+- Cada oferta conserva URL exacta, observación vigente por 24 h, costo fuente, disponibilidad, presentación y ETA. Precio público: costo × 1.15; tasa comercial intacta en 245 GYD/USD.
+- Bloqueados tras revalidación: Aceite vegetal 1 L (cambió a USD 3.53 y está agotado), Aseo Personal (no se encontró la composición exacta a USD 15.04) y Huevos (la ficha del proveedor no fue verificable de forma fiable).
+- Compra de Mamá y Doubledow siguen no comprables; ambos conservan `image_status=needed` y Doubledow no usa una imagen parecida.
+- Migración aplicada al Supabase canónico: `20260913072407_cuyana_food_004_catalog_expansion.sql`.
+
 ## CUYANA-ACCOUNT-TRACK-001 — Cuenta + Confianza + Seguimiento (2026-09-13)
 
 Bloque del Blueprint §5. Lo confirmado en `main` y producción:
