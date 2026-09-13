@@ -27,6 +27,7 @@
 - Panel operativo capaz de registrar la compra ejecutada contra un pedido real, con costo aterrizado, tasa, margen y reparto 5%/5%/5% en snapshot.
 - 123/123 tests, TypeScript y build verdes. Lint conserva únicamente tres warnings preexistentes del panel general.
 - Advisors reejecutados: políticas FOOD optimizadas, relaciones indexadas y sin hallazgos de seguridad originados por este bloque; permanecen avisos anteriores de Auth/Cuadre.
+- PR #8 mergeado a `main` (`1e24abc769292ef50ca3d81257b623c537daa791`); Vercel producción verde. Certificados HTTP 200 y contenido real en `/tienda/alimentos`, `/producto/combo-kiosko` y `/carrito`.
 
 Última actualización: 2026-09-11T18:00:00Z por Claude Code (CUYANA-WEB-001).
 

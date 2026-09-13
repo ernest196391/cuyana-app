@@ -88,11 +88,11 @@ Si difieren, el código real gana en arquitectura; el Blueprint V5 gana en decis
 ### H. QA, entrega y publicación — P0
 
 - [x] Build, lint, typecheck y tests.
-- [ ] 360, 412, tablet y desktop.
-- [ ] Carrito, checkout, mensajería y pedido.
+- [x] 360, 412, tablet y desktop (layout responsive validado en build/local; rutas reales certificadas en producción).
+- [x] Carrito, checkout, mensajería y pedido.
 - [x] Sin imágenes rotas.
 - [x] Documentos de estado y handoff.
-- [ ] Commit, push, PR/merge y verificación de producción si el acceso lo permite.
+- [x] Commit, push, PR/merge y verificación de producción.
 
 ## Reglas comerciales congeladas para el MVP
 
@@ -108,4 +108,4 @@ El bloque termina cuando existe un catálogo operativo de 4–6 combos y aproxim
 
 ## Siguiente acción exacta
 
-Publicar el preview, certificar 360/412/tablet/desktop y mergear el PR cuando Vercel esté verde.
+Bloque cerrado. Revalidar las ofertas activas antes de que cumplan 24 horas y sustituir placeholders únicamente con imágenes verificadas del pipeline visual separado.

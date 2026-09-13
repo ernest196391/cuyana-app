@@ -22,6 +22,10 @@ Verificación local: 123/123 pruebas, TypeScript y build verdes; lint solo conse
 
 Supabase Advisors se ejecutó tras las migraciones finales: se optimizaron las políticas e índices de todas las tablas `market_*`. Los avisos restantes pertenecen a funciones/Auth/Cuadre anteriores a FOOD.
 
+### Cierre
+
+PR #8 mergeado a `main` (`1e24abc769292ef50ca3d81257b623c537daa791`) y deployment de producción marcado `success` por Vercel. En `cuyana.casavivadecuba.com`, alimentos, la ficha de Combo Kiosko y carrito responden 200; se verificaron nombres de los cuatro combos, USD 194.29, composición, sustituciones y CTA. FOOD queda cerrado. La única continuidad deliberada es reemplazar placeholders cuando el chat visual entregue activos aprobados y revalidar ofertas cada 24 h.
+
 De: Claude Code (sesión `session_011YVe5XSew1neZgVdirhS38`)
 Fecha: 2026-09-12T03:15:00Z (UTC)
 Rama: `claude/ecstatic-ramanujan-iv70r6`

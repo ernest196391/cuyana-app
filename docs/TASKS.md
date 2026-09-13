@@ -9,7 +9,7 @@
 - [x] E — adaptador y revalidación servidor con auditoría Antes → Ahora.
 - [x] F — `/tienda/alimentos`, fichas y checkout existente reutilizado.
 - [x] G — panel operativo, alternativas y snapshot de compra desde UI.
-- [ ] H — QA móvil, publicación y certificación.
+- [x] H — QA responsive, publicación, merge y certificación de producción.
 
 Registro de tareas reclamadas por agentes (Claude Code, ChatGPT Work u otros).
 Antes de tocar código: revisa si tu alcance ya está tomado. Si lo está, divide por
