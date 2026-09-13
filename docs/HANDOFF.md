@@ -20,6 +20,8 @@ Se cerraron los pendientes operativos: revalidación servidor segura con histori
 
 Verificación local: 123/123 pruebas, TypeScript y build verdes; lint solo conserva tres warnings anteriores y ajenos a FOOD. Pendiente inmediato: certificar el preview responsive, mergear PR #8 y comprobar producción.
 
+Supabase Advisors se ejecutó tras las migraciones finales: se optimizaron las políticas e índices de todas las tablas `market_*`. Los avisos restantes pertenecen a funciones/Auth/Cuadre anteriores a FOOD.
+
 De: Claude Code (sesión `session_011YVe5XSew1neZgVdirhS38`)
 Fecha: 2026-09-12T03:15:00Z (UTC)
 Rama: `claude/ecstatic-ramanujan-iv70r6`

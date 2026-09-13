@@ -26,6 +26,7 @@
 - Cuarto combo vigente: Combo Kiosko; el catálogo público activo queda en 4 combos + 2 esenciales. Los agotados/404 permanecen fuera de venta.
 - Panel operativo capaz de registrar la compra ejecutada contra un pedido real, con costo aterrizado, tasa, margen y reparto 5%/5%/5% en snapshot.
 - 123/123 tests, TypeScript y build verdes. Lint conserva únicamente tres warnings preexistentes del panel general.
+- Advisors reejecutados: políticas FOOD optimizadas, relaciones indexadas y sin hallazgos de seguridad originados por este bloque; permanecen avisos anteriores de Auth/Cuadre.
 
 Última actualización: 2026-09-11T18:00:00Z por Claude Code (CUYANA-WEB-001).
 
