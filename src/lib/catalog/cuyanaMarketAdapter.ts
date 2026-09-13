@@ -1,5 +1,5 @@
 import type { CatalogListResult, CatalogProduct, CatalogProductResult } from "./types";
-import { supabase } from "@/lib/supabase";
+import { marketSupabase } from "./marketSupabase";
 
 type PublicCatalogRow = {
   product_id: string;
@@ -39,16 +39,14 @@ export function mapPublicFoodRow(row: PublicCatalogRow): CatalogProduct {
 }
 
 export async function listCuyanaFoodProducts(): Promise<CatalogListResult> {
-  if (!supabase) return { status: "error", products: [], message: "Catálogo CUYANA no disponible." };
-  const { data, error } = await supabase.from("market_public_catalog").select("*").eq("category", "alimentos").order("kind", { ascending: true }).order("name");
+  const { data, error } = await marketSupabase.from("market_public_catalog").select("*").eq("category", "alimentos").order("kind", { ascending: true }).order("name");
   if (error) return { status: "error", products: [], message: "No pudimos actualizar el catálogo de alimentos." };
   const products = (data as PublicCatalogRow[]).map(mapPublicFoodRow);
   return { status: products.length ? "ok" : "empty", products };
 }
 
 export async function getCuyanaFoodProduct(slug: string): Promise<CatalogProductResult> {
-  if (!supabase) return { status: "error", product: null, message: "Catálogo CUYANA no disponible." };
-  const { data, error } = await supabase.from("market_public_catalog").select("*").eq("slug", slug).maybeSingle();
+  const { data, error } = await marketSupabase.from("market_public_catalog").select("*").eq("slug", slug).maybeSingle();
   if (error) return { status: "error", product: null, message: "No pudimos actualizar este producto." };
   return data ? { status: "ok", product: mapPublicFoodRow(data as PublicCatalogRow) } : { status: "empty", product: null };
 }
