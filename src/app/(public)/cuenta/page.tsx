@@ -173,6 +173,10 @@ export default function MiCuentaPage() {
         )}
       </div>
 
+      <p className="cuenta-atajos">
+        <Link href="/cuenta/familiares">Tus familiares en Cuba</Link>
+      </p>
+
       <h2 className="cuenta-h2">Tus envíos</h2>
       {cargandoHistorial ? (
         <p className="page-lead">Cargando…</p>
@@ -209,7 +213,21 @@ export default function MiCuentaPage() {
                   >
                     {abierto === r.id ? "Ocultar" : "Ver por dónde va"}
                   </button>
-                  {abierto === r.id && <SeguimientoCliente referencia={r.tracking_ref} />}
+                  {abierto === r.id && (
+                    <>
+                      <SeguimientoCliente referencia={r.tracking_ref} />
+                      {/* Un enlace, no una captura: lo que le mande a su familia
+                          se actualiza solo según avanza el envío. */}
+                      <a
+                        className="cuenta-envio-ver"
+                        href={`/envio/${r.tracking_ref}`}
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        Abrir el comprobante para enseñárselo a tu familia
+                      </a>
+                    </>
+                  )}
                 </>
               ) : (
                 <p className="cuenta-envio-sin">

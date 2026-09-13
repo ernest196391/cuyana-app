@@ -855,8 +855,14 @@ input:focus-visible,
 }
 
 /* ---------- páginas internas (tienda, legales, enviar-dinero) ---------- */
+/* `padding-block` y NO el atajo `padding`: estas páginas llevan además la
+   clase `.wrap`, que pone los 24px de margen lateral. Con el atajo —que
+   escribe los cuatro lados— esos 24px se ponían a cero y TODO el contenido de
+   cada página se pegaba al borde de la pantalla: el título, el texto y las
+   horas del seguimiento tocando el cristal. `.page-section` solo tiene que
+   decir cuánto aire va arriba y abajo. */
 .page-section {
-  padding: 40px 0 64px;
+  padding-block: 40px 64px;
 }
 .page-title {
   font-family: var(--font-playfair), serif;
@@ -1735,4 +1741,76 @@ select.campo {
 .cuenta-archivo {
   padding: 10px 12px;
   line-height: 1.4;
+}
+
+/* El comprobante. Se enseña en el móvil de otra persona, así que lo que
+   importa —cuánto recibe— tiene que leerse sin acercar la pantalla. */
+.comprobante {
+  margin: 20px 0 10px;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1.5px solid var(--linea);
+  background: var(--papel-card);
+}
+.comprobante-linea {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+.comprobante-linea:last-child {
+  margin-bottom: 0;
+}
+.comprobante-linea strong {
+  color: var(--texto);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.comprobante-destacado strong {
+  font-size: 22px;
+  color: var(--vino);
+}
+.comprobante-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.comprobante-acciones > * {
+  flex: 1 1 180px;
+}
+/* El enlace al comprobante comparte el estilo del botón de al lado, pero es un
+   enlace: abre otra página y se puede copiar con el dedo largo. */
+a.cuenta-envio-ver {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.cuenta-volver {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-bottom: 6px;
+  color: var(--texto-suave);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.cuenta-atajos {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+.cuenta-atajos a {
+  color: var(--vino);
+  font-weight: 600;
+}
+.cuenta-anadir {
+  margin-top: 18px;
+}
+/* Quitar a alguien es destructivo: se dice en rojo, no en el color de marca. */
+.cuenta-quitar {
+  color: #b3261e;
 }

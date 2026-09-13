@@ -11,6 +11,7 @@ import { formatNumber } from "@/lib/format";
 import { track, ANALYTICS_EVENTS } from "@/lib/analytics";
 import { supabase } from "@/lib/supabase";
 import { useCuenta } from "@/lib/cuenta";
+import { COLUMNAS_FAMILIAR, type Familiar } from "@/lib/familiares";
 
 /** Lo que se elige en los desplegables. Solo La Habana, por ahora. */
 const ENTREGA = catalogoDeEntrega();
@@ -18,7 +19,7 @@ const ENTREGA = catalogoDeEntrega();
 const OTRA_ZONA = "__otra";
 
 export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null }) {
-  const { perfil } = useCuenta();
+  const { user, perfil } = useCuenta();
   const [items, setItems] = useState<CartItem[]>([]);
   const [customerName, setCustomerName] = useState("");
   const [customerWhatsapp, setCustomerWhatsapp] = useState("");
@@ -31,6 +32,38 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
     if (!tocoNombre && perfil.full_name) setCustomerName((v) => (v ? v : perfil.full_name!));
     if (!tocoWhatsapp && perfil.phone) setCustomerWhatsapp((v) => (v ? v : perfil.phone!));
   }, [perfil, tocoNombre, tocoWhatsapp]);
+
+  // Los familiares que ya tiene guardados. Se ofrecen para elegir, pero los
+  // campos siguen ahí y se pueden corregir: el que eligió a su hermana quizá
+  // esta vez manda a la misma casa con otro teléfono.
+  const [familiares, setFamiliares] = useState<Familiar[]>([]);
+  useEffect(() => {
+    if (!user || !supabase) return;
+    let vivo = true;
+    (async () => {
+      const { data } = await supabase!
+        .from("customer_beneficiaries")
+        .select(COLUMNAS_FAMILIAR)
+        .eq("customer_id", user.id)
+        .order("created_at", { ascending: false });
+      if (vivo) setFamiliares((data ?? []) as Familiar[]);
+    })();
+    return () => { vivo = false; };
+  }, [user]);
+
+  function usarFamiliar(id: string) {
+    const f = familiares.find((x) => x.id === id);
+    if (!f) return;
+    setDestNombre(f.full_name);
+    setDestTelefono(f.phone ?? "");
+    setDestMunicipio(f.municipio ?? "");
+    // La zona solo se pone si sigue existiendo en la tabla de tarifas: si un
+    // reparto cambió de nombre, es mejor que lo vuelva a elegir que cobrarle
+    // una mensajería calculada sobre una zona que ya no está.
+    setDestZona(f.municipio && f.zona && zonasDe(f.municipio).includes(f.zona) ? f.zona : "");
+    setDestDireccion(f.direccion ?? "");
+    setDestReferencia(f.referencia ?? "");
+  }
   // Quien recibe en Cuba. Es otra persona que quien paga, y sin esto el pedido
   // no se puede llevar a ninguna puerta.
   const [destNombre, setDestNombre] = useState("");
@@ -214,6 +247,26 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
           <p className="cart-seccion-nota">
             Por ahora entregamos solo en La Habana. Pronto en más provincias.
           </p>
+
+          {familiares.length > 0 && (
+            <div className="field">
+              <label htmlFor="dest-guardado">Alguien que ya tienes guardado</label>
+              <select
+                id="dest-guardado"
+                className="campo"
+                defaultValue=""
+                onChange={(e) => usarFamiliar(e.target.value)}
+              >
+                <option value="">Escribirlo a mano</option>
+                {familiares.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.full_name}
+                    {f.municipio ? ` — ${f.municipio}` : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="field">
             <label htmlFor="dest-nombre">Nombre y apellidos</label>
