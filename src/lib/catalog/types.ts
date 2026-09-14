@@ -3,7 +3,7 @@
 // sistema canónico (Product Studio One / NEXO) controla producto,
 // disponibilidad y pedido oficial. Ver docs/DECISIONS.md.
 
-export type CatalogCategory = "alimentos" | "energia";
+export type CatalogCategory = "alimentos" | "energia" | "electrodomesticos";
 
 export interface CatalogProduct {
   /** Slug estable usado en la URL pública /producto/[slug]. */

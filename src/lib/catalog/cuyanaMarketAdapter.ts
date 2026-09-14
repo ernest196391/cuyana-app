@@ -1,4 +1,4 @@
-import type { CatalogListResult, CatalogProduct, CatalogProductResult } from "./types";
+import type { CatalogCategory, CatalogListResult, CatalogProduct, CatalogProductResult } from "./types";
 import { marketSupabase } from "./marketSupabase";
 import { aplicarVigencia } from "./vigencia";
 
@@ -7,7 +7,7 @@ type PublicCatalogRow = {
   slug: string;
   name: string;
   kind: "product" | "bundle";
-  category: "alimentos" | "hogar";
+  category: "alimentos" | "hogar" | "electrodomesticos";
   description: string;
   presentation: string | null;
   composition: string[] | null;
@@ -21,13 +21,15 @@ type PublicCatalogRow = {
   valid_until: string | null;
 };
 
-export function mapPublicFoodRow(row: PublicCatalogRow): CatalogProduct {
+type MarketCategory = Extract<CatalogCategory, "alimentos" | "electrodomesticos">;
+
+function mapPublicMarketRow(row: PublicCatalogRow, category: MarketCategory): CatalogProduct {
   return {
     slug: row.slug,
     sourceSystem: "cuyana-market",
     sourceProductId: row.product_id,
     syncedAt: row.source_checked_at,
-    category: "alimentos",
+    category,
     name: row.name,
     description: row.description,
     imageUrl: row.image_url,
@@ -41,22 +43,62 @@ export function mapPublicFoodRow(row: PublicCatalogRow): CatalogProduct {
   };
 }
 
-export async function listCuyanaFoodProducts(): Promise<CatalogListResult> {
-  const { data, error } = await marketSupabase.from("market_public_catalog").select("*").eq("category", "alimentos").order("kind", { ascending: true }).order("name");
-  if (error) return { status: "error", products: [], message: "No pudimos actualizar el catálogo de alimentos." };
-  // La vigencia y la ficha se comprueban aquí, en el único sitio por el que
-  // pasan TODOS los lectores del catálogo —la rejilla, la ficha y el servidor
-  // que vuelve a resolver el precio al guardar el pedido—. Si se comprobara
-  // en la pantalla, el checkout se lo saltaría.
+/** Compatibilidad con los tests y consumidores FOOD existentes. */
+export function mapPublicFoodRow(row: PublicCatalogRow): CatalogProduct {
+  return mapPublicMarketRow(row, "alimentos");
+}
+
+export async function listCuyanaMarketProducts(category: MarketCategory): Promise<CatalogListResult> {
+  const { data, error } = await marketSupabase
+    .from("market_public_catalog")
+    .select("*")
+    .eq("category", category)
+    .order("kind", { ascending: true })
+    .order("name");
+
+  if (error) {
+    return {
+      status: "error",
+      products: [],
+      message: `No pudimos actualizar el catálogo de ${category === "alimentos" ? "alimentos" : "electrodomésticos"}.`,
+    };
+  }
+
+  // Vigencia y ficha se comprueban aquí para que grid, ficha y checkout lean
+  // exactamente la misma verdad comercial.
   const products = (data as PublicCatalogRow[]).map((row) =>
-    aplicarVigencia(mapPublicFoodRow(row), row.valid_until));
+    aplicarVigencia(mapPublicMarketRow(row, category), row.valid_until),
+  );
   return { status: products.length ? "ok" : "empty", products };
 }
 
-export async function getCuyanaFoodProduct(slug: string): Promise<CatalogProductResult> {
-  const { data, error } = await marketSupabase.from("market_public_catalog").select("*").eq("slug", slug).maybeSingle();
+export async function listCuyanaFoodProducts(): Promise<CatalogListResult> {
+  return listCuyanaMarketProducts("alimentos");
+}
+
+export async function listCuyanaElectrodomesticosProducts(): Promise<CatalogListResult> {
+  return listCuyanaMarketProducts("electrodomesticos");
+}
+
+export async function getCuyanaMarketProduct(slug: string): Promise<CatalogProductResult> {
+  const { data, error } = await marketSupabase
+    .from("market_public_catalog")
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+
   if (error) return { status: "error", product: null, message: "No pudimos actualizar este producto." };
   if (!data) return { status: "empty", product: null };
+
   const row = data as PublicCatalogRow;
-  return { status: "ok", product: aplicarVigencia(mapPublicFoodRow(row), row.valid_until) };
+  const category: MarketCategory = row.category === "electrodomesticos" || row.category === "hogar"
+    ? "electrodomesticos"
+    : "alimentos";
+  return { status: "ok", product: aplicarVigencia(mapPublicMarketRow(row, category), row.valid_until) };
+}
+
+export async function getCuyanaFoodProduct(slug: string): Promise<CatalogProductResult> {
+  const result = await getCuyanaMarketProduct(slug);
+  if (result.status !== "ok" || result.product?.category === "alimentos") return result;
+  return { status: "empty", product: null };
 }

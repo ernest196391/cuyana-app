@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Tienda",
-  description: "Elige alimentos o energía para enviar a tu familia en Cuba.",
+  description: "Elige alimentos, electrodomésticos o energía para enviar a tu familia en Cuba.",
   alternates: { canonical: "/tienda" },
 };
 
@@ -22,6 +22,10 @@ export default function TiendaPage() {
         <Link href="/tienda/alimentos" className="need-card">
           <span className="need-title">Alimentos</span>
           <span className="need-desc">Combos de alimentos para compartir en familia.</span>
+        </Link>
+        <Link href="/tienda/electrodomesticos" className="need-card">
+          <span className="need-title">Electrodomésticos</span>
+          <span className="need-desc">Equipos prácticos para resolver en casa.</span>
         </Link>
         <Link href="/tienda/energia" className="need-card">
           <span className="need-title">Energía</span>

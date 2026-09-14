@@ -56,14 +56,6 @@ export async function createStoreOrder(
   }));
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
-    // El id y el código se deciden AQUÍ, y no se pide la fila de vuelta.
-    //
-    // Pedirla obligaría a un SELECT sobre `store_orders`, y ahí solo puede
-    // leer el admin: en esa tabla están los nombres y los teléfonos de todos
-    // los clientes. Abrir la lectura para recuperar dos campos que ya se
-    // conocen sería cambiar un pedido roto por una fuga de datos. Esto es lo
-    // que tenía la tienda parada: la fila se insertaba y la lectura de vuelta
-    // se denegaba, así que el cliente veía «no se pudo registrar el pedido».
     const id = randomUUID();
     const code = generateOrderCode(category);
     const { error } = await supabase.from("store_orders").insert({
@@ -81,8 +73,6 @@ export async function createStoreOrder(
     });
 
     if (!error) {
-      // Avisar a Cuadre viene DESPUÉS de guardar y va aparte: el pedido ya está
-      // a salvo aquí, y que Cuadre falle no puede tumbarle la compra a nadie.
       await avisarACuadre(
         {
           external_ref: id,
@@ -97,17 +87,13 @@ export async function createStoreOrder(
           ...destinoParaCuadre(input.destino),
           source: "cuyana-web",
         },
-        code
+        code,
       );
       return { status: "ok", orderCode: code, canonicalOrderId: id };
     }
 
-    // Colisión del código único: reintenta una vez con otro.
     if (error.code === "23505" && attempt === 0) continue;
 
-    // Sin esto, un pedido perdido no deja ni rastro y no hay forma de saber
-    // por qué. Va el error, no el cliente: en los registros no pintan nada su
-    // nombre ni su teléfono.
     console.error("No se pudo guardar el pedido de tienda", {
       code,
       categoria: category,
@@ -124,18 +110,6 @@ export async function createStoreOrder(
   };
 }
 
-/**
- * Los datos de quien recibe, más lo que cuesta llevarlo.
- *
- * La mensajería se vuelve a calcular AQUÍ contra la tabla de tarifas, igual que
- * los precios de los productos: lo que llegue del navegador sobre cuánto cuesta
- * llevarlo no se guarda. Y cuando no se reconoce el barrio, el importe queda en
- * NULL — un cero ahí se leería como «envío gratis».
- *
- * Sale de una sola función porque la fila de la base y el aviso a Cuadre tienen
- * que decir exactamente lo mismo; con dos copias, la primera corrección se
- * aplicaría a una sola.
- */
 function destinoResuelto(destino: CreateOrderInput["destino"]) {
   if (!destino) return null;
   const envio = cotizar(destino.municipio, destino.zona);
@@ -152,12 +126,10 @@ function destinoResuelto(destino: CreateOrderInput["destino"]) {
   };
 }
 
-/** Para la fila de `store_orders`. */
 function destinoParaGuardar(destino: CreateOrderInput["destino"]) {
   return destinoResuelto(destino) ?? {};
 }
 
-/** Para el aviso a Cuadre: lo mismo, más la provincia, que allá se lee sola. */
 function destinoParaCuadre(destino: CreateOrderInput["destino"]) {
   const d = destinoResuelto(destino);
   if (!d) return {};
@@ -167,6 +139,6 @@ function destinoParaCuadre(destino: CreateOrderInput["destino"]) {
 
 function generateOrderCode(category: string): string {
   const suffix = randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase();
-  const prefix = category === "energia" ? "ENE" : "ALI";
+  const prefix = category === "energia" ? "ENE" : category === "electrodomesticos" ? "ELE" : "ALI";
   return `CUY-${prefix}-${suffix}`;
 }
