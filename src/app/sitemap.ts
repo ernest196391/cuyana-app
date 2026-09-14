@@ -6,6 +6,7 @@ const STATIC_ROUTES = [
   { path: "/enviar-dinero", priority: 0.9, changeFrequency: "daily" as const },
   { path: "/tienda", priority: 0.7, changeFrequency: "weekly" as const },
   { path: "/tienda/alimentos", priority: 0.6, changeFrequency: "weekly" as const },
+  { path: "/tienda/electrodomesticos", priority: 0.6, changeFrequency: "weekly" as const },
   { path: "/tienda/energia", priority: 0.6, changeFrequency: "weekly" as const },
   { path: "/ayuda", priority: 0.5, changeFrequency: "monthly" as const },
   { path: "/contacto", priority: 0.4, changeFrequency: "monthly" as const },
