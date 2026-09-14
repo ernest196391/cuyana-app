@@ -13,7 +13,7 @@ export interface CartItem {
   sourceProductId: string;
   name: string;
   priceUsd: number;
-  category: "alimentos" | "energia";
+  category: "alimentos" | "energia" | "electrodomesticos";
   quantity: number;
 }
 
