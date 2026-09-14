@@ -10,18 +10,14 @@ import type {
 import { fetchNexoEnergiaProducts, mapWooProductToCatalogProduct } from "./nexoProducts";
 import { getStoreCommercialRate } from "./commercialRate";
 import { createStoreOrder } from "@/lib/store/orders";
-import { getCuyanaFoodProduct, listCuyanaFoodProducts } from "./cuyanaMarketAdapter";
+import { getCuyanaMarketProduct, listCuyanaMarketProducts } from "./cuyanaMarketAdapter";
 
 /**
  * Adaptador server-to-server hacia el sistema canónico (Product Studio One /
- * NEXO). Solo lee catálogo (WooCommerce, vía la API pública de NEXO) — nunca
- * usa el checkout ni el sistema de gestoras de NEXO. El pedido "oficial" para
- * Cuyana es el que ella misma persiste en su propio Supabase antes de abrir
- * WhatsApp (ver src/lib/store/orders.ts); no se escribe nada en WooCommerce.
- *
- * Solo la categoría "energia" tiene mapeo de categoría NEXO confirmado hoy
- * (ver nexoCategories.ts). "alimentos" queda `not_configured` hasta que se
- * confirme un mapeo real: no se inventa una categoría equivalente.
+ * NEXO) para Energía, y hacia el marketplace propio de CUYANA para Alimentos
+ * y Electrodomésticos. Nunca usa el checkout ni el sistema de gestoras de NEXO.
+ * El pedido oficial lo persiste CUYANA en su propio Supabase antes de abrir
+ * WhatsApp (ver src/lib/store/orders.ts).
  */
 export class NexoCatalogAdapter implements CatalogProvider {
   readonly sourceSystem = "nexo";
@@ -30,13 +26,16 @@ export class NexoCatalogAdapter implements CatalogProvider {
   private readonly apiKey = process.env.NEXO_CATALOG_API_KEY || "";
 
   get configured(): boolean {
-    // El endpoint público de NEXO no exige clave hoy; si en el futuro la
-    // exige, esta clase es el único lugar que debe cambiar.
+    // Alimentos y electrodomésticos pueden funcionar con Cuyana Market aunque
+    // NEXO no esté configurado. Este indicador conserva el sentido histórico
+    // para la rama de Energía.
     return Boolean(this.baseUrl);
   }
 
   async listByCategory(category: CatalogCategory): Promise<CatalogListResult> {
-    if (category === "alimentos") return listCuyanaFoodProducts();
+    if (category === "alimentos" || category === "electrodomesticos") {
+      return listCuyanaMarketProducts(category);
+    }
     if (!this.configured) {
       return {
         status: "not_configured",
@@ -53,8 +52,8 @@ export class NexoCatalogAdapter implements CatalogProvider {
   }
 
   async getProduct(slug: string): Promise<CatalogProductResult> {
-    const food = await getCuyanaFoodProduct(slug);
-    if (food.status === "ok") return food;
+    const market = await getCuyanaMarketProduct(slug);
+    if (market.status === "ok") return market;
     if (!this.configured) {
       return { status: "not_configured", product: null, message: "Catálogo no configurado." };
     }
