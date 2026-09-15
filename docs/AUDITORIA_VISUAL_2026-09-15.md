@@ -116,3 +116,48 @@ pruebas decían «dos líneas, bien» mientras el CSS se comía el «450W» del 
 por su cuenta. Los asserts leían el texto del DOM, no lo que se ve. Ahora hay
 una comprobación de que el CSS no recorta nada (`scrollHeight` contra la
 altura visible) y otra específica para ese nombre.
+
+
+---
+
+## 7. El catálogo apagado del 15 de septiembre
+
+Apareció mientras se revisaba esto, y es más grave que cualquier texto de
+relleno: **la tienda amaneció con los 19 productos sin poder comprarse.**
+
+**No se borró nada.** Las 15 fichas de alimentos y las 4 de electrodomésticos
+seguían enteras en la base, con sus combos. Lo que había pasado es que
+`valid_until` venció en todas a la vez — las de alimentos el día 14, las de
+electrodomésticos a las 02:55 del 15 — y la compuerta de vigencia hizo su
+trabajo: no dejar vender a un precio caducado.
+
+**La causa de fondo no es el código, es un trabajo diario que nadie hacía.**
+Un precio vale 24 h. Renovarlo era pulsar «Revalidar ahora» oferta por oferta,
+34 veces, todos los días. El diseño daba por hecho que alguien lo haría.
+
+**Lo que se hizo:**
+
+1. **Un botón «Renovar todo el catálogo»** en Abastecimiento, con la cuenta de
+   cuántas ofertas están vencidas arriba del todo. Va por tandas porque cada
+   oferta abre la web de su proveedor y todas juntas se pasarían del tiempo
+   que Vercel da a una función.
+2. **Un riego automático diario** a las 06:00 UTC (02:00 en Guyana), antes de
+   que abra nadie. Necesita dos variables en Vercel: `CRON_SECRET` y
+   `SUPABASE_SERVICE_ROLE_KEY`. Sin ellas responde 503 y lo dice, en vez de
+   fallar callada — un cron que contesta «ok» sin hacer nada dejaría la tienda
+   apagada otra vez sin que nadie se entere.
+3. **La tarjeta vuelve a decir por qué** algo no se puede comprar. Se lo había
+   quitado en el apartado 1 de esta auditoría, pensando que afectaba a unos
+   pocos productos. Era falso: afectó a todos a la vez, y una rejilla llena de
+   botones apagados sin explicación es exactamente lo que parece una web rota.
+
+**Ninguna de las dos rutas inventa precios.** Vuelven a leer la página real de
+cada proveedor. La que no se pueda leer queda bloqueada y su producto sale del
+escaparate: vale más una tienda con menos cosas que una que promete un precio
+que nadie comprobó.
+
+**Lo que este agente NO pudo hacer:** disparar la renovación. Este entorno no
+tiene salida a `alawao.com`, `combitos.com`, `revolico.com` ni
+`supermarket23.com`. Que el mecanismo funciona está comprobado por otra vía:
+hay 50 revisiones guardadas, 49 leídas bien y 48 con el precio extraído, contra
+esos cuatro dominios. Desde Vercel, que sí tiene salida, funcionará.
