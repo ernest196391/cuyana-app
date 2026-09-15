@@ -31,6 +31,8 @@ export interface ResultadoRevalidacion {
   motivo?: string;
   precio: number | null;
   severidad: string | null;
+  /** Falso si la ficha pública no se pudo tocar. Ver `avisarSiNoTocoNada`. */
+  fichaActualizada: boolean;
 }
 
 async function leerFuentePublica(inicial: URL): Promise<Response> {
@@ -47,7 +49,8 @@ async function leerFuentePublica(inicial: URL): Promise<Response> {
 
 export async function revalidarOferta(sb: SupabaseClient, offerId: string): Promise<ResultadoRevalidacion> {
   const fallo = (motivo: string): ResultadoRevalidacion => ({
-    offerId, ok: false, renovada: false, bloqueada: false, motivo, precio: null, severidad: null,
+    offerId, ok: false, renovada: false, bloqueada: false, motivo,
+    precio: null, severidad: null, fichaActualizada: false,
   });
 
   const { data: offer, error } = await sb
@@ -130,20 +133,46 @@ export async function revalidarOferta(sb: SupabaseClient, offerId: string): Prom
     status: bloquea ? "blocked" : "approved",
   }).eq("id", offer.id);
 
+  // `.select()` no es decorativo: sin él, PostgREST contesta «ok» aunque la
+  // actualización no haya tocado NADA. Así fue como una política de lectura
+  // dejó el catálogo entero apagado sin que nadie se enterara — el botón
+  // decía que había renovado y la tienda seguía a oscuras. Ahora se cuenta lo
+  // que se tocó y se dice cuando son cero.
+  let tocadas: unknown[] | null = null;
+
   if (bloquea) {
     await sb.from("market_products").update({ purchasable: false }).eq("id", offer.product_id);
-    await sb.from("market_public_catalog").update({ available: false, valid_until: null }).eq("product_id", offer.product_id);
+    const { data } = await sb
+      .from("market_public_catalog")
+      .update({ available: false, valid_until: null })
+      .eq("product_id", offer.product_id)
+      .select("product_id");
+    tocadas = data;
   } else {
-    await sb.from("market_public_catalog").update({
-      price_usd: Number((despues.price * MARGEN).toFixed(2)),
-      source_checked_at: new Date().toISOString(),
-      valid_until: hasta,
-      available: true,
-    }).eq("product_id", offer.product_id);
+    const { data } = await sb
+      .from("market_public_catalog")
+      .update({
+        price_usd: Number((despues.price * MARGEN).toFixed(2)),
+        source_checked_at: new Date().toISOString(),
+        valid_until: hasta,
+        available: true,
+      })
+      .eq("product_id", offer.product_id)
+      .select("product_id");
+    tocadas = data;
   }
+
+  // Un producto que no está publicado no tiene ficha, y eso es normal: no es
+  // un fallo. Solo se avisa cuando la ficha existe y aun así no se pudo tocar.
+  const { count: tieneFicha } = await sb
+    .from("market_public_catalog")
+    .select("product_id", { count: "exact", head: true })
+    .eq("product_id", offer.product_id);
+  const fichaActualizada = (tocadas?.length ?? 0) > 0 || (tieneFicha ?? 0) === 0;
 
   return {
     offerId, ok: true, renovada: !bloquea, bloqueada: bloquea,
-    precio: extraido.price, severidad: severidad ?? null,
+    precio: extraido.price, severidad: severidad ?? null, fichaActualizada,
+    motivo: fichaActualizada ? undefined : "La ficha de la tienda no se pudo actualizar.",
   };
 }

@@ -81,6 +81,10 @@ export async function POST(request: Request) {
     renovadas: resultados.filter((r) => r.renovada).length,
     bloqueadas: resultados.filter((r) => r.bloqueada).length,
     fallidas: resultados.filter((r) => !r.ok).length,
+    // Ofertas que se revisaron bien pero cuya ficha de tienda no se pudo
+    // tocar. Si esto sale distinto de cero, la tienda NO va a reflejar lo que
+    // dice el panel — y eso hay que verlo, no descubrirlo tres días después.
+    fichasSinActualizar: resultados.filter((r) => r.ok && !r.fichaActualizada).length,
     quedan: quedan ?? 0,
     detalle: resultados,
   });

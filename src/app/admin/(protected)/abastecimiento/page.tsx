@@ -74,7 +74,7 @@ export default function AbastecimientoPage() {
     if (!supabase) return;
     setRenovando(true);
     setError("");
-    let renovadas = 0, bloqueadas = 0, vueltas = 0;
+    let renovadas = 0, bloqueadas = 0, sinFicha = 0, vueltas = 0;
     try {
       for (;;) {
         vueltas += 1;
@@ -89,6 +89,7 @@ export default function AbastecimientoPage() {
         if (!response.ok) { setError(result.error ?? "No se pudo renovar el catálogo."); break; }
         renovadas += result.renovadas ?? 0;
         bloqueadas += result.bloqueadas ?? 0;
+        sinFicha += result.fichasSinActualizar ?? 0;
         setProgreso(`${renovadas} renovadas, ${bloqueadas} bloqueadas · quedan ${result.quedan}`);
         if (!result.quedan || !result.procesadas) break;
       }
@@ -96,6 +97,11 @@ export default function AbastecimientoPage() {
       setRenovando(false);
     }
     setNotice(`Catálogo renovado: ${renovadas} con precio al día, ${bloqueadas} bloqueadas por no poder leer al proveedor.`);
+    // Que la tienda no refleje lo que dice el panel es peor que un error: todo
+    // parece bien y nadie mira. Se enseña como error, no como aviso de paso.
+    if (sinFicha > 0) {
+      setError(`OJO: ${sinFicha} ofertas se revisaron pero su ficha de tienda no se pudo actualizar. La tienda no va a reflejar esto.`);
+    }
     window.setTimeout(() => window.location.reload(), 1500);
   }
 
