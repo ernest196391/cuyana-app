@@ -60,8 +60,14 @@ await page.waitForTimeout(1500);
 const a = await page.locator("body").innerText();
 ok(!/Mismo día/.test(a), "fuera los «Mismo día» de las tarjetas");
 ok(!/Por confirmar/.test(a), "fuera los «Por confirmar»");
-ok(!/Preparando la ficha/.test(a), "fuera «Preparando la ficha»");
-ok(!/Confirmando precio/.test(a), "fuera «Confirmando precio»");
+// OJO: «Confirmando precio» y «Preparando la ficha» SÍ tienen que salir
+// cuando un producto no se puede comprar. Aquí había dos comprobaciones que
+// exigían lo contrario; se quitaron el 15 de septiembre, el día que venció la
+// vigencia de las 19 fichas a la vez y la tienda se quedó llena de botones
+// apagados sin una palabra de explicación. Una tarjeta que no se puede
+// comprar y no dice por qué parece una web rota. Lo que no puede volver es la
+// pastilla amarilla: el motivo va como una línea discreta, y que se vea y se
+// lea lo comprueba `tarjetas.mjs`.
 ok((await page.locator(".volver").count()) === 1, "hay botón de volver");
 
 const tarjetas = page.locator(".product-card");

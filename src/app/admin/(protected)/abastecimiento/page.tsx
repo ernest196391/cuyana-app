@@ -32,6 +32,8 @@ export default function AbastecimientoPage() {
   const [rate, setRate] = useState<CommercialRate | null>(null);
   const [rateValue, setRateValue] = useState("245");
   const [savingRate, setSavingRate] = useState(false);
+  const [renovando, setRenovando] = useState(false);
+  const [progreso, setProgreso] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -55,6 +57,46 @@ export default function AbastecimientoPage() {
     setChecking(null);
     if (!response.ok) setError(result.error ?? "No se pudo revalidar.");
     else window.location.reload();
+  }
+
+  /**
+   * Renovar la vigencia de todo el catálogo.
+   *
+   * Llama a la ruta por tandas y vuelve a llamar mientras queden ofertas. Se
+   * hace así, y no de una sola vez, porque cada oferta abre la web de su
+   * proveedor: todas juntas se pasarían del tiempo que Vercel da a una
+   * función y se cortaría por la mitad sin saber qué quedó hecho.
+   *
+   * El tope de vueltas evita que un error del servidor que siempre devuelva
+   * «quedan: 34» deje el navegador dando vueltas para siempre.
+   */
+  async function renovarTodo() {
+    if (!supabase) return;
+    setRenovando(true);
+    setError("");
+    let renovadas = 0, bloqueadas = 0, vueltas = 0;
+    try {
+      for (;;) {
+        vueltas += 1;
+        if (vueltas > 40) { setError("La renovación dio demasiadas vueltas. Recarga y mira qué quedó."); break; }
+        const { data } = await supabase.auth.getSession();
+        const response = await fetch("/api/admin/supply/revalidate-todo", {
+          method: "POST",
+          headers: { "content-type": "application/json", authorization: `Bearer ${data.session?.access_token ?? ""}` },
+          body: JSON.stringify({}),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) { setError(result.error ?? "No se pudo renovar el catálogo."); break; }
+        renovadas += result.renovadas ?? 0;
+        bloqueadas += result.bloqueadas ?? 0;
+        setProgreso(`${renovadas} renovadas, ${bloqueadas} bloqueadas · quedan ${result.quedan}`);
+        if (!result.quedan || !result.procesadas) break;
+      }
+    } finally {
+      setRenovando(false);
+    }
+    setNotice(`Catálogo renovado: ${renovadas} con precio al día, ${bloqueadas} bloqueadas por no poder leer al proveedor.`);
+    window.setTimeout(() => window.location.reload(), 1500);
   }
 
   async function saveRate() {
@@ -81,12 +123,31 @@ export default function AbastecimientoPage() {
   }
 
   if (loading) return <main className="admin-page"><p>Cargando abastecimiento…</p></main>;
+  const vencidas = offers.filter((o) => !o.valid_until || new Date(o.valid_until).getTime() <= Date.now()).length;
   const rateExpiresAt = rate?.expires_at ? new Date(rate.expires_at).getTime() : 0;
   const rateState = !rate || rateExpiresAt <= Date.now() ? "vencida" : rateExpiresAt - Date.now() <= 86400000 ? "por vencer" : "vigente";
   return (
     <main className="admin-page">
       <header className="admin-page-header"><div><p className="admin-eyebrow">CUYANA Market</p><h1>Abastecimiento</h1><p>Compra externa manual. Abre la fuente y confirma precio, existencia, presentación, destino, entrega y shipping antes de pagar.</p></div></header>
       <div className="supply-warning"><strong>Nunca compres solo por el dato guardado.</strong> La última revisión puede haber vencido.</div>
+      {/* Un precio dura 24 h. Cuando vencen todos a la vez, la tienda se queda
+          con todo «no disponible» y parece rota — pasó el 15 de septiembre.
+          Esto lo dice ANTES de que el cliente se lo encuentre, y lo arregla
+          sin tener que pulsar oferta por oferta. */}
+      <section className={vencidas > 0 ? "supply-vigencia supply-vigencia-mal" : "supply-vigencia"}>
+        <div>
+          <h2>Vigencia del catálogo</h2>
+          <p>
+            {vencidas === 0
+              ? `Las ${offers.length} ofertas tienen el precio al día.`
+              : `${vencidas} de ${offers.length} ofertas tienen el precio vencido. Los productos que dependen de ellas no se pueden comprar en la tienda.`}
+          </p>
+          {progreso && <p className="supply-progreso" role="status">{progreso}</p>}
+        </div>
+        <button className="btn btn-primary" type="button" disabled={renovando || vencidas === 0} onClick={renovarTodo}>
+          {renovando ? "Renovando…" : "Renovar todo el catálogo"}
+        </button>
+      </section>
       {error && <p className="admin-error" role="alert">{error}</p>}
       {notice && <p className="supply-success" role="status">{notice}</p>}
       <section className="supply-rate" aria-labelledby="rate-title"><div><p className="admin-eyebrow">PRECIO EN GUYANA</p><h2 id="rate-title">Tasa comercial GYD/USD</h2><p className={`supply-rate-${rateState.replace(" ", "-")}`}><strong>{rateState.toUpperCase()}.</strong> {rate ? `Actualizada ${new Date(rate.as_of).toLocaleString("es")}. Vence ${rate.expires_at ? new Date(rate.expires_at).toLocaleString("es") : "sin fecha"}.` : "No hay una tasa activa."}</p></div><label>GYD por 1 USD<input type="number" min="0.01" step="0.01" value={rateValue} onChange={(event) => setRateValue(event.target.value)} /></label><button className="btn btn-primary" type="button" disabled={savingRate} onClick={saveRate}>{savingRate ? "Guardando…" : "Actualizar 7 días"}</button></section>

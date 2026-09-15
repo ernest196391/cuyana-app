@@ -40,6 +40,9 @@ const PRODUCTOS = [
   { nombre: "Combo Kiosko", pres: "12 líneas: pollo, cerdo, jamón, leche, Choco Milk, aceite, frijoles, café, arroz, mayonesa, azúcar y atún.", gyd: "G$53,430", usd: "US$194.29" },
   { nombre: "Solomillo de cerdo", pres: "pieza de 1.25–1.50 kg", gyd: "G$4,675", usd: "US$17.00" },
   { nombre: "Atún", pres: "170 g", gyd: "G$605", usd: "US$2.20" },
+  // El caso que se rompió el 15 de septiembre: precio vencido. La tarjeta
+  // TIENE que decir por qué, o la rejilla entera parece una web rota.
+  { nombre: "Proteína Familiar", pres: "30 huevos + 11 lb de muslo", gyd: "G$25,300", usd: "US$92.00", motivo: "Confirmando precio" },
 ];
 
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
@@ -58,6 +61,7 @@ const tarjetas = PRODUCTOS.map((p) => {
       ${detalle ? `<span class="product-card-presentation">${detalle}</span>` : ""}
       <span class="product-card-price">${p.gyd}</span>
       <span class="product-card-price-secondary">${p.usd}</span>
+      ${p.motivo ? `<span class="product-card-motivo">${p.motivo}</span>` : ""}
     </a>
     <div class="product-card-add"><button class="cta">Añadir</button></div>
   </article>`;
@@ -103,6 +107,19 @@ ok(cortados.length === 0, "el CSS no corta ningún nombre por su cuenta", cortad
 // Y en concreto el que se dio por bueno en la auditoría tiene que salir entero.
 const panel = await page.locator(".product-card-name").filter({ hasText: "Panel solar" }).textContent();
 ok(panel.includes("450W"), "«Panel solar monocristalino 450W» conserva el 450W", panel);
+
+// El motivo se ve, y se lee: un texto del mismo color que el fondo no sirve
+// de nada aunque el elemento exista.
+const motivo = page.locator(".product-card-motivo");
+ok((await motivo.count()) === 1, "la tarjeta sin precio vigente dice por qué");
+ok(await motivo.first().isVisible(), "y el motivo se ve");
+const colores = await motivo.first().evaluate((e) => {
+  const cs = getComputedStyle(e);
+  let fondo = "rgba(0, 0, 0, 0)", n = e;
+  while (n && fondo === "rgba(0, 0, 0, 0)") { fondo = getComputedStyle(n).backgroundColor; n = n.parentElement; }
+  return { texto: cs.color, fondo };
+});
+ok(colores.texto !== colores.fondo, "y no es texto del color del fondo", JSON.stringify(colores));
 
 // Y las tarjetas de una misma fila tienen que medir lo mismo.
 const altos = await page.locator(".product-card").evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().height)));

@@ -1,0 +1,149 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { auditSupplierObservation, highestSeverity } from "./audit";
+import { extractProductPage } from "./extractProductPage";
+import { safeSourceUrl } from "./safeSourceUrl";
+
+/**
+ * Revalidar UNA oferta: volver a leer la página del proveedor, apuntar lo que
+ * dice hoy, y renovar —o cortar— la vigencia del precio publicado.
+ *
+ * Esto vivía dentro de `/api/admin/supply/revalidate`. Se sacó aquí para que
+ * la renovación de una y la de todas sean literalmente el mismo código. Si
+ * fueran dos copias, la de «todas» se quedaría atrás en cuanto alguien tocara
+ * la de «una», y estaríamos renovando precios con reglas viejas — que en una
+ * tienda que maneja dinero real es de las peores cosas que pueden pasar sin
+ * que nadie se entere.
+ *
+ * NO inventa precios. Si la página del proveedor no se puede leer o no se le
+ * saca un precio, la oferta queda BLOQUEADA y el producto sale del escaparate.
+ * Vale más una tienda con menos cosas que una que promete un precio que nadie
+ * comprobó.
+ */
+
+export const VIGENCIA_MS = 86_400_000; // 24 h, igual que la ruta de una sola.
+const MARGEN = 1.15;
+
+export interface ResultadoRevalidacion {
+  offerId: string;
+  ok: boolean;
+  renovada: boolean;
+  bloqueada: boolean;
+  motivo?: string;
+  precio: number | null;
+  severidad: string | null;
+}
+
+async function leerFuentePublica(inicial: URL): Promise<Response> {
+  let actual = inicial;
+  for (let saltos = 0; saltos <= 4; saltos += 1) {
+    const respuesta = await fetch(actual, { redirect: "manual", cache: "no-store", signal: AbortSignal.timeout(12000) });
+    if (![301, 302, 303, 307, 308].includes(respuesta.status)) return respuesta;
+    const siguiente = safeSourceUrl(new URL(respuesta.headers.get("location") ?? "", actual).toString());
+    if (!siguiente) throw new Error("Redirección insegura");
+    actual = siguiente;
+  }
+  throw new Error("Demasiadas redirecciones");
+}
+
+export async function revalidarOferta(sb: SupabaseClient, offerId: string): Promise<ResultadoRevalidacion> {
+  const fallo = (motivo: string): ResultadoRevalidacion => ({
+    offerId, ok: false, renovada: false, bloqueada: false, motivo, precio: null, severidad: null,
+  });
+
+  const { data: offer, error } = await sb
+    .from("market_supplier_offers")
+    .select("id,product_id,source_url,source_price,currency,availability,presentation,composition,supplier_shipping,destination_scope,eta_text")
+    .eq("id", offerId)
+    .maybeSingle();
+  if (error || !offer) return fallo("Oferta no encontrada.");
+
+  const sourceUrl = safeSourceUrl(offer.source_url);
+  if (!sourceUrl) return fallo("La URL de origen no es pública y segura.");
+
+  const { data: previa } = await sb
+    .from("market_supplier_observations")
+    .select("id,price,availability,presentation,composition,supplier_shipping,destination_scope,eta_text,source_reachable")
+    .eq("offer_id", offer.id)
+    .order("observed_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  let respuesta: Response;
+  try {
+    respuesta = await leerFuentePublica(sourceUrl);
+  } catch {
+    // 599 no es un código real: es la forma de decir «no se pudo llegar» sin
+    // romper el flujo, para que quede constancia de la revisión fallida en
+    // vez de perderse.
+    respuesta = new Response("", { status: 599 });
+  }
+
+  const html = respuesta.ok ? await respuesta.text() : "";
+  const extraido = respuesta.ok ? extractProductPage(html) : { price: null, available: false, currency: null };
+
+  const antes = previa
+    ? {
+        price: Number(previa.price ?? offer.source_price),
+        available: previa.availability === "available" ? true : previa.availability === "unavailable" ? false : null,
+        presentation: previa.presentation, composition: previa.composition, eta: previa.eta_text,
+        shipping: previa.supplier_shipping, destinationScope: previa.destination_scope,
+        sourceReachable: previa.source_reachable,
+      }
+    : {
+        price: Number(offer.source_price),
+        available: offer.availability === "available",
+        presentation: offer.presentation, composition: offer.composition, eta: offer.eta_text,
+        shipping: offer.supplier_shipping, destinationScope: offer.destination_scope,
+        sourceReachable: true,
+      };
+  const despues = { ...antes, price: extraido.price ?? antes.price, available: extraido.available, sourceReachable: respuesta.ok };
+
+  const diffs = auditSupplierObservation(antes, despues);
+  const severidad = highestSeverity(diffs);
+  const bloquea = severidad === "CRITICAL" || extraido.price === null || extraido.available !== true;
+
+  const { data: observacion, error: errorObs } = await sb
+    .from("market_supplier_observations")
+    .insert({
+      offer_id: offer.id, http_status: respuesta.status, resolved_url: respuesta.url || offer.source_url,
+      source_reachable: respuesta.ok, price: extraido.price, currency: extraido.currency ?? offer.currency,
+      availability: extraido.available === true ? "available" : extraido.available === false ? "unavailable" : "unknown",
+      presentation: offer.presentation, composition: offer.composition, supplier_shipping: offer.supplier_shipping,
+      destination_scope: offer.destination_scope, eta_text: offer.eta_text,
+      extraction_confidence: extraido.price !== null ? 90 : 25, snapshot: { extractor: "product-jsonld-v1" },
+    })
+    .select("id")
+    .single();
+  if (errorObs || !observacion) return fallo("No se pudo guardar la revisión.");
+
+  await sb.from("market_supplier_audits").insert({
+    offer_id: offer.id, previous_observation_id: previa?.id ?? null,
+    current_observation_id: observacion.id, severity: severidad, diffs, blocks_purchase: bloquea,
+  });
+
+  const hasta = new Date(Date.now() + VIGENCIA_MS).toISOString();
+  await sb.from("market_supplier_offers").update({
+    source_price: despues.price,
+    availability: despues.available === true ? "available" : despues.available === false ? "unavailable" : "unknown",
+    last_checked_at: new Date().toISOString(),
+    valid_until: bloquea ? null : hasta,
+    status: bloquea ? "blocked" : "approved",
+  }).eq("id", offer.id);
+
+  if (bloquea) {
+    await sb.from("market_products").update({ purchasable: false }).eq("id", offer.product_id);
+    await sb.from("market_public_catalog").update({ available: false, valid_until: null }).eq("product_id", offer.product_id);
+  } else {
+    await sb.from("market_public_catalog").update({
+      price_usd: Number((despues.price * MARGEN).toFixed(2)),
+      source_checked_at: new Date().toISOString(),
+      valid_until: hasta,
+      available: true,
+    }).eq("product_id", offer.product_id);
+  }
+
+  return {
+    offerId, ok: true, renovada: !bloquea, bloqueada: bloquea,
+    precio: extraido.price, severidad: severidad ?? null,
+  };
+}

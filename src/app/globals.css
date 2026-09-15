@@ -2100,3 +2100,12 @@ a.cuenta-envio-ver {
   grid-column: 1 / -1;
   margin-bottom: 0;
 }
+
+/* Por qué un producto no se puede comprar. Discreto: es información que hace
+   falta, no una alarma. Lo que NO puede pasar es que no esté — una rejilla
+   llena de botones apagados sin explicación parece una web rota. */
+.product-card-motivo {
+  color: #8a6d1f;
+  font-size: 12px;
+  font-weight: 600;
+}

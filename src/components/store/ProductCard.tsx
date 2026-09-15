@@ -21,9 +21,14 @@ import AddToCartButton from "./AddToCartButton";
  *   quince tarjetas son quince etiquetas de colores que no ayudan a elegir
  *   entre un arroz y un aceite. El plazo es de la ficha, que es donde se
  *   decide de verdad.
- * · El motivo de que algo no se pueda comprar. El botón ya sale apagado y
- *   diciendo «No disponible»: repetirlo arriba en una pastilla amarilla es
- *   decir dos veces lo mismo y ensuciar la rejilla entera por unos pocos.
+ *
+ * Lo que sí lleva, y se había quitado por error: POR QUÉ algo no se puede
+ * comprar. Se quitó pensando que afectaba «a unos pocos productos» y que el
+ * botón apagado ya lo decía. Los dos supuestos eran falsos: el 15 de
+ * septiembre venció la vigencia de las 19 fichas a la vez y la tienda entera
+ * quedó llena de botones apagados sin una palabra de explicación, que es
+ * exactamente lo que parece una web rota. Vuelve, pero como una línea
+ * discreta y no como la pastilla amarilla de antes.
  */
 export default function ProductCard({
   product,
@@ -54,6 +59,9 @@ export default function ProductCard({
         {detalle && <span className="product-card-presentation">{detalle}</span>}
         <span className="product-card-price">{price.primary}</span>
         {price.secondary && <span className="product-card-price-secondary">{price.secondary}</span>}
+        {!product.available && (
+          <span className="product-card-motivo">{motivo(product.unavailableReason)}</span>
+        )}
       </Link>
 
       {/* Poder añadir sin entrar al producto es media tienda: quien ya sabe lo
@@ -63,4 +71,18 @@ export default function ProductCard({
       </div>
     </article>
   );
+}
+
+/**
+ * Por qué no se puede comprar, dicho para quien lo lee.
+ *
+ * «No disponible» a secas hace pensar que se acabó el producto y que la culpa
+ * es del mundo. Cuando lo que pasa es que se nos venció el precio o que la
+ * ficha está a medias, el problema es NUESTRO, y decirlo así hace que la
+ * persona vuelva en vez de irse pensando que no tenemos nada.
+ */
+function motivo(razon: CatalogProduct["unavailableReason"]) {
+  if (razon === "precio_vencido") return "Confirmando precio";
+  if (razon === "ficha_incompleta") return "Preparando la ficha";
+  return "Agotado";
 }

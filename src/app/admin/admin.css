@@ -772,3 +772,37 @@
 .admin-cliente-detalle > .admin-cell-label:first-child {
   margin-top: 0;
 }
+
+/* Vigencia del catálogo: lo primero que hay que ver al entrar cuando la
+   tienda se ha quedado sin precios al día. */
+.supply-vigencia {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--linea, #e5e7eb);
+  background: #fffdfa;
+}
+.supply-vigencia-mal {
+  border-color: #e0b64a;
+  background: #fdf7e6;
+}
+.supply-vigencia h2 {
+  margin: 0 0 4px;
+  font-size: 17px;
+}
+.supply-vigencia p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.supply-progreso {
+  margin-top: 6px !important;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px !important;
+  color: #6b7280;
+}
