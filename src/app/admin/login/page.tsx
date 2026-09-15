@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAdminAuth, esAdministrador } from "@/lib/useAdminAuth";
 import Logo from "@/components/Logo";
@@ -86,6 +87,12 @@ export default function AdminLoginPage() {
             {submitting ? "Entrando…" : "Entrar"}
           </button>
           {error && <p className="admin-error">{error}</p>}
+          {/* Hasta hoy, quien olvidaba la contraseña del panel no tenía por
+              dónde salir: no había enlace, y el panel tampoco tiene pantalla
+              para cambiarla estando dentro. Se resolvía a mano en la base. */}
+          <Link className="admin-login-volver" href="/admin/recuperar">
+            ¿Olvidaste la contraseña?
+          </Link>
         </form>
       </div>
     </div>

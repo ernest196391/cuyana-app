@@ -55,3 +55,15 @@ Vigila en concreto dos cosas que un assert ingenuo no ve:
 lleva una copia de `partirNombre` a propósito: dos copias de la misma regla se
 separan en cuanto alguien toca una, y la prueba diría que todo va bien
 mientras la web hace otra cosa.
+
+## `admin-recuperar.mjs`
+
+El camino de «olvidé la contraseña» del panel: que el enlace esté en la
+pantalla de entrada, que lleve donde debe, y —lo que más importa— que
+`/admin/nueva-clave` sin un enlace válido DIGA que no vale en vez de quedarse
+cargando para siempre.
+
+Ese último es el que hay que vigilar. La sesión de recuperación tarda un
+instante en canjearse, así que la pantalla espera antes de rendirse; si
+alguien quita esa espera, la pantalla dirá «enlace caducado» a quien acaba de
+abrirlo, y el fallo solo se ve con un enlace de verdad en la mano.

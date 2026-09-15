@@ -69,7 +69,9 @@ export default function AdminNav({ email }: { email: string }) {
   return (
     <>
       <div className="admin-topbar">
-        <span className="admin-topbar-email">{email}</span>
+        <Link className="admin-topbar-email" href="/admin/mi-clave">
+          {email}
+        </Link>
         <button className="admin-logout" onClick={handleLogout}>
           Cerrar sesión
         </button>

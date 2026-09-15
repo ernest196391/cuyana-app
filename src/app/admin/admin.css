@@ -806,3 +806,61 @@
   font-size: 13px !important;
   color: #6b7280;
 }
+
+/* ---------- recuperar el acceso ---------- */
+.admin-login-volver {
+  display: block;
+  margin-top: 14px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13.5px;
+  text-decoration: none;
+}
+.admin-login-volver:hover {
+  color: #7a0e2e;
+  text-decoration: underline;
+}
+.admin-recuperar-ok {
+  margin: 0 0 10px;
+  color: #1f1b1d;
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+.admin-recuperar-nota {
+  margin: 10px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
+}
+.admin-btn-secundario {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #1f1b1d;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.admin-btn-secundario:hover {
+  border-color: #7a0e2e;
+  color: #7a0e2e;
+}
+
+/* El correo de la barra superior lleva a la propia cuenta. Se subraya al
+   pasar por encima para que se note que lleva a algún sitio. */
+a.admin-topbar-email {
+  color: inherit;
+  text-decoration: none;
+}
+a.admin-topbar-email:hover {
+  text-decoration: underline;
+}
+.admin-clave-form {
+  max-width: 420px;
+}
