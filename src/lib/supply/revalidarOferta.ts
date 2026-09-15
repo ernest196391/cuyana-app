@@ -35,10 +35,31 @@ export interface ResultadoRevalidacion {
   fichaActualizada: boolean;
 }
 
+/**
+ * Cómo nos presentamos al pedir la página de un proveedor.
+ *
+ * Sin esto, Node no manda `User-Agent` y varias tiendas contestan 403 sin
+ * mirar nada más. El 15 de septiembre fueron 17 de 34 ofertas —combitos y
+ * revolico enteros— dadas por «no se pudo leer» cuando la página estaba
+ * perfectamente viva.
+ *
+ * Son páginas públicas de producto de proveedores a los que ya les compramos,
+ * y esto automatiza exactamente lo que se hacía a mano: abrir la ficha y
+ * mirar el precio antes de pagarlo. Por eso el identificador dice quiénes
+ * somos y deja una dirección de contacto, en vez de disfrazarse de otro: si a
+ * algún proveedor le molesta, que pueda decírnoslo y lo quitamos de la lista.
+ */
+const COMO_NOS_PRESENTAMOS = {
+  "user-agent":
+    "Mozilla/5.0 (compatible; CuyanaBot/1.0; +https://cuyana.casavivadecuba.com/contacto)",
+  accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "accept-language": "es-ES,es;q=0.9,en;q=0.8",
+} as const;
+
 async function leerFuentePublica(inicial: URL): Promise<Response> {
   let actual = inicial;
   for (let saltos = 0; saltos <= 4; saltos += 1) {
-    const respuesta = await fetch(actual, { redirect: "manual", cache: "no-store", signal: AbortSignal.timeout(12000) });
+    const respuesta = await fetch(actual, { redirect: "manual", cache: "no-store", headers: COMO_NOS_PRESENTAMOS, signal: AbortSignal.timeout(12000) });
     if (![301, 302, 303, 307, 308].includes(respuesta.status)) return respuesta;
     const siguiente = safeSourceUrl(new URL(respuesta.headers.get("location") ?? "", actual).toString());
     if (!siguiente) throw new Error("Redirección insegura");
