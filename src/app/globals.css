@@ -64,7 +64,6 @@
 .food-support-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .food-support .btn-secondary { color: white; border-color: rgba(255,255,255,.4); text-decoration: none; }
 .product-card-presentation { display: -webkit-box; overflow: hidden; color: #675b60; font-size: .82rem; line-height: 1.35; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.product-card-eta { color: #396247; font-size: .78rem; font-weight: 700; }
 .add-label-mobile { display: none; }
 .product-composition, .product-policy { margin-top: 1rem; padding: 1rem; border-radius: .8rem; background: #f8f4ed; }
 .product-composition h2, .product-policy h2 { margin: 0 0 .5rem; font-size: 1rem; color: #520b24; }
@@ -1077,6 +1076,17 @@ input:focus-visible,
   font-size: 15px;
   line-height: 1.3;
   -webkit-box-orient: vertical;
+  /* Tres líneas, y es una decisión, no un descuido.
+     En un teléfono de 375px la columna del nombre mide 144px. Medido: «Panel
+     solar monocristalino 450W» no entra en dos líneas ni bajando la letra a
+     12px, que ya no se lee. Con el clamp en 2 lo que se pierde es el «450W»
+     —justo el dato que distingue un panel de otro—, y un nombre recortado que
+     esconde la potencia es peor que un nombre de tres líneas.
+     Lo que SÍ se arregló del problema original es que ya no hay bloques de
+     cuatro líneas: `partirNombre` se lleva la ficha técnica a su propia
+     línea, así que la mayoría de nombres ocupan una o dos y la tercera solo
+     la usan los pocos que de verdad la necesitan. Las filas no se descuadran
+     porque `min-height` y el estirado de la rejilla las igualan. */
   -webkit-line-clamp: 3;
 }
 .product-card-price {
@@ -1105,11 +1115,14 @@ input:focus-visible,
   .product-card { gap: 8px; padding: 10px; border-radius: 14px; }
   .product-card-link { gap: 5px; }
   .product-card-name { min-height: 2.6em; font-size: 14px; }
-  .food-featured-grid .product-card-name { -webkit-line-clamp: 2; }
-  .product-card-presentation,
-  .product-card-price-secondary { display: none; }
+  /* El USD se queda también en el teléfono. Quien compra está en Guyana y
+     paga en GYD —por eso ese va grande—, pero el precio de referencia de todo
+     este negocio es el dólar, y esconderlo en la pantalla desde la que compra
+     casi todo el mundo obligaba a entrar en la ficha solo para verlo.
+     La presentación tampoco se esconde ya: en energía es lo único que
+     distingue un BLUETTI de otro BLUETTI. */
+  .product-card-presentation { font-size: 12px; }
   .product-card-price { font-size: 17px; white-space: nowrap; }
-  .product-card-eta { font-size: 13px; }
   .product-card-add .cta { min-height: 44px; padding-inline: 8px; white-space: nowrap; }
   .add-label-mobile { display: inline; }
   .add-label-desktop { display: none; }
@@ -1929,4 +1942,161 @@ a.cuenta-envio-ver {
   font-weight: 700;
   letter-spacing: 0.12em;
   color: var(--vino);
+}
+
+/* ---------------------------------------------------------------------------
+   Auditoría visual · limpieza de relleno
+   --------------------------------------------------------------------------- */
+
+/* Un título que no compite con un lead debajo puede ir centrado sin quedar
+   suelto. Solo donde se pide: el resto de la web sigue alineado a la
+   izquierda, que es como se lee un texto largo. */
+.page-title-centrado {
+  text-align: center;
+}
+
+/* La línea del aviso de tasa. Cuando la tasa está vigente el componente no
+   pinta nada, y un <p> vacío seguiría ocupando su margen y separando el
+   título de la calculadora sin motivo. `:empty` lo quita del flujo. */
+.rate-freshness-linea {
+  margin: 0 0 18px;
+  text-align: center;
+  font-size: 13.5px;
+}
+.rate-freshness-linea:empty {
+  display: none;
+}
+
+/* El botón de WhatsApp: dorado de Guyana, y la mitad de bulto.
+   El texto va oscuro y no blanco — sobre este dorado el blanco da 2,4:1 de
+   contraste y no se lee; el grafito da 7,2:1. La altura no baja de 44px
+   aunque el botón encoja: por debajo de eso el dedo falla. */
+.cta-wa {
+  width: 52%;
+  min-width: 205px;
+  max-width: 100%;
+  margin-inline: auto;
+  min-height: 44px;
+  padding-block: 11px;
+  padding-inline: 14px;
+  background: var(--dorado);
+  color: var(--grafito);
+  font-size: 15px;
+}
+.cta-wa:hover {
+  background: #bb8c12;
+}
+.cta-wa[aria-disabled="true"] {
+  opacity: 0.5;
+}
+
+/* La puerta de la tienda: dos caminos con foto, no dos botones de texto. */
+.puerta-pregunta {
+  max-width: 16ch;
+  margin-inline: auto;
+  margin-bottom: 26px;
+  text-wrap: balance;
+}
+.puerta-grid {
+  display: grid;
+  /* `auto-fit` y no un número fijo: la tienda ya pasó de dos categorías a
+     tres, y volverá a cambiar. Con esto, añadir una cuarta no obliga a tocar
+     el CSS ni deja una tarjeta huérfana en su propia fila. */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+@media (max-width: 720px) {
+  .puerta-grid { grid-template-columns: 1fr; }
+}
+.puerta-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 0 16px;
+  border-radius: 16px;
+  border: 1.5px solid var(--linea);
+  background: var(--papel-card);
+  color: var(--texto);
+  text-decoration: none;
+  overflow: hidden;
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+.puerta-card:hover {
+  border-color: var(--vino);
+  transform: translateY(-2px);
+}
+/* La foto manda el alto, no el contenedor: con `fill` hace falta que el
+   envoltorio tenga medida propia o la imagen se colapsa a cero. */
+.puerta-foto {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  max-width: 100%;
+  margin-bottom: 12px;
+  background: var(--papel);
+}
+.puerta-foto-cubrir img {
+  object-fit: cover;
+}
+/* Foto de producto sobre fondo claro: se encaja entera, no se recorta, o le
+   cortaríamos el aparato. Va sobre el papel de la tarjeta para que no cante
+   al lado de las dos fotos de campaña. */
+.puerta-foto-encajar {
+  background: var(--papel-card);
+}
+.puerta-foto-encajar img {
+  object-fit: contain;
+  padding: 14px;
+}
+.puerta-titulo {
+  padding-inline: 16px;
+  font-family: var(--font-playfair), serif;
+  font-size: 22px;
+  color: var(--vino-deep);
+}
+.puerta-linea {
+  padding-inline: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--texto-suave);
+}
+.puerta-cobertura {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+/* Volver: discreto y arriba. No compite con nada, pero el dedo lo encuentra
+   —44px de alto real aunque el texto sea pequeño, por el padding. */
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding-block: 8px;
+  padding-inline: 10px 12px;
+  margin-inline-start: -10px;
+  border-radius: 9px;
+  color: var(--texto-suave);
+  font-size: 13.5px;
+  text-decoration: none;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.volver:hover {
+  color: var(--vino);
+  background: rgba(122, 14, 46, 0.06);
+}
+.volver svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* En la ficha, el volver ocupa la fila entera: es una rejilla de dos columnas
+   y si no, se metería al lado de la foto. */
+.product-detail .volver {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
 }

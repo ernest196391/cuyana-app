@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { CatalogProduct } from "@/lib/catalog/types";
 import { formatProductPrice } from "@/lib/format";
+import { partirNombre } from "@/lib/catalog/nombre";
 import AddToCartButton from "./AddToCartButton";
 
 /**
@@ -13,6 +14,16 @@ import AddToCartButton from "./AddToCartButton";
  * la tarjeta, el enlace se estira por encima con un `::after` y el botón queda
  * por delante (ver `.product-card-add` en globals.css). Así hay un enlace y un
  * botón, cada uno con su papel, sin anidarlos.
+ *
+ * Lo que la tarjeta NO lleva, y es a propósito:
+ *
+ * · El plazo de entrega. «Mismo día», «24 h», «Por confirmar» repetidos en
+ *   quince tarjetas son quince etiquetas de colores que no ayudan a elegir
+ *   entre un arroz y un aceite. El plazo es de la ficha, que es donde se
+ *   decide de verdad.
+ * · El motivo de que algo no se pueda comprar. El botón ya sale apagado y
+ *   diciendo «No disponible»: repetirlo arriba en una pastilla amarilla es
+ *   decir dos veces lo mismo y ensuciar la rejilla entera por unos pocos.
  */
 export default function ProductCard({
   product,
@@ -22,7 +33,13 @@ export default function ProductCard({
   gydPerUsd: number | null;
 }) {
   const price = formatProductPrice(product.priceUsd, gydPerUsd);
-  const eta = product.eta ? shortEta(product.eta) : null;
+
+  // Los nombres de energía vienen de NEXO con la ficha técnica pegada detrás.
+  // Se parte para pintarlo; el nombre entero sigue en la ficha del producto y
+  // en el `alt` de la foto, que es lo que lee quien no ve la pantalla.
+  const { nombre, ficha } = partirNombre(product.name);
+  const detalle = product.presentation || ficha;
+
   return (
     <article className="product-card">
       <Link href={`/producto/${product.slug}`} className="product-card-link">
@@ -33,14 +50,10 @@ export default function ProductCard({
             <div className="product-card-img-placeholder" aria-hidden="true" />
           )}
         </div>
-        <span className="product-card-name">{product.name}</span>
-        {product.presentation && <span className="product-card-presentation">{product.presentation}</span>}
+        <span className="product-card-name" title={product.name}>{nombre}</span>
+        {detalle && <span className="product-card-presentation">{detalle}</span>}
         <span className="product-card-price">{price.primary}</span>
         {price.secondary && <span className="product-card-price-secondary">{price.secondary}</span>}
-        {!product.available && (
-          <span className="badge badge-warning">{motivo(product.unavailableReason)}</span>
-        )}
-        {product.available && eta && <span className="product-card-eta">{eta}</span>}
       </Link>
 
       {/* Poder añadir sin entrar al producto es media tienda: quien ya sabe lo
@@ -50,26 +63,4 @@ export default function ProductCard({
       </div>
     </article>
   );
-}
-
-/**
- * Por qué no se puede comprar, dicho para quien lo lee.
- *
- * «No disponible» a secas hace pensar que se acabó. Si lo que pasa es que se
- * nos venció el precio o que la ficha está a medias, el problema es nuestro y
- * conviene decirlo así: la persona vuelve, en vez de irse pensando que no
- * tenemos nada.
- */
-function motivo(razon: CatalogProduct["unavailableReason"]) {
-  if (razon === "precio_vencido") return "Confirmando precio";
-  if (razon === "ficha_incompleta") return "Preparando la ficha";
-  return "No disponible";
-}
-
-function shortEta(eta: string) {
-  const value = eta.toLowerCase();
-  if (value.includes("mismo día")) return "Mismo día";
-  if (value.includes("24–48") || value.includes("24-48")) return "24–48 h";
-  if (value.includes("24")) return "24 h";
-  return "Por confirmar";
 }

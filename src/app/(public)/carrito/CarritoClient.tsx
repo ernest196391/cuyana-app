@@ -9,6 +9,7 @@ import { validarPedidoTienda, construirMensajePedidoTienda } from "@/lib/store/o
 import { catalogoDeEntrega, cotizar, zonasDe } from "@/lib/store/mensajeria";
 import { formatNumber } from "@/lib/format";
 import { track, ANALYTICS_EVENTS } from "@/lib/analytics";
+import Volver from "@/components/store/Volver";
 import { supabase } from "@/lib/supabase";
 import { useCuenta } from "@/lib/cuenta";
 import { COLUMNAS_FAMILIAR, type Familiar } from "@/lib/familiares";
@@ -201,6 +202,7 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
 
   return (
     <div className="wrap page-section">
+      <Volver href="/tienda">Seguir comprando</Volver>
       <h1 className="page-title">Tu carrito</h1>
 
       {items.length === 0 ? (

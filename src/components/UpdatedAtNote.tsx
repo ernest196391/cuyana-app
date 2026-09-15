@@ -24,12 +24,23 @@ export function useRateFreshness() {
   return rateFreshnessStatus(updatedAt, new Date(), freshHours, staleHours);
 }
 
-export default function UpdatedAtNote() {
+/**
+ * @param soloSiHayQueAvisar  Con la tasa vigente, no pinta nada.
+ *
+ * «Tasa vigente · actualizada el 12/9, 21:31» solo dice que todo va bien, y
+ * eso no hace falta decirlo: ocupa la línea de debajo del título y no cambia
+ * ninguna decisión de quien la lee. Lo que sí hay que decir es lo contrario
+ * —que la tasa se está quedando vieja—, y eso se sigue diciendo. Así que esto
+ * no quita el aviso: quita el ruido y deja el aviso.
+ */
+export default function UpdatedAtNote({ soloSiHayQueAvisar = false }: { soloSiHayQueAvisar?: boolean } = {}) {
   const { updatedAt, status } = useDeliveryMethods();
   const freshness = useRateFreshness();
 
-  if (status === "loading") return <Skeleton width="14em" />;
+  if (status === "loading") return soloSiHayQueAvisar ? null : <Skeleton width="14em" />;
   if (status === "error" || !updatedAt) return <>No pudimos confirmar la vigencia de la tasa ahora mismo.</>;
+
+  if (soloSiHayQueAvisar && freshness === "vigente") return null;
 
   const cuando = formatUpdatedAt(updatedAt);
   if (!freshness) return <>Tasas actualizadas {cuando}.</>;

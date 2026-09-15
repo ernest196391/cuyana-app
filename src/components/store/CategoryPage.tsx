@@ -2,6 +2,7 @@ import { getCatalogProvider } from "@/lib/catalog";
 import type { CatalogCategory } from "@/lib/catalog/types";
 import ProductCard from "./ProductCard";
 import CatalogEmptyState from "./CatalogEmptyState";
+import Volver from "./Volver";
 
 export default async function CategoryPage({
   category,
@@ -23,6 +24,7 @@ export default async function CategoryPage({
 
   return (
     <div className="wrap page-section">
+      <Volver href="/tienda">Tienda</Volver>
       <h1 className="page-title">{title}</h1>
       <p className="page-lead">{lead}</p>
 

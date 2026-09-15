@@ -3,6 +3,7 @@ import { getCatalogProvider } from "@/lib/catalog";
 import { WHATSAPP_NUMBER } from "@/lib/config/site";
 import ProductCard from "@/components/store/ProductCard";
 import CatalogEmptyState from "@/components/store/CatalogEmptyState";
+import Volver from "@/components/store/Volver";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,7 @@ export default async function AlimentosPage() {
   return (
     <main>
       <section className="wrap page-section food-hero">
+        <Volver href="/tienda">Tienda</Volver>
         <h1 className="page-title">Compra para tu familia en Cuba</h1>
         <p className="page-lead">Elige un combo o añade productos. Confirmamos disponibilidad y coordinamos la entrega en La Habana.</p>
       </section>

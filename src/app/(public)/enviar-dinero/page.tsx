@@ -11,9 +11,13 @@ export const metadata: Metadata = {
 export default function EnviarDineroPage() {
   return (
     <div className="wrap page-section">
-      <h1 className="page-title">Enviar dinero</h1>
-      <p className="page-lead">
-        <UpdatedAtNote />
+      {/* Sin lead. La calculadora que va debajo ya dice a cuánto está cada
+          método; una frase encima explicando que existe una tasa solo separa
+          el título de lo único que la persona vino a hacer. El aviso de tasa
+          vieja sigue saliendo, y solo cuando lo hay. */}
+      <h1 className="page-title page-title-centrado">Enviar dinero</h1>
+      <p className="rate-freshness-linea">
+        <UpdatedAtNote soloSiHayQueAvisar />
       </p>
       <div className="enviar-dinero-calc">
         <Calculator />

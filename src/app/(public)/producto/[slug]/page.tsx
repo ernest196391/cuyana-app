@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getCatalogProvider } from "@/lib/catalog";
 import { formatProductPrice } from "@/lib/format";
 import AddToCartButton from "@/components/store/AddToCartButton";
+import Volver from "@/components/store/Volver";
 
 // Precio, disponibilidad e imagen vienen del catálogo en vivo (NEXO) y de la
 // tasa comercial en Supabase: nunca se congela como HTML estático.
@@ -42,6 +43,12 @@ export default async function ProductoPage({ params }: { params: { slug: string 
 
   return (
     <div className="wrap page-section product-detail">
+      {/* Ocupa la fila entera de la rejilla (ver `.product-detail .volver`):
+          dentro de una columna quedaría al lado de la foto en vez de encima
+          de todo, que es donde se busca un «volver». */}
+      <Volver href={`/tienda/${product.category}`}>
+        {product.category === "energia" ? "Energía" : "Alimentos"}
+      </Volver>
       <div className="product-detail-img">
         {product.imageUrl ? (
           <Image src={product.imageUrl} alt={product.name} fill sizes="(max-width: 720px) 100vw, 480px" style={{ objectFit: "contain" }} />
