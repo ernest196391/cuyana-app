@@ -23,16 +23,16 @@ describe("isAvailable", () => {
   it("disponible: en stock, comprable y con precio", () => {
     expect(isAvailable({ id: 1, slug: "x", name: "X", stock_status: "instock", price: "10.00" })).toBe(true);
   });
-  it("no disponible sin stock", () => {
-    expect(isAvailable({ id: 1, slug: "x", name: "X", stock_status: "outofstock", price: "10.00" })).toBe(false);
+  it("sigue disponible aunque cambie el stock automático", () => {
+    expect(isAvailable({ id: 1, slug: "x", name: "X", stock_status: "outofstock", price: "10.00" })).toBe(true);
   });
   it("no disponible sin precio", () => {
     expect(isAvailable({ id: 1, slug: "x", name: "X", stock_status: "instock", price: "0" })).toBe(false);
   });
-  it("no disponible si purchasable es false", () => {
+  it("sigue publicado hasta que el administrador lo retire de NEXO", () => {
     expect(
       isAvailable({ id: 1, slug: "x", name: "X", stock_status: "instock", price: "10.00", purchasable: false }),
-    ).toBe(false);
+    ).toBe(true);
   });
 });
 

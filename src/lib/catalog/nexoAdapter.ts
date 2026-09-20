@@ -7,7 +7,13 @@ import type {
   CreateOrderInput,
   CreateOrderResult,
 } from "./types";
-import { fetchNexoEnergiaProducts, mapWooProductToCatalogProduct } from "./nexoProducts";
+import {
+  fetchAllNexoProducts,
+  fetchNexoElectrodomesticosProducts,
+  fetchNexoEnergiaProducts,
+  mapWooProductToCatalogProduct,
+} from "./nexoProducts";
+import { isElectrodomesticosCategory, isEnergiaProduct } from "./nexoCategories";
 import { getStoreCommercialRate } from "./commercialRate";
 import { createStoreOrder } from "@/lib/store/orders";
 import { getCuyanaMarketProduct, listCuyanaMarketProducts } from "./cuyanaMarketAdapter";
@@ -33,9 +39,25 @@ export class NexoCatalogAdapter implements CatalogProvider {
   }
 
   async listByCategory(category: CatalogCategory): Promise<CatalogListResult> {
-    if (category === "alimentos" || category === "electrodomesticos") {
+    if (category === "alimentos") {
       return listCuyanaMarketProducts(category);
     }
+    if (category === "electrodomesticos") {
+      if (!this.configured) return listCuyanaMarketProducts(category);
+      const [market, nexo] = await Promise.all([
+        listCuyanaMarketProducts(category),
+        fetchNexoElectrodomesticosProducts(this.baseUrl, this.apiKey),
+      ]);
+      if (!nexo.ok && market.status !== "ok") {
+        return { status: "error", products: [], message: nexo.message };
+      }
+      const external = nexo.ok
+        ? nexo.products.map((product) => mapWooProductToCatalogProduct(product, this.baseUrl, "electrodomesticos"))
+        : [];
+      const products = [...market.products, ...external];
+      return { status: products.length ? "ok" : "empty", products };
+    }
+
     if (!this.configured) {
       return {
         status: "not_configured",
@@ -43,11 +65,12 @@ export class NexoCatalogAdapter implements CatalogProvider {
         message: "El catálogo de Product Studio One / NEXO todavía no tiene credenciales configuradas.",
       };
     }
+
     const result = await fetchNexoEnergiaProducts(this.baseUrl, this.apiKey);
     if (!result.ok) {
       return { status: "error", products: [], message: result.message };
     }
-    const products = result.products.map((product) => mapWooProductToCatalogProduct(product, this.baseUrl));
+    const products = result.products.map((product) => mapWooProductToCatalogProduct(product, this.baseUrl, "energia"));
     return { status: "ok", products };
   }
 
@@ -57,13 +80,19 @@ export class NexoCatalogAdapter implements CatalogProvider {
     if (!this.configured) {
       return { status: "not_configured", product: null, message: "Catálogo no configurado." };
     }
-    const result = await fetchNexoEnergiaProducts(this.baseUrl, this.apiKey);
+    const result = await fetchAllNexoProducts(this.baseUrl, this.apiKey);
     if (!result.ok) {
       return { status: "error", product: null, message: result.message };
     }
     const match = result.products.find((product) => product.slug === slug);
     if (!match) return { status: "empty", product: null };
-    return { status: "ok", product: mapWooProductToCatalogProduct(match, this.baseUrl) };
+    if (isEnergiaProduct(match)) {
+      return { status: "ok", product: mapWooProductToCatalogProduct(match, this.baseUrl, "energia") };
+    }
+    if (isElectrodomesticosCategory(match.categories || [])) {
+      return { status: "ok", product: mapWooProductToCatalogProduct(match, this.baseUrl, "electrodomesticos") };
+    }
+    return { status: "empty", product: null };
   }
 
   async getCommercialRate(): Promise<CommercialRate | null> {

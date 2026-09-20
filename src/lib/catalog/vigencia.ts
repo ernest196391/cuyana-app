@@ -3,17 +3,11 @@ import type { CatalogProduct } from "./types";
 /**
  * Qué puede venderse y qué no.
  *
- * Dos reglas que el Blueprint exige y que hasta ahora no comprobaba nadie en
- * la cara del cliente:
+ * La disponibilidad pública es una decisión manual del administrador. La
+ * fecha de revisión del proveedor sigue guardándose para auditoría, pero ya
+ * no apaga automáticamente una ficha ni la saca de la tienda.
  *
- * 1. UN PRECIO VENCIDO NO SE VENDE. `market_public_catalog.valid_until`
- *    existe desde el principio y el catálogo del cliente lo ignoraba. La
- *    ruta de compra del operador (`/api/admin/supply/purchase`) SÍ lo exige:
- *    se niega a comprar con una oferta vencida. O sea que la tienda podía
- *    venderle a alguien a un precio que después Ernesto tenía prohibido
- *    pagar. Esa diferencia la come CUYANA o se cancela el pedido.
- *
- * 2. UNA FICHA A MEDIAS NO SE VENDE. Un combo sin descripción, sin
+ * UNA FICHA A MEDIAS NO SE VENDE. Un combo sin descripción, sin
  *    composición y sin política de sustitución es «foto + nombre + precio»,
  *    que es exactamente lo que el Blueprint prohíbe (§8.4, §10.2) y lo que
  *    el paso 7 de §7.3 pone como condición para publicar.
@@ -23,9 +17,9 @@ import type { CatalogProduct } from "./types";
  * qué, y quien opera necesita ver qué hay que arreglar.
  */
 export function sinPrecioVigente(validUntil: string | null | undefined, ahora = Date.now()) {
-  if (!validUntil) return true;
-  const t = new Date(validUntil).getTime();
-  return !Number.isFinite(t) || t <= ahora;
+  void validUntil;
+  void ahora;
+  return false;
 }
 
 /**
@@ -40,7 +34,7 @@ export function fichaIncompleta(p: Pick<CatalogProduct, "kind" | "description" |
   return sinTexto || sinComposicion || sinPolitica;
 }
 
-/** Aplica las dos reglas. El orden importa: se informa del primer problema. */
+/** Respeta la publicación manual y evita vender combos sin datos esenciales. */
 export function aplicarVigencia(
   producto: CatalogProduct,
   validUntil: string | null | undefined,
@@ -49,9 +43,8 @@ export function aplicarVigencia(
   if (fichaIncompleta(producto)) {
     return { ...producto, available: false, unavailableReason: "ficha_incompleta" };
   }
-  if (sinPrecioVigente(validUntil, ahora)) {
-    return { ...producto, available: false, unavailableReason: "precio_vencido" };
-  }
+  void validUntil;
+  void ahora;
   if (!producto.available) {
     return { ...producto, unavailableReason: producto.unavailableReason ?? "agotado" };
   }

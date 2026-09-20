@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { isEnergiaCategory, normalizedCategoryName } from "./nexoCategories";
+import {
+  isElectrodomesticosCategory,
+  isEnergiaCategory,
+  isEnergiaProduct,
+  normalizedCategoryName,
+} from "./nexoCategories";
 
 describe("normalizedCategoryName", () => {
   it("quita acentos y pasa a minúsculas", () => {
@@ -7,6 +12,22 @@ describe("normalizedCategoryName", () => {
   });
   it("recorta espacios", () => {
     expect(normalizedCategoryName("  Energia  ")).toBe("energia");
+  });
+});
+
+describe("catálogo ampliado", () => {
+  it("incluye los cuatro productos energéticos clasificados fuera de Energía", () => {
+    expect(isEnergiaProduct({ slug: "nexo-ecoflow-cable-10m", categories: [{ name: "Accesorios" }] })).toBe(true);
+    expect(isEnergiaProduct({ slug: "nexo-solar-install-supports", categories: [{ name: "Servicios" }] })).toBe(true);
+    expect(isEnergiaProduct({ slug: "bateria-portatil-puregear-magnetica-10000mah-20w", categories: [{ name: "Sin categorizar" }] })).toBe(true);
+    expect(isEnergiaProduct({ slug: "ventilador-solar-recargable-royal-ra123sl-de-12-pulgadas-con-bombillos-led", categories: [{ name: "Ventiladores" }] })).toBe(true);
+  });
+
+  it("reconoce categorías de electrodomésticos de NEXO", () => {
+    expect(isElectrodomesticosCategory([{ name: "Electrodomésticos" }])).toBe(true);
+    expect(isElectrodomesticosCategory([{ name: "Refrigeradores" }])).toBe(true);
+    expect(isElectrodomesticosCategory([{ name: "Cocinas y hornos" }])).toBe(true);
+    expect(isElectrodomesticosCategory([{ name: "Energía" }])).toBe(false);
   });
 });
 

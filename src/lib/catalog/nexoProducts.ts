@@ -3,7 +3,8 @@
 // usa el checkout ni el sistema de gestoras de NEXO desde aquí — Cuyana solo
 // lee producto/precio/imagen y arma su propio pedido y su propio WhatsApp.
 import type { CatalogProduct } from "./types";
-import { isEnergiaCategory } from "./nexoCategories";
+import type { CatalogCategory } from "./types";
+import { isElectrodomesticosCategory, isEnergiaProduct } from "./nexoCategories";
 
 type WooImage = { src?: string; alt?: string };
 type WooCategory = { id?: number; name?: string };
@@ -66,21 +67,29 @@ function priceOf(product: WooProduct): number {
 }
 
 export function isAvailable(product: WooProduct): boolean {
-  return product.stock_status === "instock" && product.purchasable !== false && priceOf(product) > 0;
+  // La publicación en NEXO es la decisión editorial. CUYANA mantiene el
+  // artículo visible/comprable hasta que el administrador lo retire allí.
+  // Solo un precio inexistente impide construir un pedido válido.
+  return priceOf(product) > 0;
 }
 
-export function mapWooProductToCatalogProduct(product: WooProduct, baseUrl: string): CatalogProduct {
+export function mapWooProductToCatalogProduct(
+  product: WooProduct,
+  baseUrl: string,
+  category: Extract<CatalogCategory, "energia" | "electrodomesticos"> = "energia",
+): CatalogProduct {
   return {
     slug: product.slug,
     sourceSystem: "nexo",
     sourceProductId: String(product.id),
     syncedAt: new Date().toISOString(),
-    category: "energia",
+    category,
     name: product.name,
     description: stripHtml(product.short_description) || stripHtml(product.description),
     imageUrl: resolveNexoImageUrl(product.images?.[0]?.src, baseUrl),
     priceUsd: priceOf(product),
     available: isAvailable(product),
+    deliveryLocation: "Toda Cuba, según cobertura",
   };
 }
 
@@ -133,6 +142,15 @@ export async function fetchAllNexoProducts(baseUrl: string, apiKey: string): Pro
 export async function fetchNexoEnergiaProducts(baseUrl: string, apiKey: string) {
   const result = await fetchAllNexoProducts(baseUrl, apiKey);
   if (!result.ok) return result;
-  const energia = result.products.filter((product) => isEnergiaCategory(product.categories || []));
+  const energia = result.products.filter((product) => isEnergiaProduct(product));
   return { ok: true as const, products: energia };
+}
+
+export async function fetchNexoElectrodomesticosProducts(baseUrl: string, apiKey: string) {
+  const result = await fetchAllNexoProducts(baseUrl, apiKey);
+  if (!result.ok) return result;
+  const electrodomesticos = result.products.filter((product) =>
+    isElectrodomesticosCategory(product.categories || []),
+  );
+  return { ok: true as const, products: electrodomesticos };
 }

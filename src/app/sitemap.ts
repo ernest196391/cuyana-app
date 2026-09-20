@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/config/site";
 import { marketSupabase } from "@/lib/catalog/marketSupabase";
+import { getCatalogProvider } from "@/lib/catalog";
 
 const STATIC_ROUTES = [
   { path: "/", priority: 1, changeFrequency: "daily" as const },
@@ -32,12 +33,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .select("slug, updated_at")
     .order("updated_at", { ascending: false });
 
-  const productRoutes: MetadataRoute.Sitemap = (data ?? []).map((product) => ({
+  const marketRoutes: MetadataRoute.Sitemap = (data ?? []).map((product) => ({
     url: `${SITE_URL}/producto/${product.slug}`,
     lastModified: new Date(product.updated_at),
     changeFrequency: "daily",
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...productRoutes];
+  const provider = getCatalogProvider();
+  const [energia, electrodomesticos] = await Promise.all([
+    provider.listByCategory("energia"),
+    provider.listByCategory("electrodomesticos"),
+  ]);
+  const marketSlugs = new Set((data ?? []).map((product) => product.slug));
+  const externalRoutes: MetadataRoute.Sitemap = [...energia.products, ...electrodomesticos.products]
+    .filter((product) => !marketSlugs.has(product.slug))
+    .map((product) => ({
+      url: `${SITE_URL}/producto/${product.slug}`,
+      lastModified: new Date(product.syncedAt),
+      changeFrequency: "daily",
+      priority: 0.7,
+    }));
+
+  return [...staticRoutes, ...marketRoutes, ...externalRoutes];
 }

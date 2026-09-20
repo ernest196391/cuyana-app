@@ -162,10 +162,11 @@ export async function revalidarOferta(sb: SupabaseClient, offerId: string): Prom
   let tocadas: unknown[] | null = null;
 
   if (bloquea) {
-    await sb.from("market_products").update({ purchasable: false }).eq("id", offer.product_id);
+    // Una comprobación fallida se registra en la oferta, pero no despublica
+    // la ficha. Desde ahora solo el administrador decide cuándo retirarla.
     const { data } = await sb
       .from("market_public_catalog")
-      .update({ available: false, valid_until: null })
+      .update({ source_checked_at: new Date().toISOString() })
       .eq("product_id", offer.product_id)
       .select("product_id");
     tocadas = data;

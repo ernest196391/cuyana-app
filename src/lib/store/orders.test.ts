@@ -115,11 +115,11 @@ describe("pedido de tienda", () => {
     expect(insertsHechos[0].customer_id).toBe(quien);
   });
 
-  it("un precio vencido no se puede vender, aunque esté en el carrito", async () => {
+  it("una fecha de revisión vencida no despublica el producto", async () => {
     const { createStoreOrder } = await import("./orders");
     const { aplicarVigencia } = await import("@/lib/catalog/vigencia");
-    // El proveedor devuelve lo mismo que devolvería el catálogo real tras
-    // pasar por la vigencia: el precio de ayer, ya caducado.
+    // La fecha queda como dato operativo, pero la disponibilidad la controla
+    // manualmente el administrador.
     const vencido = {
       ...proveedor,
       getProduct: async () => ({
@@ -133,11 +133,8 @@ describe("pedido de tienda", () => {
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const r = await createStoreOrder(vencido as any, entrada);
-    // Esto es lo que cierra el agujero: la ruta de compra del operador ya se
-    // negaba a comprar con una oferta vencida. Si la tienda hubiera seguido
-    // vendiendo, la diferencia la pagaba CUYANA.
-    expect(r.status).toBe("error");
-    expect(insertsHechos).toHaveLength(0);
+    expect(r.status).toBe("ok");
+    expect(insertsHechos).toHaveLength(1);
   });
 
   it("no encadena un select al insert: eso es lo que rompía la tienda", async () => {

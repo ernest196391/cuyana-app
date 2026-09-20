@@ -35,25 +35,23 @@ const comboCarnesAceite: CatalogProduct = {
 };
 
 describe("vigencia del precio", () => {
-  it("un precio vencido no vale", () => {
-    expect(sinPrecioVigente("2026-09-13T11:59:00Z", AHORA)).toBe(true);
+  it("una fecha vencida no despublica automáticamente", () => {
+    expect(sinPrecioVigente("2026-09-13T11:59:00Z", AHORA)).toBe(false);
   });
   it("uno que no ha vencido, sí", () => {
     expect(sinPrecioVigente("2026-09-14T00:00:00Z", AHORA)).toBe(false);
   });
-  it("sin fecha de vencimiento se trata como vencido, no como eterno", () => {
-    // `valid_until` en nulo es lo que escribe la revalidación cuando bloquea
-    // una oferta. Leerlo como «no caduca» sería justo al revés.
-    expect(sinPrecioVigente(null, AHORA)).toBe(true);
+  it("sin fecha de vencimiento permanece publicado", () => {
+    expect(sinPrecioVigente(null, AHORA)).toBe(false);
   });
   it("una fecha ilegible no abre la puerta", () => {
-    expect(sinPrecioVigente("mañana", AHORA)).toBe(true);
+    expect(sinPrecioVigente("mañana", AHORA)).toBe(false);
   });
 
-  it("un combo con el precio vencido deja de poder comprarse, y dice por qué", () => {
+  it("un combo con fecha antigua sigue comprable", () => {
     const r = aplicarVigencia(comboCompleto, "2026-09-13T06:00:00Z", AHORA);
-    expect(r.available).toBe(false);
-    expect(r.unavailableReason).toBe("precio_vencido");
+    expect(r.available).toBe(true);
+    expect(r.unavailableReason).toBeUndefined();
   });
 
   it("con el precio vigente se compra igual que antes", () => {
