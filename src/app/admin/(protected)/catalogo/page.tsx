@@ -167,9 +167,14 @@ export default function CatalogoAdminPage() {
           <h1>Catálogo</h1>
           <p>Productos propios (proveedor directo, precio y stock que tú controlas) — no las arroceras de Revolico, esas siguen en Abastecer.</p>
         </div>
-        <Link className="admin-btn-primary" href="/admin/catalogo/nuevo">
-          + Nuevo producto
-        </Link>
+        <div className="admin-catalogo-header-actions">
+          <Link className="admin-btn-secondary" href="/admin/catalogo/nuevo?manual=1">
+            + Añadir manualmente
+          </Link>
+          <Link className="admin-btn-primary" href="/admin/catalogo/nuevo">
+            + Nuevo producto
+          </Link>
+        </div>
       </header>
 
       {actionError && <p className="admin-error">{actionError}</p>}

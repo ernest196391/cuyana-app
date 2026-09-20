@@ -923,6 +923,12 @@ a.admin-topbar-email:hover {
 }
 
 /* ---------- Catálogo: filtros, tabla, foto, IA ---------- */
+.admin-catalogo-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .admin-catalogo-filters {
   display: flex;
   flex-wrap: wrap;

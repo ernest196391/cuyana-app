@@ -60,6 +60,7 @@ function ProductoFormInner() {
   const router = useRouter();
   const params = useSearchParams();
   const editId = params.get("id");
+  const manualMode = params.get("manual") === "1";
 
   const [loading, setLoading] = useState(Boolean(editId));
   const [existingImageUrl, setExistingImageUrl] = useState("");
@@ -88,7 +89,7 @@ function ProductoFormInner() {
   const [trackStock, setTrackStock] = useState(false);
   const [stockQtyStr, setStockQtyStr] = useState("0");
   const [status, setStatus] = useState<"publicado" | "oculto">("publicado");
-  const [readyToPublish, setReadyToPublish] = useState(false);
+  const [readyToPublish, setReadyToPublish] = useState(manualMode);
   const [dirty, setDirty] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -155,7 +156,7 @@ function ProductoFormInner() {
       setGeneratedPreview(null);
       setChosenImage("original");
       markDirty();
-      if (!editId) setReadyToPublish(false);
+      if (!editId && !manualMode) setReadyToPublish(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo leer la foto.");
     }
@@ -203,7 +204,7 @@ function ProductoFormInner() {
       setError("El panel no está conectado a la base de datos.");
       return;
     }
-    if (!editId && !originalBlob) {
+    if (!editId && !manualMode && !originalBlob) {
       setError("Sube primero una foto del producto.");
       return;
     }
@@ -215,34 +216,35 @@ function ProductoFormInner() {
     setPublishing(true);
     setError("");
     try {
-      let imageUrl = existingImageUrl;
+      let imageUrl = existingImageUrl || null;
       let slug = existingSlugRef.current;
+
+      if (!editId) {
+        const { data: slugData, error: slugError } = await supabase.rpc("admin_catalogo_generar_slug", {
+          p_category: category,
+          p_name: name.trim(),
+        });
+        if (slugError || !slugData) throw new Error("No se pudo generar el slug.");
+        slug = slugData as string;
+      }
 
       if (!editId || photoChanged) {
         const finalBlob =
           chosenImage === "editada" && editedPreview ? editedPreview.blob :
           chosenImage === "generada" && generatedPreview ? generatedPreview.blob :
           originalBlob;
-        if (!finalBlob) throw new Error("Falta la foto del producto.");
 
-        if (!editId) {
-          const { data: slugData, error: slugError } = await supabase.rpc("admin_catalogo_generar_slug", {
-            p_category: category,
-            p_name: name.trim(),
+        if (finalBlob) {
+          const path = `${slug}-${Date.now()}.jpg`;
+          const { error: uploadError } = await supabase.storage.from("cuyana-productos").upload(path, finalBlob, {
+            contentType: finalBlob.type || "image/jpeg",
+            upsert: true,
           });
-          if (slugError || !slugData) throw new Error("No se pudo generar el slug.");
-          slug = slugData as string;
+          if (uploadError) throw uploadError;
+          imageUrl = supabase.storage.from("cuyana-productos").getPublicUrl(path).data.publicUrl;
         }
-
-        const path = `${slug}-${Date.now()}.jpg`;
-        const { error: uploadError } = await supabase.storage.from("cuyana-productos").upload(path, finalBlob, {
-          contentType: finalBlob.type || "image/jpeg",
-          upsert: true,
-        });
-        if (uploadError) throw uploadError;
-        imageUrl = supabase.storage.from("cuyana-productos").getPublicUrl(path).data.publicUrl;
-        existingSlugRef.current = slug;
       }
+      existingSlugRef.current = slug;
 
       const stockQty = trackStock ? Math.max(0, Math.round(parseOr(stockQtyStr, 0))) : null;
 
@@ -303,7 +305,7 @@ function ProductoFormInner() {
       <section className="admin-card admin-upload-drop">
         {!originalPreview ? (
           <>
-            <strong>Subir foto del producto</strong>
+            <strong>Foto del producto{manualMode ? " (opcional)" : ""}</strong>
             <p className="admin-note">Adjunta una foto que ya tengas, o tómala con la cámara.</p>
           </>
         ) : (
