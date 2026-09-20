@@ -37,6 +37,10 @@ export interface CatalogProduct {
   composition?: string[] | null;
   substitutionPolicy?: string | null;
   eta?: string | null;
+  /** Cobertura comercial concreta de esta oferta (p. ej. Santiago de Cuba). */
+  deliveryLocation?: string | null;
+  /** Aclara qué datos vienen del proveedor y cuáles siguen por confirmar. */
+  dataQualityNote?: string | null;
 }
 
 /**

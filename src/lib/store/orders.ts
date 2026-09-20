@@ -40,6 +40,21 @@ export async function createStoreOrder(
     resolved.push({ product: result.product, quantity: item.quantity });
   }
 
+  const coberturas = Array.from(
+    new Set(resolved.map(({ product }) => product.deliveryLocation || "La Habana")),
+  );
+  if (coberturas.length > 1) {
+    return {
+      status: "error",
+      message: "Este carrito mezcla productos de distintas provincias. Haz un pedido separado para cada provincia.",
+    };
+  }
+  // La cobertura vuelve a resolverse desde el catálogo: nunca se confía en la
+  // provincia enviada por el navegador.
+  const destino = input.destino
+    ? { ...input.destino, provincia: coberturas[0] || "La Habana" }
+    : undefined;
+
   const category = resolved[0].product.category;
   const totalUsd = resolved.reduce((sum, line) => sum + line.product.priceUsd * line.quantity, 0);
   const rate = await provider.getCommercialRate();
@@ -69,7 +84,7 @@ export async function createStoreOrder(
       customer_name: input.customerName.trim(),
       customer_whatsapp: input.customerWhatsapp.trim(),
       customer_id: input.customerId ?? null,
-      ...destinoParaGuardar(input.destino),
+      ...destinoParaGuardar(destino),
     });
 
     if (!error) {
@@ -84,7 +99,7 @@ export async function createStoreOrder(
           amount_total_gyd: totalGyd,
           customer_name: input.customerName.trim(),
           customer_phone: input.customerWhatsapp.trim(),
-          ...destinoParaCuadre(input.destino),
+          ...destinoParaCuadre(destino),
           source: "cuyana-web",
         },
         code,
@@ -116,6 +131,7 @@ function destinoResuelto(destino: CreateOrderInput["destino"]) {
   return {
     recipient_name: destino.nombre.trim(),
     recipient_phone: destino.telefono.trim(),
+    recipient_province: destino.provincia.trim(),
     recipient_municipality: destino.municipio.trim(),
     recipient_zone: destino.zona.trim() || null,
     recipient_address: destino.direccion.trim(),
@@ -134,7 +150,7 @@ function destinoParaCuadre(destino: CreateOrderInput["destino"]) {
   const d = destinoResuelto(destino);
   if (!d) return {};
   const { shipping_rate_version: _, ...resto } = d;
-  return { ...resto, recipient_province: "La Habana" };
+  return resto;
 }
 
 function generateOrderCode(category: string): string {

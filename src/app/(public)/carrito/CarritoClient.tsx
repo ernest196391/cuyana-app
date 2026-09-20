@@ -87,11 +87,16 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
 
   const totalUsd = cartTotalUsd(items);
   const totalPrecio = formatProductPrice(totalUsd, gydPerUsd);
+  const coberturas = Array.from(new Set(items.map((item) => item.deliveryLocation || "La Habana")));
+  const coberturaMixta = coberturas.length > 1;
+  const provinciaEntrega = coberturas[0] || "La Habana";
+  const entregaEnSantiago = provinciaEntrega === "Santiago de Cuba";
 
   const zonas = destMunicipio ? zonasDe(destMunicipio) : [];
   const destino = {
     nombre: destNombre,
     telefono: destTelefono,
+    provincia: provinciaEntrega,
     municipio: destMunicipio,
     zona: destZona === OTRA_ZONA ? "" : destZona,
     direccion: destDireccion,
@@ -99,12 +104,16 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
   };
   // Se cotiza según se elige, no al final: nadie debería descubrir lo que
   // cuesta la mensajería después de haber dado todos sus datos.
-  const envio = destMunicipio ? cotizar(destMunicipio, destino.zona) : null;
+  const envio = destMunicipio && !entregaEnSantiago ? cotizar(destMunicipio, destino.zona) : null;
   const mensajeriaCup = envio?.estado === "zona" ? envio.cup : null;
 
   async function confirmarPedido() {
     if (!gydPerUsd) {
       setFormError("El precio en GYD se está actualizando. Podrás confirmar en cuanto la tasa comercial esté vigente.");
+      return;
+    }
+    if (coberturaMixta) {
+      setFormError("Este carrito mezcla productos de La Habana y Santiago de Cuba. Haz un pedido separado para cada provincia.");
       return;
     }
     const error = validarPedidoTienda({ items, customerName, customerWhatsapp, destino });
@@ -251,8 +260,14 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
 
           <h2 className="cart-seccion">¿Quién lo recibe en Cuba?</h2>
           <p className="cart-seccion-nota">
-            Por ahora entregamos solo en La Habana. Pronto en más provincias.
+            Este pedido se entrega en <strong>{provinciaEntrega}</strong>. La mensajería se confirma según la dirección.
           </p>
+
+          {coberturaMixta && (
+            <p className="calc-error" role="alert">
+              Tu carrito mezcla productos de La Habana y Santiago de Cuba. Sepáralos en dos pedidos para calcular correctamente la entrega.
+            </p>
+          )}
 
           {familiares.length > 0 && (
             <div className="field">
@@ -299,27 +314,34 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
 
           <div className="field">
             <label htmlFor="dest-municipio">Municipio</label>
-            <select
-              id="dest-municipio"
-              className="campo"
-              value={destMunicipio}
-              onChange={(e) => {
-                setDestMunicipio(e.target.value);
-                // El barrio de antes no tiene por qué existir en el municipio
-                // nuevo: dejarlo puesto cobraría una tarifa de otro sitio.
-                setDestZona("");
-              }}
-            >
-              <option value="">Elige el municipio</option>
-              {ENTREGA.municipios.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
+            {entregaEnSantiago ? (
+              <input
+                id="dest-municipio"
+                className="campo"
+                type="text"
+                placeholder="Santiago de Cuba, Palma Soriano…"
+                value={destMunicipio}
+                onChange={(e) => { setDestMunicipio(e.target.value); setDestZona(""); }}
+              />
+            ) : (
+              <select
+                id="dest-municipio"
+                className="campo"
+                value={destMunicipio}
+                onChange={(e) => {
+                  setDestMunicipio(e.target.value);
+                  setDestZona("");
+                }}
+              >
+                <option value="">Elige el municipio</option>
+                {ENTREGA.municipios.map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            )}
           </div>
 
-          {zonas.length > 0 && (
+          {!entregaEnSantiago && zonas.length > 0 && (
             <div className="field">
               <label htmlFor="dest-zona">Barrio o reparto</label>
               <select
@@ -379,6 +401,11 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
               )}
             </p>
           )}
+          {entregaEnSantiago && destMunicipio && (
+            <p className="cart-envio" role="status">
+              Mensajería en Santiago de Cuba <strong>a coordinar por WhatsApp</strong> según la dirección.
+            </p>
+          )}
 
           <h2 className="cart-seccion">Tus datos</h2>
           <div className="field">
@@ -423,7 +450,7 @@ export default function CarritoClient({ gydPerUsd }: { gydPerUsd: number | null 
               {totalPrecio.primary}
               {totalPrecio.secondary && <span className="product-card-price-secondary">{totalPrecio.secondary}</span>}
             </span>
-            <button type="button" className="cta" disabled={enviando || !gydPerUsd} onClick={() => void confirmarPedido()}>
+            <button type="button" className="cta" disabled={enviando || !gydPerUsd || coberturaMixta} onClick={() => void confirmarPedido()}>
               {!gydPerUsd ? "Precio en actualización" : enviando ? "Registrando…" : "Confirmar pedido"}
             </button>
           </div>

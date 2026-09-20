@@ -19,6 +19,8 @@ type PublicCatalogRow = {
   source_checked_at: string;
   /** Hasta cuándo vale el precio que trae esta fila. */
   valid_until: string | null;
+  delivery_location?: string | null;
+  data_quality_note?: string | null;
 };
 
 type MarketCategory = Extract<CatalogCategory, "alimentos" | "electrodomesticos">;
@@ -40,6 +42,8 @@ function mapPublicMarketRow(row: PublicCatalogRow, category: MarketCategory): Ca
     composition: row.composition,
     substitutionPolicy: row.substitution_policy,
     eta: row.eta_text,
+    deliveryLocation: row.delivery_location ?? null,
+    dataQualityNote: row.data_quality_note ?? null,
   };
 }
 

@@ -6,6 +6,7 @@ import { formatProductPrice } from "@/lib/format";
 import AddToCartButton from "@/components/store/AddToCartButton";
 import Volver from "@/components/store/Volver";
 import { CATEGORIA_ETIQUETA } from "@/lib/catalog/etiquetas";
+import { SITE_URL } from "@/lib/config/site";
 
 // Precio, disponibilidad e imagen vienen del catálogo en vivo (NEXO) y de la
 // tasa comercial en Supabase: nunca se congela como HTML estático.
@@ -19,6 +20,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     title: result.product.name,
     description: result.product.description,
     alternates: { canonical: `/producto/${params.slug}` },
+    openGraph: {
+      type: "website",
+      title: result.product.name,
+      description: result.product.description,
+      url: `/producto/${params.slug}`,
+      images: result.product.imageUrl ? [{ url: result.product.imageUrl, alt: result.product.name }] : [],
+    },
   };
 }
 
@@ -41,9 +49,38 @@ export default async function ProductoPage({ params }: { params: { slug: string 
 
   const product = result.product;
   const price = formatProductPrice(product.priceUsd, rate?.gydPerUsd ?? null);
+  const productUrl = `${SITE_URL}/producto/${product.slug}`;
+  const imageUrl = product.imageUrl
+    ? new URL(product.imageUrl, SITE_URL).toString()
+    : undefined;
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    sku: product.sourceProductId,
+    category: CATEGORIA_ETIQUETA[product.category],
+    url: productUrl,
+    ...(imageUrl ? { image: [imageUrl] } : {}),
+    ...(product.deliveryLocation ? { areaServed: product.deliveryLocation } : {}),
+    offers: {
+      "@type": "Offer",
+      url: productUrl,
+      priceCurrency: "USD",
+      price: product.priceUsd.toFixed(2),
+      availability: product.available
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition",
+    },
+  };
 
   return (
     <div className="wrap page-section product-detail">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }}
+      />
       {/* Ocupa la fila entera de la rejilla (ver `.product-detail .volver`):
           dentro de una columna quedaría al lado de la foto en vez de encima
           de todo, que es donde se busca un «volver». */}
@@ -70,6 +107,8 @@ export default async function ProductoPage({ params }: { params: { slug: string 
         )}
         {product.substitutionPolicy && <section className="product-policy"><h2>Sustituciones</h2><p>{product.substitutionPolicy}</p></section>}
         {product.eta && <p className="product-detail-meta"><strong>Entrega estimada:</strong> {product.eta}</p>}
+        {product.deliveryLocation && <p className="product-detail-meta"><strong>Disponible en:</strong> {product.deliveryLocation}</p>}
+        {product.dataQualityNote && <p className="product-detail-meta"><strong>Información:</strong> {product.dataQualityNote}</p>}
         {!product.available && (
           <p className="badge badge-warning product-detail-badge">Ahora mismo no disponible</p>
         )}
@@ -81,8 +120,9 @@ export default async function ProductoPage({ params }: { params: { slug: string 
         {/* La cobertura, justo donde se decide comprar. Enterarse al final de
             que no llega a tu provincia es la peor forma de enterarse. */}
         <p className="product-detail-meta">
-          Se entrega en La Habana, en casa de tu familiar. La mensajería se calcula al
-          finalizar el pedido, según el municipio.
+          {product.deliveryLocation
+            ? `Se entrega en ${product.deliveryLocation}. La disponibilidad y la mensajería se confirman al finalizar el pedido.`
+            : "La cobertura y la mensajería se confirman al finalizar el pedido."}
         </p>
       </div>
       {/* En móvil, el precio y el botón quedan siempre a la vista al fondo

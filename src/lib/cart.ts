@@ -14,6 +14,8 @@ export interface CartItem {
   name: string;
   priceUsd: number;
   category: "alimentos" | "energia" | "electrodomesticos";
+  /** Cobertura de la ficha al añadirla; permite separar pedidos por provincia. */
+  deliveryLocation?: string | null;
   quantity: number;
 }
 

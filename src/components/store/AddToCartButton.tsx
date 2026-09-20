@@ -22,6 +22,7 @@ export default function AddToCartButton({ product, compact = false, rateAvailabl
         name: product.name,
         priceUsd: product.priceUsd,
         category: product.category,
+        deliveryLocation: product.deliveryLocation,
       },
       qty,
     );

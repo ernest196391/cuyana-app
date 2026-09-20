@@ -28,6 +28,7 @@ export interface ValidarPedidoTiendaInput {
 export interface DestinoEnCuba {
   nombre: string;
   telefono: string;
+  provincia: string;
   municipio: string;
   /** Barrio o reparto. Puede ir vacío: entonces la mensajería se coordina. */
   zona: string;
@@ -48,6 +49,7 @@ export function validarPedidoTienda(input: ValidarPedidoTiendaInput): string | n
   if (!d) return null;
   if (d.nombre.trim().length < 2) return "Escribe el nombre de quien lo recibe en Cuba.";
   if (!telefonoPlausible(d.telefono)) return "Escribe el teléfono de quien lo recibe.";
+  if (!d.provincia.trim()) return "Falta la provincia de entrega.";
   if (!d.municipio.trim()) return "Elige el municipio de entrega.";
   if (d.direccion.trim().length < 6)
     return "Escribe la dirección exacta: calle, número y entre calles.";
@@ -104,7 +106,7 @@ export function construirMensajePedidoTienda(input: MensajePedidoTiendaInput): s
       ...seccion("Recibe en Cuba", [
         `Nombre: ${d.nombre.trim()}`,
         `Teléfono: ${d.telefono.trim()}`,
-        "Provincia: La Habana",
+        `Provincia: ${d.provincia.trim()}`,
         `Municipio: ${d.municipio.trim()}`,
         d.zona.trim() && `Zona: ${d.zona.trim()}`,
         `Dirección: ${d.direccion.trim()}`,

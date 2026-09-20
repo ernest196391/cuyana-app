@@ -47,6 +47,7 @@ function leerDestino(bruto: unknown): DestinoEnCuba | undefined {
   const destino: DestinoEnCuba = {
     nombre: texto(d.nombre, 120),
     telefono: texto(d.telefono, 40),
+    provincia: texto(d.provincia, 60),
     municipio: texto(d.municipio, 60),
     zona: texto(d.zona, 60),
     direccion: texto(d.direccion, 300),

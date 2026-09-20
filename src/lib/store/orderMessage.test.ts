@@ -63,6 +63,7 @@ describe("pedido con destino en Cuba", () => {
   const destino = {
     nombre: "Yanet Pérez Rondón",
     telefono: "+53 5 234 5678",
+    provincia: "La Habana",
     municipio: "Playa",
     zona: "Miramar",
     direccion: "Calle 26 #503 e/ 31 y 33, apto 4",
@@ -81,6 +82,7 @@ describe("pedido con destino en Cuba", () => {
     const m = construirMensajePedidoTienda({ ...base, destino, mensajeriaCup: 1800 });
     expect(m).toContain("Yanet Pérez Rondón");
     expect(m).toContain("+53 5 234 5678");
+    expect(m).toContain("Provincia: La Habana");
     expect(m).toContain("Municipio: Playa");
     expect(m).toContain("Zona: Miramar");
     expect(m).toContain("Calle 26 #503 e/ 31 y 33, apto 4");
@@ -138,6 +140,7 @@ describe("validar el destino", () => {
   const destino = {
     nombre: "Yanet Pérez",
     telefono: "+53 5 234 5678",
+    provincia: "La Habana",
     municipio: "Playa",
     zona: "Miramar",
     direccion: "Calle 26 #503 e/ 31 y 33",
