@@ -2,17 +2,16 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Cuyana — Cerca de los tuyos.",
-    short_name: "Cuyana",
-    description: "Envía dinero, alimentos o energía para tu familia en Cuba desde Guyana.",
+    name: "Curuguay — Cerca, aunque estén lejos.",
+    short_name: "Curuguay",
+    description: "Remesas desde Uruguay hacia Cuba.",
     start_url: "/",
     display: "standalone",
-    background_color: "#F8F4ED",
-    theme_color: "#7A0E2E",
+    background_color: "#F5F8FC",
+    theme_color: "#103563",
     lang: "es",
     icons: [
-      { src: "/brand/cuyana/pwa-192x192.png", sizes: "192x192", type: "image/png" },
-      { src: "/brand/cuyana/pwa-512x512.png", sizes: "512x512", type: "image/png" },
+      { src: "/brand/curuguay/curuguay-avatar-light.svg", sizes: "any", type: "image/svg+xml" },
     ],
   };
 }
