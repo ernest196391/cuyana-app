@@ -3,14 +3,14 @@
 // marca, navegación o contacto vive aquí para que un cambio no obligue a
 // tocar JSX en varios archivos.
 
-export const SITE_NAME = "Cuyana";
-export const SITE_TAGLINE = "Cerca de los tuyos.";
-export const SITE_URL = "https://cuyana.casavivadecuba.com";
+export const SITE_NAME = "Curuguay";
+export const SITE_TAGLINE = "Cerca, aunque estén lejos.";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://curuguay.vercel.app";
 
 export const NAV_LINKS = [
   { href: "/enviar-dinero", label: "Enviar dinero" },
-  { href: "/tienda", label: "Tienda" },
   { href: "/#como-funciona", label: "Cómo funciona" },
+  { href: "/#seguimiento", label: "Seguimiento" },
   { href: "/ayuda", label: "Ayuda" },
 ] as const;
 
@@ -24,7 +24,7 @@ export const FOOTER_LEGAL_LINKS = [
 // Número de WhatsApp del negocio (formato internacional, sin + ni espacios).
 // Mismo valor observado en la auditoría pública; puede sobreescribirse por
 // entorno sin tocar código.
-export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5355879222";
+export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5354056173";
 
 /**
  * Datos legales/comerciales que la auditoría marcó como faltantes

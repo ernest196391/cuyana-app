@@ -1,17 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import "./curuguay.css";
 
 // Tipografía de marca Cuyana: Playfair Display para títulos y logotipo,
 // Inter para interfaz. Ver docs/DECISIONS.md.
-const playfairDisplay = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-playfair",
-  display: "swap",
-});
-
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -29,24 +22,24 @@ const jetBrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-const TITLE = "Cuyana — Cerca de los tuyos. Remesas de Guyana a Cuba";
+const TITLE = "Curuguay — Remesas de Uruguay a Cuba";
 const DESCRIPTION =
-  "Envía dinero, alimentos o energía para tu familia en Cuba desde Guyana, con el total claro antes de continuar.";
+  "Calcula y solicita remesas desde Uruguay hacia Cuba con tasas claras, seguimiento y atención por WhatsApp.";
 
-const SITE_URL = "https://cuyana.casavivadecuba.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://curuguay.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: TITLE, template: "%s — Cuyana" },
+  title: { default: TITLE, template: "%s — Curuguay" },
   description: DESCRIPTION,
-  applicationName: "Cuyana",
+  applicationName: "Curuguay",
   manifest: "/manifest.webmanifest",
   alternates: { canonical: "/" },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
     url: "/",
-    siteName: "Cuyana",
+    siteName: "Curuguay",
     locale: "es",
     type: "website",
   },
@@ -61,7 +54,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#7A0E2E",
+  themeColor: "#0B2D5B",
 };
 
 export default function RootLayout({
@@ -72,7 +65,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${playfairDisplay.variable} ${inter.variable} ${jetBrainsMono.variable}`}
+      className={`${inter.variable} ${jetBrainsMono.variable}`}
     >
       <body>{children}</body>
     </html>

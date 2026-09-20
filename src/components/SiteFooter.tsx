@@ -22,7 +22,7 @@ export default function SiteFooter() {
         </nav>
       </div>
       <div className="wrap">
-        <p className="site-footer-copy">Cuyana © {new Date().getFullYear()}</p>
+        <p className="site-footer-copy">Curuguay © {new Date().getFullYear()}</p>
       </div>
     </footer>
   );

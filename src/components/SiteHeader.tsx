@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
-import CartIndicator from "./CartIndicator";
 import { NAV_LINKS } from "@/lib/config/site";
 import { useCuenta } from "@/lib/cuenta";
 
@@ -20,8 +19,8 @@ export default function SiteHeader() {
   return (
     <header className="site-header">
       <div className="wrap site-header-row">
-        <Link href="/" className="site-logo" aria-label="Cuyana — inicio" onClick={() => setOpen(false)}>
-          <Logo variant="header" height={30} />
+        <Link href="/" className="site-logo" aria-label="Curuguay — inicio" onClick={() => setOpen(false)}>
+          <Logo variant="header" height={34} />
         </Link>
 
         <nav className="site-nav-desktop" aria-label="Principal">
@@ -38,7 +37,6 @@ export default function SiteHeader() {
         </nav>
 
         <div className="site-header-actions">
-          <CartIndicator />
           <button
             type="button"
             className="site-menu-btn"
