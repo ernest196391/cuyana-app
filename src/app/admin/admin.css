@@ -864,3 +864,303 @@ a.admin-topbar-email:hover {
 .admin-clave-form {
   max-width: 420px;
 }
+
+/* ---------- cabecera de página (faltaba: la usaba Abastecer sin
+   definirla, así que se veía sin estilo — se define aquí para las dos) ---------- */
+.admin-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 20px calc(88px + env(safe-area-inset-bottom));
+}
+.admin-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.admin-page-header h1 {
+  font-family: var(--font-playfair), serif;
+  font-weight: 400;
+  font-size: 26px;
+  color: var(--vino-deep);
+  margin: 2px 0 6px;
+}
+.admin-page-header p {
+  color: var(--texto-suave);
+  font-size: 13px;
+  margin: 0;
+  max-width: 46ch;
+}
+.admin-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vino);
+  margin: 0;
+}
+.admin-meta {
+  color: var(--texto-suave);
+  font-size: 13px;
+  margin: 0 0 10px;
+}
+.admin-note {
+  color: var(--texto-suave);
+  font-size: 12px;
+  margin: 6px 0 0;
+}
+.admin-text-link {
+  color: var(--vino);
+  font-weight: 700;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-decoration: underline;
+}
+
+/* ---------- Catálogo: filtros, tabla, foto, IA ---------- */
+.admin-catalogo-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.admin-catalogo-filters .admin-input {
+  flex: 1;
+  min-width: 200px;
+  margin-bottom: 0;
+}
+.admin-catalogo-filters .admin-select {
+  margin-bottom: 0;
+  max-width: 220px;
+}
+
+.admin-row-catalogo {
+  grid-template-columns: 32px 1.6fr 0.8fr 0.7fr 0.9fr 1fr;
+}
+@media (max-width: 720px) {
+  .admin-row-catalogo {
+    grid-template-columns: auto 1fr 1fr;
+  }
+}
+
+.admin-catalogo-product-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-catalogo-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--papel);
+  flex-shrink: 0;
+}
+.admin-catalogo-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.admin-bulk-delete {
+  color: #a33;
+  font-weight: 700;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-decoration: underline;
+}
+
+.admin-bulk-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: var(--vino-deep);
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 0 0 14px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.admin-bulk-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.admin-bulk-bar-actions .admin-btn-secondary {
+  padding: 8px 14px;
+  font-size: 13px;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.admin-bulk-bar-actions .admin-bulk-delete,
+.admin-bulk-cancel {
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font: inherit;
+  text-decoration: underline;
+}
+
+.admin-product-wizard {
+  max-width: 640px;
+}
+.admin-upload-drop {
+  text-align: center;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+.admin-product-preview-img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: var(--papel);
+}
+
+.admin-photo-picker {
+  display: flex;
+  gap: 10px;
+}
+.admin-photo-picker input[type="file"] {
+  display: none;
+}
+.admin-photo-picker-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 88px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--linea);
+  background: var(--papel-card);
+  color: var(--texto);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.admin-photo-picker-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.admin-product-generate-choice {
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.admin-image-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+.admin-image-option {
+  border: 2px solid var(--linea);
+  border-radius: 14px;
+  padding: 6px;
+  background: var(--papel);
+  cursor: pointer;
+  display: grid;
+  gap: 6px;
+  text-align: center;
+}
+.admin-image-option img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.admin-image-option span {
+  font-size: 12px;
+  color: var(--texto-suave);
+  font-weight: 700;
+}
+.admin-image-option.selected {
+  border-color: var(--vino);
+}
+.admin-image-option.selected span {
+  color: var(--vino);
+}
+
+.admin-checkbox-row {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.admin-checkbox-row input {
+  width: auto !important;
+  min-height: 0 !important;
+}
+
+.admin-stock-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-stock-stepper input {
+  text-align: center;
+  flex: 1;
+}
+.admin-stock-stepper button {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 1px solid var(--linea);
+  background: var(--papel-card);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--vino-deep);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-stock-stepper button:active {
+  background: var(--papel);
+}
+
+.admin-product-publish-bar {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(to top, var(--papel) 60%, transparent);
+  padding: 16px 0 6px;
+  margin-top: 8px;
+}
+.admin-product-publish-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 10px;
+}
+.admin-saved {
+  color: #166534;
+  font-weight: 750;
+  font-size: 13px;
+}
+.admin-dirty-warning {
+  color: #92640a;
+  font-weight: 750;
+  font-size: 13px;
+}
