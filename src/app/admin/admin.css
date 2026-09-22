@@ -624,7 +624,7 @@
 
 /* ---------- pedidos ---------- */
 .admin-row-pedidos {
-  grid-template-columns: 1fr 1.2fr 0.9fr 0.9fr 1.1fr 1fr;
+  grid-template-columns: 1fr 1.2fr 0.9fr 0.9fr 1.1fr 1fr 1fr;
 }
 .admin-wa-link {
   display: inline-flex;
@@ -1169,4 +1169,113 @@ a.admin-topbar-email:hover {
   color: #92640a;
   font-weight: 750;
   font-size: 13px;
+}
+
+/* ---------- Facturas ---------- */
+.admin-row-facturas {
+  grid-template-columns: 1fr 1.3fr 0.9fr 0.8fr 0.9fr 0.9fr 1fr;
+}
+@media (max-width: 720px) {
+  .admin-row-facturas {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.admin-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.admin-pill.borrador,
+.admin-pill.pendiente {
+  background: #fff4d6;
+  color: #8a6100;
+}
+.admin-pill.emitida,
+.admin-pill.pagado {
+  background: #e5f3ea;
+  color: #166534;
+}
+
+.admin-invoice-layout {
+  display: grid;
+  gap: 20px;
+}
+.admin-invoice-form {
+  min-width: 0;
+}
+.admin-sidebar-sticky {
+  position: sticky;
+  bottom: 0;
+}
+@media (min-width: 960px) {
+  .admin-invoice-layout {
+    grid-template-columns: 1fr 320px;
+    align-items: start;
+  }
+  .admin-sidebar-sticky {
+    position: sticky;
+    top: 90px;
+  }
+}
+
+.admin-invoice-grid-2 {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 720px) {
+  .admin-invoice-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-line-item {
+  display: grid;
+  grid-template-columns: 1fr 140px 36px;
+  gap: 8px;
+  align-items: start;
+  margin-bottom: 10px;
+}
+.admin-line-item textarea {
+  min-height: 44px;
+}
+.admin-line-item-remove {
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--linea);
+  background: var(--papel-card);
+  color: #a33;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+@media (max-width: 560px) {
+  .admin-line-item {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-invoice-totals {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--linea);
+  display: grid;
+  gap: 6px;
+}
+.admin-invoice-totals > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+.admin-invoice-totals > div.total {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--vino-deep);
+  padding-top: 6px;
+  border-top: 1px solid var(--linea);
 }

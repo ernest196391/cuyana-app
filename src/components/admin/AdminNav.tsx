@@ -67,6 +67,16 @@ const TABS = [
       </svg>
     ),
   },
+  {
+    href: "/admin/facturas",
+    label: "Facturas",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M5 4h11l3 3v13H5z" />
+        <path d="M8 9h7M8 13h7M8 17h4" />
+      </svg>
+    ),
+  },
 ];
 
 export default function AdminNav({ email }: { email: string }) {

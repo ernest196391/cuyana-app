@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { conTimeout, mensajeDeError } from "@/lib/adminFetch";
@@ -117,6 +118,7 @@ export default function PedidosPage() {
             <div className="admin-cell">Recibe</div>
             <div className="admin-cell">Método</div>
             <div className="admin-cell">Estado</div>
+            <div className="admin-cell">Factura</div>
           </div>
           {orders.map((o) => {
             // Pedidos anteriores a los métodos múltiples no tienen method_key y
@@ -181,6 +183,13 @@ export default function PedidosPage() {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                <div className="admin-cell">
+                  <span className="admin-cell-label">Factura</span>
+                  <Link className="admin-text-link" href={`/admin/facturas/nueva?pedido=${o.id}&tipo=remesa`}>
+                    Generar →
+                  </Link>
                 </div>
               </div>
             );
